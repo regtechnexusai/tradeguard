@@ -17,23 +17,22 @@ export function calculateRisk(input) {
   : `The declared unit price is approximately ${Math.round(deviation)}% below the lower bound of the supplied market range (USD ${marketLow} per unit).`;
 
   if (deviation >= 100) {
-    flags.push({
-      id: "price-material",
-      title: "Material price deviation",
-      points: 25,
-      detail: `detail: priceDetail,
-      action: "Obtain independent price evidence, product specifications and commercial rationale."
-    });
-  } else if (deviation >= 50) {
-    flags.push({
-      id: "price-significant",
-      title: "Significant price deviation",
-      points: 15,
-      detail: `detail: priceDetail,
-      action: "Validate the benchmark, grade, quality, Incoterms and pricing rationale."
-    });
-  }
-
+  flags.push({
+    id: "price-material",
+    title: "Material price deviation",
+    points: 25,
+    detail: priceDetail,
+    action: "Obtain independent price evidence, product specifications and commercial rationale."
+  });
+} else if (deviation >= 50) {
+  flags.push({
+    id: "price-significant",
+    title: "Significant price deviation",
+    points: 15,
+    detail: priceDetail,
+    action: "Validate the benchmark, grade, quality, Incoterms and pricing rationale."
+  });
+}
   if (input.relatedParty) {
     flags.push({
       id: "related-party",
