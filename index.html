@@ -22,34 +22,59 @@
       }
 
       .brand-logo {
-  display: block;
-  width: 125px;
-  max-width: 38vw;
-  height: auto;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-}
+        display: block;
+        width: 125px;
+        max-width: 38vw;
+        height: auto;
+        object-fit: contain;
+        background: transparent;
+        mix-blend-mode: multiply;
+      }
 
-.footer-logo {
-  display: block;
-  width: 125px;
-  max-width: 42vw;
-  height: auto;
-  object-fit: contain;
-  mix-blend-mode: multiply;
-}
+      .footer-brand {
+        display: flex;
+        align-items: center;
+      }
 
-@media (max-width: 640px) {
-  .brand-logo {
-    width: 115px;
-    max-width: 38vw;
-  }
+      .footer-logo {
+        display: block;
+        width: 125px;
+        max-width: 42vw;
+        height: auto;
+        object-fit: contain;
+        background: transparent;
+        mix-blend-mode: multiply;
+      }
 
-  .footer-logo {
-    width: 120px;
-    max-width: 42vw;
-  }
-}
+      .footer-link {
+        display: inline-block;
+        margin: 10px 0 14px;
+        color: var(--navy);
+        font-size: 0.9rem;
+        line-height: 1.4;
+        text-decoration: none;
+        overflow-wrap: anywhere;
+      }
+
+      .footer-link:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 640px) {
+        .brand-logo {
+          width: 115px;
+          max-width: 38vw;
+        }
+
+        .footer-logo {
+          width: 120px;
+          max-width: 42vw;
+        }
+
+        .footer-link {
+          font-size: 0.82rem;
+        }
+      }
     </style>
   </head>
 
@@ -112,14 +137,14 @@
 
         <div
           class="hero-visual"
-          aria-label="TradeGuard risk intelligence preview"
+          aria-label="Illustrative TradeGuard risk intelligence preview"
         >
           <div class="visual-orbit orbit-large"></div>
           <div class="visual-orbit orbit-small"></div>
 
           <div class="visual-card visual-card-main">
             <div class="visual-card-top">
-              <span class="mini-label">TRADE RISK SIGNAL</span>
+              <span class="mini-label">ILLUSTRATIVE PREVIEW</span>
               <span class="status-pill status-high">HIGH</span>
             </div>
 
@@ -155,7 +180,10 @@
         </div>
       </section>
 
-      <section class="trust-strip section-shell" aria-label="Product principles">
+      <section
+        class="trust-strip section-shell"
+        aria-label="Product principles"
+      >
         <div>
           <span class="trust-icon">01</span>
           <strong>AI-assisted</strong>
@@ -570,6 +598,15 @@
         />
       </div>
 
+      <a
+        class="footer-link"
+        href="https://regtechnexusai.github.io/tradeguard/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        regtechnexusai.github.io/tradeguard/
+      </a>
+
       <p>
         AI-assisted review support. Not a regulatory determination or legal
         interpretation.
@@ -621,7 +658,6 @@
           "China",
           "Colombia",
           "Comoros",
-          "Congo",
           "Costa Rica",
           "Côte d'Ivoire",
           "Croatia",
@@ -723,6 +759,7 @@
           "Poland",
           "Portugal",
           "Qatar",
+          "Republic of the Congo",
           "Romania",
           "Russia",
           "Rwanda",
@@ -781,6 +818,7 @@
         ];
 
         let hsCodeIndex = new Map();
+        let hsCodesLoaded = false;
 
         const cleanCode = (value) =>
           String(value || "").replace(/\s/g, "");
@@ -788,6 +826,7 @@
         function populateCountries() {
           ["originCountry", "destinationCountry"].forEach((id) => {
             const select = document.getElementById(id);
+
             if (!select) return;
 
             const defaultCountry = select.dataset.defaultCountry;
@@ -797,8 +836,10 @@
 
             countries.forEach((country) => {
               const option = document.createElement("option");
+
               option.value = country;
               option.textContent = country;
+
               select.appendChild(option);
             });
 
@@ -815,6 +856,7 @@
             }
 
             const data = await response.json();
+
             const items = Array.isArray(data.items)
               ? data.items
               : [];
@@ -825,7 +867,10 @@
                 item
               ])
             );
+
+            hsCodesLoaded = true;
           } catch (error) {
+            hsCodesLoaded = false;
             console.warn("HS code dataset error:", error);
           }
         }
@@ -842,6 +887,14 @@
           if (!/^[0-9]{8}$/.test(code)) {
             description.textContent =
               "HS Code must contain exactly 8 digits.";
+
+            description.style.color = "#b42318";
+            return;
+          }
+
+          if (!hsCodesLoaded) {
+            description.textContent =
+              "HS Code reference file is still loading. Please try again.";
 
             description.style.color = "#b42318";
             return;
