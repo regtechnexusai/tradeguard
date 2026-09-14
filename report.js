@@ -35,9 +35,15 @@ export function renderReport(result, input) {
   gaugeShell.style.background = `conic-gradient(#1967d2 ${result.score * 3.6}deg, #dcecf6 0deg)`;
   flagCount.textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
 
-  const priceText = result.deviation > 0
-    ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
-    : "The declared price falls inside the supplied market range.";
+  const invoicePrice = Number(input.invoicePrice);
+const marketLow = Number(input.marketLow);
+const marketHigh = Number(input.marketHigh);
+
+const priceText = result.deviation > 0
+  ? invoicePrice > marketHigh
+    ? `The declared price is approximately ${Math.round(result.deviation)}% above the upper bound of the supplied market range (USD ${formatNumber(marketHigh)} per unit).`
+    : `The declared price is approximately ${Math.round(result.deviation)}% below the lower bound of the supplied market range (USD ${formatNumber(marketLow)} per unit).`
+  : "The declared unit price falls inside the supplied market range.";
 
   summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText} This is a prioritisation signal, not a final TBML determination.`;
 
