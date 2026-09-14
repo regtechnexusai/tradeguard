@@ -22,36 +22,34 @@
       }
 
       .brand-logo {
-        display: block;
-        width: 185px;
-        max-width: 52vw;
-        height: auto;
-        object-fit: contain;
-      }
+  display: block;
+  width: 125px;
+  max-width: 38vw;
+  height: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
 
-      .footer-brand {
-        display: flex;
-        align-items: center;
-      }
+.footer-logo {
+  display: block;
+  width: 125px;
+  max-width: 42vw;
+  height: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
 
-      .footer-logo {
-        display: block;
-        width: 170px;
-        max-width: 55vw;
-        height: auto;
-        object-fit: contain;
-      }
+@media (max-width: 640px) {
+  .brand-logo {
+    width: 115px;
+    max-width: 38vw;
+  }
 
-      @media (max-width: 640px) {
-        .brand-logo {
-          width: 170px;
-          max-width: 52vw;
-        }
-
-        .footer-logo {
-          width: 145px;
-        }
-      }
+  .footer-logo {
+    width: 120px;
+    max-width: 42vw;
+  }
+}
     </style>
   </head>
 
