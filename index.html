@@ -1,262 +1,83 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="TradeGuard by RegTech Nexus AI — an explainable trade-finance and TBML risk review demo."
-    />
-    <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <div class="ambient ambient-one" aria-hidden="true"></div>
-    <div class="ambient ambient-two" aria-hidden="true"></div>
+RN RegTech Nexus AI Where regulation meets intelligence
+Risk demo How it works Request pilot
+Product preview by RegTech Nexus AI
+Trade finance review with a clearer risk signal.
+TradeGuard helps reviewers identify potential TBML red flags across price, parties, routes and documents—before a transaction becomes a difficult case.
 
-    <header class="site-header">
-      <a class="brand" href="#top" aria-label="TradeGuard home">
-        <span class="brand-mark">RN</span>
-        <span>
-          <strong>RegTech Nexus AI</strong>
-          <small>Where regulation meets intelligence</small>
-        </span>
-      </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#risk-check">Risk demo</a>
-        <a href="#how-it-works">How it works</a>
-        <a class="nav-cta" href="#pilot">Request pilot</a>
-      </nav>
-    </header>
+Run the sample demo → Explore the workflow
+Explainable flags Human review Bangladesh-focused
+TRADE RISK SIGNAL HIGH
+65/100
+Enhanced review recommended
 
-    <main id="top">
-      <section class="hero section-shell">
-        <div class="hero-copy">
-          <div class="eyebrow"><span class="pulse-dot"></span> Product preview by RegTech Nexus AI</div>
-          <h1>Trade finance review with a clearer risk signal.</h1>
-          <p class="hero-lead">
-            TradeGuard helps reviewers identify potential TBML red flags across price, parties,
-            routes and documents—before a transaction becomes a difficult case.
-          </p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#risk-check">Run the sample demo <span>→</span></a>
-            <a class="button button-quiet" href="#how-it-works">Explore the workflow</a>
-          </div>
-          <div class="hero-proof">
-            <span>Explainable flags</span>
-            <span>Human review</span>
-            <span>Bangladesh-focused</span>
-          </div>
-        </div>
+Price deviation+25
+Document mismatch+15
+Related party+15
+CASE STATUS Human review queue ✓ Evidence traceable
+01AI-assistedNot an automated decision
+02ExplainableEvery flag has a reason
+03Review-readyBuilt for investigation workflow
+Sample transaction review
+Run a TradeGuard risk check
+Use fictional or anonymised information only. This demo does not store transaction documents.
 
-        <div class="hero-visual" aria-label="TradeGuard risk intelligence preview">
-          <div class="visual-orbit orbit-large"></div>
-          <div class="visual-orbit orbit-small"></div>
-          <div class="visual-card visual-card-main">
-            <div class="visual-card-top">
-              <span class="mini-label">TRADE RISK SIGNAL</span>
-              <span class="status-pill status-high">HIGH</span>
-            </div>
-            <div class="visual-score">65<span>/100</span></div>
-            <p>Enhanced review recommended</p>
-            <div class="signal-line"><span style="width: 65%"></span></div>
-            <div class="visual-meta"><span>Price deviation</span><strong>+25</strong></div>
-            <div class="visual-meta"><span>Document mismatch</span><strong>+15</strong></div>
-            <div class="visual-meta"><span>Related party</span><strong>+15</strong></div>
-          </div>
-          <div class="visual-card visual-card-float">
-            <span class="mini-label">CASE STATUS</span>
-            <strong>Human review queue</strong>
-            <span class="float-check">✓ Evidence traceable</span>
-          </div>
-        </div>
-      </section>
+STEP 01
+Transaction inputs
+Load sample case
+Product / commodity 
+e.g. Cotton textile
+HS Code 
+Example: 52010000
+ Verify HS Code Bangladesh Customs tariff 2026–2027 reference.
+Quantity 
+100000
+ Declared unit price (USD) 
+50
+ Market lower range (USD) 
+10
+ Market upper range (USD) 
+12
+ Origin country 
+Bangladesh
+ Destination country 
+United Arab Emirates
+Additional review indicators
+Related partyBuyer/seller may be connected Third-party paymentPayer differs from buyer Route anomalyShipping route needs review Document mismatchKey fields do not align Duplicate invoiceSimilar invoice may exist
+Analyse sample transaction →
+STEP 02
+Risk intelligence report
+Copy summary
+✦
+Your review result will appear here
+Complete the sample transaction fields and run the risk check.
 
-      <section class="trust-strip section-shell" aria-label="Product principles">
-        <div><span class="trust-icon">01</span><strong>AI-assisted</strong><small>Not an automated decision</small></div>
-        <div><span class="trust-icon">02</span><strong>Explainable</strong><small>Every flag has a reason</small></div>
-        <div><span class="trust-icon">03</span><strong>Review-ready</strong><small>Built for investigation workflow</small></div>
-      </section>
+From signal to action
+A practical review workflow
+TradeGuard is designed to support people who review trade transactions—not replace them.
 
-      <section id="risk-check" class="section-shell section-block">
-        <div class="section-heading">
-          <div>
-            <div class="eyebrow">Sample transaction review</div>
-            <h2>Run a TradeGuard risk check</h2>
-          </div>
-          <p>Use fictional or anonymised information only. This demo does not store transaction documents.</p>
-        </div>
+01
+Structure the evidence
+Bring the commercial terms, parties, documents and route into one review context.
 
-        <div class="workspace-grid">
-          <form id="riskForm" class="panel form-panel">
-            <div class="panel-heading">
-              <div>
-                <span class="panel-kicker">STEP 01</span>
-                <h3>Transaction inputs</h3>
-              </div>
-              <button id="sampleButton" class="text-button" type="button">Load sample case</button>
-            </div>
+02
+Prioritise the signal
+Use transparent rules to surface material inconsistencies and connected risk indicators.
 
-            <div class="form-grid">
-              <label class="field field-wide">
-                <span>Product / commodity</span>
-                <input id="productName" name="productName" type="text" placeholder="e.g. Cotton textile" required />
-              </label>
-              <label class="field">
-                <span>Quantity</span>
-                <input id="quantity" name="quantity" type="number" min="0" step="any" placeholder="100000" required />
-              </label>
-              <label class="field">
-                <span>Declared unit price (USD)</span>
-                <input id="invoicePrice" name="invoicePrice" type="number" min="0" step="any" placeholder="50" required />
-              </label>
-              <label class="field">
-                <span>Market lower range (USD)</span>
-                <input id="marketLow" name="marketLow" type="number" min="0" step="any" placeholder="10" required />
-              </label>
-              <label class="field">
-                <span>Market upper range (USD)</span>
-                <input id="marketHigh" name="marketHigh" type="number" min="0" step="any" placeholder="12" required />
-              </label>
-              <label class="field">
-                <span>Origin country</span>
-                <select id="originCountry" name="originCountry">
-                  <option>Bangladesh</option>
-                  <option>China</option>
-                  <option>India</option>
-                  <option>Singapore</option>
-                  <option>Turkey</option>
-                  <option>United Arab Emirates</option>
-                  <option>Other</option>
-                </select>
-              </label>
-              <label class="field">
-                <span>Destination country</span>
-                <select id="destinationCountry" name="destinationCountry">
-                  <option>United Arab Emirates</option>
-                  <option>Bangladesh</option>
-                  <option>China</option>
-                  <option>India</option>
-                  <option>Singapore</option>
-                  <option>Turkey</option>
-                  <option>Other</option>
-                </select>
-              </label>
-            </div>
-<div class="field">
-  <label for="hsCode">HS Code</label>
+03
+Document the action
+Turn the review into an explainable case note that can be challenged, escalated and audited.
 
-  <input
-    id="hsCode"
-    name="hsCode"
-    type="text"
-    inputmode="numeric"
-    placeholder="Example: 52010000"
-  />
+Early access
+Test the workflow with your own review team.
+Request a pilot conversation for a bank, exporter, importer, C&F agent or compliance team.
 
-  <button type="button" id="lookupHsCode">
-    Verify HS Code
-  </button>
+Your name
+ 
+Organisation
+ 
+Organisation type
+ Prepare pilot request →
+TradeGuardby RegTech Nexus AI
+AI-assisted review support. Not a regulatory determination or legal interpretation.
 
-  <small id="hsCodeDescription"></small>
-</div>
-            <div class="check-section">
-              <div class="check-section-title">Additional review indicators</div>
-              <div class="check-grid">
-                <label class="check-card"><input id="relatedParty" type="checkbox" /><span><strong>Related party</strong><small>Buyer/seller may be connected</small></span></label>
-                <label class="check-card"><input id="thirdPartyPayment" type="checkbox" /><span><strong>Third-party payment</strong><small>Payer differs from buyer</small></span></label>
-                <label class="check-card"><input id="routeMismatch" type="checkbox" /><span><strong>Route anomaly</strong><small>Shipping route needs review</small></span></label>
-                <label class="check-card"><input id="documentMismatch" type="checkbox" /><span><strong>Document mismatch</strong><small>Key fields do not align</small></span></label>
-                <label class="check-card"><input id="duplicateInvoice" type="checkbox" /><span><strong>Duplicate invoice</strong><small>Similar invoice may exist</small></span></label>
-              </div>
-            </div>
-
-            <div id="formMessage" class="form-message" role="status" aria-live="polite"></div>
-            <button class="button button-primary button-full" type="submit">Analyse sample transaction <span>→</span></button>
-          </form>
-
-          <section id="reportPanel" class="panel report-panel is-empty" aria-live="polite">
-            <div class="panel-heading">
-              <div>
-                <span class="panel-kicker">STEP 02</span>
-                <h3>Risk intelligence report</h3>
-              </div>
-              <button id="copyReportButton" class="text-button" type="button" disabled>Copy summary</button>
-            </div>
-
-            <div id="emptyReport" class="empty-report">
-              <div class="empty-icon">✦</div>
-              <h3>Your review result will appear here</h3>
-              <p>Complete the sample transaction fields and run the risk check.</p>
-            </div>
-
-            <div id="reportContent" class="report-content" hidden>
-              <div class="report-overview">
-                <div>
-                  <span class="mini-label">OVERALL SIGNAL</span>
-                  <div class="report-score"><span id="reportScore">0</span><small>/100</small></div>
-                  <span id="reportBand" class="status-pill">LOW</span>
-                </div>
-                <div class="report-gauge"><span id="reportGauge"></span></div>
-              </div>
-              <div id="reportSummary" class="report-summary"></div>
-              <div class="report-subheading"><span>Detected indicators</span><span id="flagCount">0 flags</span></div>
-              <div id="flagList" class="flag-list"></div>
-              <div class="recommendation-box">
-                <span class="recommendation-icon">✓</span>
-                <div><strong>Suggested next step</strong><p id="recommendationText"></p></div>
-              </div>
-              <div class="report-footer-note">Demo output only. Final transaction decisions remain with the authorised reviewer.</div>
-            </div>
-          </section>
-        </div>
-      </section>
-
-      <section id="how-it-works" class="section-shell section-block">
-        <div class="section-heading compact-heading">
-          <div>
-            <div class="eyebrow">From signal to action</div>
-            <h2>A practical review workflow</h2>
-          </div>
-          <p>TradeGuard is designed to support people who review trade transactions—not replace them.</p>
-        </div>
-        <div class="feature-grid">
-          <article class="feature-card"><span class="feature-number">01</span><h3>Structure the evidence</h3><p>Bring the commercial terms, parties, documents and route into one review context.</p></article>
-          <article class="feature-card"><span class="feature-number">02</span><h3>Prioritise the signal</h3><p>Use transparent rules to surface material inconsistencies and connected risk indicators.</p></article>
-          <article class="feature-card"><span class="feature-number">03</span><h3>Document the action</h3><p>Turn the review into an explainable case note that can be challenged, escalated and audited.</p></article>
-        </div>
-      </section>
-
-      <section id="pilot" class="section-shell section-block pilot-section">
-        <div class="pilot-card">
-          <div>
-            <div class="eyebrow">Early access</div>
-            <h2>Test the workflow with your own review team.</h2>
-            <p>Request a pilot conversation for a bank, exporter, importer, C&F agent or compliance team.</p>
-          </div>
-          <form id="pilotForm" class="pilot-form">
-            <input id="pilotName" type="text" placeholder="Your name" required />
-            <input id="pilotOrganisation" type="text" placeholder="Organisation" required />
-            <select id="pilotType" required>
-              <option value="">Organisation type</option>
-              <option>Bank / financial institution</option>
-              <option>Exporter / importer</option>
-              <option>C&F / trade consultant</option>
-              <option>Compliance / audit team</option>
-            </select>
-            <button class="button button-light button-full" type="submit">Prepare pilot request <span>→</span></button>
-            <div id="pilotMessage" class="pilot-message" role="status" aria-live="polite"></div>
-          </form>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer section-shell">
-      <div><strong>TradeGuard</strong><span>by RegTech Nexus AI</span></div>
-      <p>AI-assisted review support. Not a regulatory determination or legal interpretation.</p>
-      <span>© <span id="year"></span> RegTech Nexus AI</span>
-    </footer>
-
-    <script type="module" src="./main.js"></script>
-  </body>
-</html>
+© RegTech Nexus AI
