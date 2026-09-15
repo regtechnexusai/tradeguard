@@ -1,5 +1,5 @@
-import { calculateRisk } from "./rules.js";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js";
+import { calculateRisk } from "./rules.js?v=8";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=8";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -10,10 +10,58 @@ const pilotMessage = document.querySelector("#pilotMessage");
 const lookupHsCode = document.querySelector("#lookupHsCode");
 const hsCodeInput = document.querySelector("#hsCode");
 const hsCodeDescription = document.querySelector("#hsCodeDescription");
+const commodityField = document.querySelector("#commodityField");
+const commodityInput = document.querySelector("#productCommodity");
 
 let latestReport = "";
 let hsCodeIndex = new Map();
 let hsCodesLoaded = false;
+
+function clearFieldError(id) {
+  const control = document.querySelector(`#${id}`);
+  const field = control?.closest(".field");
+  if (!control || !field) return;
+
+  field.classList.remove("has-error");
+  control.classList.remove("input-invalid");
+  control.removeAttribute("aria-invalid");
+  field.querySelector(".field-error")?.remove();
+}
+
+function clearValidationErrors() {
+  document.querySelectorAll("#riskForm .field.has-error").forEach((field) => {
+    field.classList.remove("has-error");
+    field.querySelector(".input-invalid")?.classList.remove("input-invalid");
+    field.querySelector("[aria-invalid='true']")?.removeAttribute("aria-invalid");
+    field.querySelector(".field-error")?.remove();
+  });
+}
+
+function setFieldError(id, message) {
+  const control = document.querySelector(`#${id}`);
+  const field = control?.closest(".field");
+  if (!control || !field) return;
+
+  field.classList.add("has-error");
+  control.classList.add("input-invalid");
+  control.setAttribute("aria-invalid", "true");
+
+  let error = field.querySelector(".field-error");
+  if (!error) {
+    error = document.createElement("small");
+    error.className = "field-error";
+    field.appendChild(error);
+  }
+  error.textContent = message;
+}
+
+function showValidationErrors(errors) {
+  clearValidationErrors();
+  Object.entries(errors).forEach(([id, message]) => setFieldError(id, message));
+
+  const firstInvalid = document.querySelector("#riskForm .input-invalid");
+  firstInvalid?.focus({ preventScroll: true });
+}
 
 const countries = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
@@ -99,6 +147,7 @@ async function loadHsCodes() {
     );
 
     hsCodesLoaded = true;
+    if (hsCodeInput?.value) verifyHsCode();
   } catch (error) {
     hsCodesLoaded = false;
     console.warn("HS code dataset error:", error);
@@ -106,28 +155,30 @@ async function loadHsCodes() {
 }
 
 function verifyHsCode() {
-  if (!hsCodeInput || !hsCodeDescription) return;
+  if (!hsCodeInput || !hsCodeDescription) return false;
 
   const code = cleanCode(hsCodeInput.value);
+  hsCodeInput.dataset.verified = "false";
+  commodityInput.value = "";
+  commodityField.hidden = true;
 
   if (!code) {
-    hsCodeDescription.textContent =
-      "Optional: enter an 8-digit HS Code to verify it against the tariff reference.";
+    hsCodeDescription.textContent = "Required: enter an 8-digit HS Code from the tariff reference.";
     hsCodeDescription.style.color = "";
-    return;
+    return false;
   }
 
   if (!/^\d{8}$/.test(code)) {
     hsCodeDescription.textContent = "HS Code must contain exactly 8 digits.";
     hsCodeDescription.style.color = "#b42318";
-    return;
+    return false;
   }
 
   if (!hsCodesLoaded) {
     hsCodeDescription.textContent =
       "HS Code reference is still loading. Please try again.";
     hsCodeDescription.style.color = "#b42318";
-    return;
+    return false;
   }
 
   const item = hsCodeIndex.get(code);
@@ -136,42 +187,32 @@ function verifyHsCode() {
     hsCodeDescription.textContent =
       "HS Code was not found in the available Bangladesh Customs tariff reference.";
     hsCodeDescription.style.color = "#b42318";
-    return;
+    return false;
   }
 
-  const productText = [
-    document.querySelector("#productName")?.value || "",
-    document.querySelector("#productDescription")?.value || ""
-  ].join(" ").toLowerCase();
-
-  const tariffText = String(item.tariffDescription || "").toLowerCase();
-  const stopWords = new Set(["with", "from", "other", "and", "the", "not"]);
-  const productWords = productText
-    .split(/[^a-z0-9]+/)
-    .filter((word) => word.length > 3 && !stopWords.has(word));
-  const possibleMatch = productWords.some((word) => tariffText.includes(word));
-
-  if (possibleMatch) {
-    hsCodeDescription.textContent =
-      `${item.tariffDescription} — Chapter ${item.chapter}. Possible description match; confirm manually.`;
-    hsCodeDescription.style.color = "#167c62";
-  } else {
-    hsCodeDescription.textContent =
-      `${item.tariffDescription} — Chapter ${item.chapter}. Product-description match not established; manual review required.`;
-    hsCodeDescription.style.color = "#b56a0c";
-  }
+  const tariffDescription = String(item.tariffDescription || `HS Code ${code}`).trim();
+  commodityInput.value = tariffDescription;
+  commodityField.hidden = false;
+  hsCodeInput.dataset.verified = "true";
+  hsCodeDescription.textContent =
+    `Verified — Chapter ${item.chapter}. Product / commodity populated from the tariff description.`;
+  hsCodeDescription.style.color = "#167c62";
+  clearFieldError("hsCode");
+  return true;
 }
 
 riskForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const input = collectInput();
-  const validationMessage = validateInput(input);
+  const validation = validateInput(input);
 
-  if (validationMessage) {
-    formMessage.textContent = validationMessage;
+  if (validation.message) {
+    showValidationErrors(validation.errors);
+    formMessage.textContent = validation.message;
     return;
   }
 
+  clearValidationErrors();
   formMessage.textContent = "";
   const result = calculateRisk(input);
   latestReport = renderReport(result, input);
@@ -214,23 +255,33 @@ pilotForm.addEventListener("submit", (event) => {
     "I would like to discuss a TradeGuard trade-finance/TBML review pilot."
   ].join("\n");
 
-  const subject = "TradeGuard pilot request";
+  const subject = `TradeGuard pilot request — ${organisation}`;
   const mailto =
     `mailto:regtechnexusai@gmail.com?subject=${encodeURIComponent(subject)}` +
     `&body=${encodeURIComponent(message)}`;
 
-  pilotMessage.textContent = "Opening your email app…";
+  pilotMessage.textContent = "A draft email is opening. Review it and press Send.";
   window.location.href = mailto;
 });
 
 populateCountries();
 loadHsCodes();
 lookupHsCode?.addEventListener("click", verifyHsCode);
+hsCodeInput?.addEventListener("input", () => {
+  clearFieldError("hsCode");
+  hsCodeInput.dataset.verified = "false";
+  commodityInput.value = "";
+  commodityField.hidden = true;
+  if (cleanCode(hsCodeInput.value).length === 8) verifyHsCode();
+});
 hsCodeInput?.addEventListener("change", verifyHsCode);
-document.querySelector("#productName")?.addEventListener("change", () => {
-  if (hsCodeInput?.value) verifyHsCode();
+
+riskForm.addEventListener("input", (event) => {
+  if (event.target.id !== "hsCode") clearFieldError(event.target.id);
 });
-document.querySelector("#productDescription")?.addEventListener("change", () => {
-  if (hsCodeInput?.value) verifyHsCode();
+
+riskForm.addEventListener("change", (event) => {
+  clearFieldError(event.target.id);
 });
+
 document.querySelector("#year").textContent = new Date().getFullYear();

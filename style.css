@@ -155,11 +155,17 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .field textarea { width: 100%; min-height: 72px; padding: 11px 12px; border: 1px solid #d6e4ef; border-radius: 10px; outline: 0; resize: vertical; color: var(--navy); background: #fbfdff; font-size: 12px; line-height: 1.45; transition: border-color .2s ease, box-shadow .2s ease; }
 .field input:focus, .field select:focus, .pilot-form input:focus, .pilot-form select:focus { border-color: #6ebce2; box-shadow: 0 0 0 4px rgba(73,198,229,.12); }
 .field textarea:focus { border-color: #6ebce2; box-shadow: 0 0 0 4px rgba(73,198,229,.12); }
+.derived-field input[readonly] { color: var(--navy); background: #eef8ff; }
+.field.has-error > input, .field.has-error > select, .field.has-error > textarea, .field.has-error .input-invalid { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(195,63,72,.12) !important; }
+.field-error { color: var(--red); font-size: 10px; font-weight: 750; line-height: 1.35; }
 .optional-section { overflow: hidden; border: 1px solid #dfeaf3; border-radius: 13px; background: #fbfdff; }
 .optional-section summary { padding: 13px 14px; color: var(--navy); cursor: pointer; font-size: 11px; font-weight: 800; list-style-position: inside; }
 .optional-section summary::marker { color: var(--blue); }
 .optional-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; padding: 0 14px 15px; }
 .optional-note { margin: 0; padding: 0 14px 12px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.tbml-indicator-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; padding: 0 14px 14px; }
+.tbml-metadata-grid { padding-top: 13px; border-top: 1px solid #e7eef5; }
+.check-section-note { padding: 0; }
 .check-section { margin: 22px 0; padding-top: 20px; border-top: 1px solid #e7eef5; }
 .check-section-title { margin-bottom: 12px; color: var(--navy); font-size: 11px; font-weight: 800; }
 .check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
@@ -259,7 +265,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   .section-heading > p { margin-top: 15px; }
   .form-panel, .report-panel { padding: 19px; }
   .form-grid, .check-grid, .feature-grid { grid-template-columns: 1fr; }
-  .optional-grid { grid-template-columns: 1fr; }
+  .optional-grid, .tbml-indicator-grid { grid-template-columns: 1fr; }
   .field-wide { grid-column: auto; }
   .report-overview { align-items: start; }
   .report-gauge { width: 90px; height: 90px; border-width: 7px; }

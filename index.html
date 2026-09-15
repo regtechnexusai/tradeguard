@@ -88,7 +88,7 @@
         </div>
 
         <div class="workspace-grid">
-          <form id="riskForm" class="panel form-panel">
+          <form id="riskForm" class="panel form-panel" novalidate>
             <div class="panel-heading">
               <div>
                 <span class="panel-kicker">STEP 01</span>
@@ -98,16 +98,17 @@
             </div>
 
             <div class="form-grid">
-              <label class="field field-wide">
-                <span>Product / commodity</span>
-                <input id="productName" name="productName" type="text" placeholder="e.g. Cotton textile" required />
-              </label>
-
               <div class="field">
-                <label for="hsCode"><span>HS Code <em>(optional)</em></span></label>
-                <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="e.g. 52010000" />
+                <label for="hsCode"><span>HS Code <em>(required)</em></span></label>
+                <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="e.g. 52010000" required aria-describedby="hsCodeDescription" />
                 <button id="lookupHsCode" class="text-button" type="button">Verify HS Code</button>
-                <small id="hsCodeDescription" aria-live="polite">Bangladesh Customs tariff 2026–2027 reference.</small>
+                <small id="hsCodeDescription" aria-live="polite">Required: enter an 8-digit HS Code from the Bangladesh Customs tariff reference.</small>
+              </div>
+
+              <div id="commodityField" class="field derived-field" hidden>
+                <label for="productCommodity"><span>Product / commodity <em>(from HS Code)</em></span></label>
+                <input id="productCommodity" name="productCommodity" type="text" readonly aria-readonly="true" placeholder="The tariff description will appear after HS Code verification" />
+                <small id="productCommodityNote">Automatically populated from the verified HS Code.</small>
               </div>
 
               <label class="field">
@@ -330,10 +331,80 @@
                   </label>
                 </div>
               </details>
+
+              <details class="optional-section field-wide" open>
+                <summary>TBML red-flag indicators — select all that apply</summary>
+                <p class="optional-note">
+                  Select only indicators supported by the information available. These are review signals, not proof of TBML.
+                </p>
+                <div class="tbml-indicator-grid">
+                  <label class="check-card">
+                    <input id="tbmlPriceValue" type="checkbox" data-tbml-indicator="price-value-anomaly" />
+                    <span><strong>Price / valuation anomaly</strong><small>Declared value may not reflect the commercial basis</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlGoodsHsMismatch" type="checkbox" data-tbml-indicator="goods-hs-mismatch" />
+                    <span><strong>Goods / HS Code mismatch</strong><small>Description, specification or classification may not align</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlQuantityUnitMismatch" type="checkbox" data-tbml-indicator="quantity-unit-mismatch" />
+                    <span><strong>Quantity / unit inconsistency</strong><small>Quantity or unit of measure may not align with the documents</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlDocumentInconsistency" type="checkbox" data-tbml-indicator="document-inconsistency" />
+                    <span><strong>Document inconsistency</strong><small>Invoice, packing list or Bill of Lading may conflict</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlRoutePortAnomaly" type="checkbox" data-tbml-indicator="route-port-anomaly" />
+                    <span><strong>Route / port anomaly</strong><small>Route, port or shipment pattern needs review</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlRelatedUbo" type="checkbox" data-tbml-indicator="related-party-ubo" />
+                    <span><strong>Related party / UBO concern</strong><small>Ownership, control or relationship requires understanding</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlThirdPartyPayment" type="checkbox" data-tbml-indicator="third-party-payment" />
+                    <span><strong>Third-party payment</strong><small>Payer is not clearly linked to the transaction</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlMultiplePhantomShipment" type="checkbox" data-tbml-indicator="multiple-phantom-shipment" />
+                    <span><strong>Multiple / phantom shipment concern</strong><small>Shipment or invoice may be repeated or unsupported</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlBusinessProfileMismatch" type="checkbox" data-tbml-indicator="business-profile-mismatch" />
+                    <span><strong>Business-profile mismatch</strong><small>Trade activity may not fit the customer’s known business</small></span>
+                  </label>
+                  <label class="check-card">
+                    <input id="tbmlUnusualPaymentTerms" type="checkbox" data-tbml-indicator="unusual-payment-terms" />
+                    <span><strong>Unusual payment terms</strong><small>Payment structure requires additional rationale</small></span>
+                  </label>
+                </div>
+                <div class="optional-grid tbml-metadata-grid">
+                  <label class="field">
+                    <span>Indicator confidence</span>
+                    <select id="indicatorConfidence">
+                      <option value="">Select confidence</option>
+                      <option>Low</option>
+                      <option>Medium</option>
+                      <option>High</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Evidence status</span>
+                    <select id="evidenceStatus">
+                      <option value="">Select evidence status</option>
+                      <option>Not provided</option>
+                      <option>Partially available</option>
+                      <option>Available for review</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
             </div>
 
             <div class="check-section">
-              <div class="check-section-title">Additional review indicators</div>
+              <div class="check-section-title">Additional quick review toggles</div>
+              <p class="optional-note check-section-note">Use these for direct reviewer observations. Related concepts are reconciled with the structured TBML indicators above.</p>
               <div class="check-grid">
                 <label class="check-card"><input id="relatedParty" type="checkbox" /><span><strong>Related party</strong><small>Buyer/seller may be connected</small></span></label>
                 <label class="check-card"><input id="thirdPartyPayment" type="checkbox" /><span><strong>Third-party payment</strong><small>Payer differs from buyer</small></span></label>
@@ -365,7 +436,7 @@
             <div id="reportContent" class="report-content" hidden>
               <div class="report-overview">
                 <div>
-                  <span class="mini-label">OVERALL SIGNAL</span>
+                  <span class="mini-label">OVERALL SIGNAL / RISK GRADE</span>
                   <div class="report-score"><span id="reportScore">0</span><small>/100</small></div>
                   <span id="reportBand" class="status-pill">LOW</span>
                 </div>
@@ -418,7 +489,7 @@
             <p>Request a pilot conversation for a bank, exporter, importer, C&F agent or compliance team.</p>
             <p class="pilot-email-note">
               Or email us directly:
-              <a href="mailto:regtechnexusai@gmail.com?subject=TradeGuard%20pilot%20request">regtechnexusai@gmail.com</a>
+              <a href="mailto:regtechnexusai@gmail.com?subject=TradeGuard%20pilot%20request&amp;body=Hello%20RegTech%20Nexus%20AI%2C%0A%0AI%20would%20like%20to%20discuss%20a%20TradeGuard%20pilot.%0A%0AOrganisation%3A%20%0AOrganisation%20type%3A%20%0A%0ARegards%2C%0A" aria-label="Email RegTech Nexus AI about a TradeGuard pilot">regtechnexusai@gmail.com</a>
             </p>
           </div>
           <form id="pilotForm" class="pilot-form">
@@ -447,6 +518,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js"></script>
+    <script type="module" src="./main.js?v=8"></script>
   </body>
 </html>

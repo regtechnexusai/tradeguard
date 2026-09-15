@@ -1,4 +1,4 @@
-import { bandClass } from "./rules.js";
+import { bandClass } from "./rules.js?v=8";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -16,7 +16,7 @@ function formatNumber(value) {
 }
 
 const completenessFields = [
-  ["Product / commodity", "productName"],
+  ["Product / commodity from HS Code", "productName"],
   ["HS Code", "hsCode"],
   ["Product / goods description", "productDescription"],
   ["Quality / grade", "qualityGrade"],
@@ -48,7 +48,22 @@ const completenessFields = [
   ["Invoice consistency", "invoiceConsistency"],
   ["Packing-list consistency", "packingListConsistency"],
   ["Bill of Lading consistency", "billOfLadingConsistency"]
+  , ["Indicator confidence", "indicatorConfidence"]
+  , ["Evidence status", "evidenceStatus"]
 ];
+
+export const TBML_INDICATOR_LABELS = {
+  "price-value-anomaly": "Price / valuation anomaly",
+  "goods-hs-mismatch": "Goods / HS Code mismatch",
+  "quantity-unit-mismatch": "Quantity / unit inconsistency",
+  "document-inconsistency": "Document inconsistency",
+  "route-port-anomaly": "Route / port anomaly",
+  "related-party-ubo": "Related party / UBO concern",
+  "third-party-payment": "Third-party payment",
+  "multiple-phantom-shipment": "Multiple / phantom shipment concern",
+  "business-profile-mismatch": "Business-profile mismatch",
+  "unusual-payment-terms": "Unusual payment terms"
+};
 
 export function calculateDataCompleteness(input) {
   const completed = completenessFields.filter(([, key]) => {
@@ -104,11 +119,14 @@ export function renderReport(result, input) {
     ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
     : "The declared price falls inside the supplied market range.";
 
-  const hsText = input.hsCode
-    ? ` HS Code provided: ${escapeHtml(input.hsCode)}.`
-    : " HS Code was not provided.";
+  const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; product/commodity was populated from the verified tariff description.`;
 
-  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText} This is a prioritisation signal, not a final TBML determination.`;
+  const selectedIndicatorCount = (input.tbmlIndicators || []).length;
+  const indicatorText = selectedIndicatorCount
+    ? ` ${selectedIndicatorCount} structured TBML indicator${selectedIndicatorCount === 1 ? " is" : "s are"} selected.`
+    : " No structured TBML indicator was selected.";
+
+  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText}${indicatorText} This is a prioritisation signal, not a final TBML determination.`;
 
   completenessValue.textContent = `${completeness.percent}%`;
   completenessBar.style.width = `${completeness.percent}%`;
@@ -125,7 +143,10 @@ export function renderReport(result, input) {
     input.incoterms && `Incoterms: ${input.incoterms}`,
     input.paymentTerms && `Payment: ${input.paymentTerms}`,
     input.portLoading && `Loading port: ${input.portLoading}`,
-    input.portDischarge && `Discharge port: ${input.portDischarge}`
+    input.portDischarge && `Discharge port: ${input.portDischarge}`,
+    input.tbmlIndicators?.length && `TBML indicators: ${input.tbmlIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}`,
+    input.indicatorConfidence && `Indicator confidence: ${input.indicatorConfidence}`,
+    input.evidenceStatus && `Evidence status: ${input.evidenceStatus}`
   ].filter(Boolean);
 
   reviewContext.innerHTML = contextItems.length
@@ -156,6 +177,9 @@ export function renderReport(result, input) {
     input.hsCode ? `HS Code: ${input.hsCode}` : "HS Code: Not provided",
     `Risk score: ${result.score}/100 (${result.band})`,
     `Data completeness: ${completeness.percent}%`,
+    `TBML indicators selected: ${(input.tbmlIndicators || []).map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ") || "None"}`,
+    `Indicator confidence: ${input.indicatorConfidence || "Not provided"}`,
+    `Evidence status: ${input.evidenceStatus || "Not provided"}`,
     `Detected flags: ${result.flags.length}`,
     ...result.flags.map((flag) => `- ${flag.title}: ${flag.detail}`),
     `Suggested next step: ${result.recommendation}`,
@@ -166,7 +190,6 @@ export function renderReport(result, input) {
 
 export function setSampleValues() {
   const values = {
-    productName: "Cotton textile",
     hsCode: "52010000",
     productDescription: "Cotton, not carded or combed; illustrative textile shipment",
     qualityGrade: "Commercial grade",
@@ -197,6 +220,8 @@ export function setSampleValues() {
     invoiceConsistency: "Needs review",
     packingListConsistency: "Consistent",
     billOfLadingConsistency: "Not provided"
+    , indicatorConfidence: "Medium"
+    , evidenceStatus: "Partially available"
   };
 
   Object.entries(values).forEach(([id, value]) => {
@@ -209,6 +234,11 @@ export function setSampleValues() {
   document.querySelector("#routeMismatch").checked = false;
   document.querySelector("#documentMismatch").checked = true;
   document.querySelector("#duplicateInvoice").checked = false;
+
+  ["tbmlPriceValue", "tbmlGoodsHsMismatch", "tbmlRelatedUbo", "tbmlThirdPartyPayment", "tbmlDocumentInconsistency"].forEach((id) => {
+    const element = document.querySelector(`#${id}`);
+    if (element) element.checked = true;
+  });
 }
 
 export function collectInput() {
@@ -221,10 +251,14 @@ export function collectInput() {
     value("packingListConsistency"),
     value("billOfLadingConsistency")
   ];
+  const tbmlIndicators = [...document.querySelectorAll("[data-tbml-indicator]:checked")]
+    .map((element) => element.dataset.tbmlIndicator)
+    .filter(Boolean);
 
   return {
-    productName: value("productName"),
+    productName: value("productCommodity"),
     hsCode: value("hsCode"),
+    hsCodeVerified: document.querySelector("#hsCode")?.dataset.verified === "true",
     productDescription: value("productDescription"),
     qualityGrade: value("qualityGrade"),
     material: value("material"),
@@ -255,6 +289,9 @@ export function collectInput() {
     invoiceConsistency: value("invoiceConsistency"),
     packingListConsistency: value("packingListConsistency"),
     billOfLadingConsistency: value("billOfLadingConsistency"),
+    tbmlIndicators,
+    indicatorConfidence: value("indicatorConfidence"),
+    evidenceStatus: value("evidenceStatus"),
     relatedParty: checked("relatedParty") || ["Possible relationship", "Confirmed relationship"].includes(relatedPartyRelationship),
     thirdPartyPayment: checked("thirdPartyPayment") || payerRelationship === "Third party",
     routeMismatch: checked("routeMismatch"),
@@ -264,12 +301,55 @@ export function collectInput() {
 }
 
 export function validateInput(input) {
-  if (!input.productName) return "Please enter a product or commodity.";
-  if (!input.originCountry || !input.destinationCountry) return "Please select the origin and destination countries.";
-  if (input.hsCode && !/^\d{8}$/.test(input.hsCode)) return "HS Code must contain exactly 8 digits or be left blank.";
-  if (Number(input.quantity) <= 0) return "Please enter a valid quantity.";
-  if (Number(input.invoicePrice) <= 0) return "Please enter a valid declared unit price.";
-  if (Number(input.marketLow) <= 0 || Number(input.marketHigh) <= 0) return "Please enter a valid market price range.";
-  if (Number(input.marketHigh) < Number(input.marketLow)) return "Market upper range must be greater than the lower range.";
-  return "";
+  const errors = {};
+
+  if (!input.hsCode) {
+    errors.hsCode = "HS Code is required.";
+  } else if (!/^\d{8}$/.test(input.hsCode)) {
+    errors.hsCode = "Enter exactly 8 digits for the HS Code.";
+  } else if (!input.hsCodeVerified) {
+    errors.hsCode = "Verify a valid HS Code from the tariff reference.";
+  }
+
+  if (!input.quantity || !Number.isFinite(Number(input.quantity)) || Number(input.quantity) <= 0) {
+    errors.quantity = "Enter a quantity greater than zero.";
+  }
+
+  if (!input.invoicePrice || !Number.isFinite(Number(input.invoicePrice)) || Number(input.invoicePrice) <= 0) {
+    errors.invoicePrice = "Enter a declared unit price greater than zero.";
+  }
+
+  if (!input.marketLow || !Number.isFinite(Number(input.marketLow)) || Number(input.marketLow) <= 0) {
+    errors.marketLow = "Enter the lower market range greater than zero.";
+  }
+
+  if (!input.marketHigh || !Number.isFinite(Number(input.marketHigh)) || Number(input.marketHigh) <= 0) {
+    errors.marketHigh = "Enter the upper market range greater than zero.";
+  }
+
+  if (
+    input.marketLow &&
+    input.marketHigh &&
+    Number(input.marketHigh) < Number(input.marketLow)
+  ) {
+    errors.marketLow = "Lower range cannot exceed the upper range.";
+    errors.marketHigh = "Upper range must be greater than or equal to the lower range.";
+  }
+
+  if (!input.originCountry) {
+    errors.originCountry = "Select the country of origin.";
+  }
+
+  if (!input.destinationCountry) {
+    errors.destinationCountry = "Select the country of destination.";
+  }
+
+  const count = Object.keys(errors).length;
+
+  return {
+    errors,
+    message: count
+      ? `Please correct ${count} required field${count === 1 ? "" : "s"} before submitting.`
+      : ""
+  };
 }
