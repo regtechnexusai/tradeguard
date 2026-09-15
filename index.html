@@ -3,98 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
     <meta
       name="description"
       content="TradeGuard by RegTech Nexus AI — an explainable trade-finance and TBML risk review demo."
     />
-
     <title>TradeGuard | RegTech Nexus AI</title>
-
     <link rel="stylesheet" href="./style.css" />
-
-    <style>
-      .brand-image {
-        display: inline-flex;
-        align-items: center;
-        gap: 0;
-        min-width: 0;
-      }
-
-      .brand-logo {
-        display: block;
-        width: 125px;
-        max-width: 38vw;
-        height: auto;
-        object-fit: contain;
-        background: transparent;
-        mix-blend-mode: multiply;
-      }
-
-      .footer-brand {
-        display: flex;
-        align-items: center;
-      }
-
-      .footer-logo {
-        display: block;
-        width: 125px;
-        max-width: 42vw;
-        height: auto;
-        object-fit: contain;
-        background: transparent;
-        mix-blend-mode: multiply;
-      }
-
-      .footer-link {
-        display: inline-block;
-        margin: 10px 0 14px;
-        color: var(--navy);
-        font-size: 0.9rem;
-        line-height: 1.4;
-        text-decoration: none;
-        overflow-wrap: anywhere;
-      }
-
-      .footer-link:hover {
-        text-decoration: underline;
-      }
-
-      @media (max-width: 640px) {
-        .brand-logo {
-          width: 115px;
-          max-width: 38vw;
-        }
-
-        .footer-logo {
-          width: 120px;
-          max-width: 42vw;
-        }
-
-        .footer-link {
-          font-size: 0.82rem;
-        }
-      }
-    </style>
   </head>
-
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
     <div class="ambient ambient-two" aria-hidden="true"></div>
 
     <header class="site-header">
-      <a
-        class="brand brand-image"
-        href="#top"
-        aria-label="TradeGuard home"
-      >
+      <a class="brand brand-image" href="#top" aria-label="TradeGuard home">
         <img
           class="brand-logo"
           src="./regtech-nexus-ai-logo.png"
           alt="RegTech Nexus AI — TradeGuard"
         />
       </a>
-
       <nav class="nav-links" aria-label="Main navigation">
         <a href="#risk-check">Risk demo</a>
         <a href="#how-it-works">How it works</a>
@@ -105,29 +32,16 @@
     <main id="top">
       <section class="hero section-shell">
         <div class="hero-copy">
-          <div class="eyebrow">
-            <span class="pulse-dot"></span>
-            Product preview by RegTech Nexus AI
-          </div>
-
+          <div class="eyebrow"><span class="pulse-dot"></span> Product preview by RegTech Nexus AI</div>
           <h1>Trade finance review with a clearer risk signal.</h1>
-
           <p class="hero-lead">
-            TradeGuard helps reviewers identify potential TBML red flags across
-            price, parties, routes and documents—before a transaction becomes a
-            difficult case.
+            TradeGuard helps reviewers identify potential TBML red flags across price, parties,
+            routes and documents—before a transaction becomes a difficult case.
           </p>
-
           <div class="hero-actions">
-            <a class="button button-primary" href="#risk-check">
-              Run the sample demo <span>→</span>
-            </a>
-
-            <a class="button button-quiet" href="#how-it-works">
-              Explore the workflow
-            </a>
+            <a class="button button-primary" href="#risk-check">Run the sample demo <span>→</span></a>
+            <a class="button button-quiet" href="#how-it-works">Explore the workflow</a>
           </div>
-
           <div class="hero-proof">
             <span>Explainable flags</span>
             <span>Human review</span>
@@ -135,43 +49,21 @@
           </div>
         </div>
 
-        <div
-          class="hero-visual"
-          aria-label="Illustrative TradeGuard risk intelligence preview"
-        >
+        <div class="hero-visual" aria-label="TradeGuard risk intelligence preview">
           <div class="visual-orbit orbit-large"></div>
           <div class="visual-orbit orbit-small"></div>
-
           <div class="visual-card visual-card-main">
             <div class="visual-card-top">
               <span class="mini-label">ILLUSTRATIVE PREVIEW</span>
               <span class="status-pill status-high">HIGH</span>
             </div>
-
             <div class="visual-score">65<span>/100</span></div>
-
             <p>Enhanced review recommended</p>
-
-            <div class="signal-line">
-              <span style="width: 65%"></span>
-            </div>
-
-            <div class="visual-meta">
-              <span>Price deviation</span>
-              <strong>+25</strong>
-            </div>
-
-            <div class="visual-meta">
-              <span>Document mismatch</span>
-              <strong>+15</strong>
-            </div>
-
-            <div class="visual-meta">
-              <span>Related party</span>
-              <strong>+15</strong>
-            </div>
+            <div class="signal-line"><span style="width: 65%"></span></div>
+            <div class="visual-meta"><span>Price deviation</span><strong>+25</strong></div>
+            <div class="visual-meta"><span>Document mismatch</span><strong>+15</strong></div>
+            <div class="visual-meta"><span>Related party</span><strong>+15</strong></div>
           </div>
-
           <div class="visual-card visual-card-float">
             <span class="mini-label">CASE STATUS</span>
             <strong>Human review queue</strong>
@@ -180,27 +72,10 @@
         </div>
       </section>
 
-      <section
-        class="trust-strip section-shell"
-        aria-label="Product principles"
-      >
-        <div>
-          <span class="trust-icon">01</span>
-          <strong>AI-assisted</strong>
-          <small>Not an automated decision</small>
-        </div>
-
-        <div>
-          <span class="trust-icon">02</span>
-          <strong>Explainable</strong>
-          <small>Every flag has a reason</small>
-        </div>
-
-        <div>
-          <span class="trust-icon">03</span>
-          <strong>Review-ready</strong>
-          <small>Built for investigation workflow</small>
-        </div>
+      <section class="trust-strip section-shell" aria-label="Product principles">
+        <div><span class="trust-icon">01</span><strong>AI-assisted</strong><small>Not an automated decision</small></div>
+        <div><span class="trust-icon">02</span><strong>Explainable</strong><small>Every flag has a reason</small></div>
+        <div><span class="trust-icon">03</span><strong>Review-ready</strong><small>Built for investigation workflow</small></div>
       </section>
 
       <section id="risk-check" class="section-shell section-block">
@@ -209,11 +84,7 @@
             <div class="eyebrow">Sample transaction review</div>
             <h2>Run a TradeGuard risk check</h2>
           </div>
-
-          <p>
-            Use fictional or anonymised information only. This demo does not
-            store transaction documents.
-          </p>
+          <p>Use fictional or anonymised information only. This demo does not store transaction documents.</p>
         </div>
 
         <div class="workspace-grid">
@@ -223,270 +94,302 @@
                 <span class="panel-kicker">STEP 01</span>
                 <h3>Transaction inputs</h3>
               </div>
-
-              <button id="sampleButton" class="text-button" type="button">
-                Load sample case
-              </button>
+              <button id="sampleButton" class="text-button" type="button">Load sample case</button>
             </div>
 
             <div class="form-grid">
               <label class="field field-wide">
                 <span>Product / commodity</span>
-
-                <input
-                  id="productName"
-                  name="productName"
-                  type="text"
-                  placeholder="e.g. Cotton textile"
-                  required
-                />
+                <input id="productName" name="productName" type="text" placeholder="e.g. Cotton textile" required />
               </label>
 
-              <div class="field field-wide">
-                <label for="hsCode">
-                  <span>HS Code</span>
-                </label>
-
-                <input
-                  id="hsCode"
-                  name="hsCode"
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="8"
-                  pattern="[0-9]{8}"
-                  placeholder="Example: 52010000"
-                />
-
-                <button
-                  class="text-button"
-                  type="button"
-                  id="lookupHsCode"
-                >
-                  Verify HS Code
-                </button>
-
-                <small id="hsCodeDescription" aria-live="polite">
-                  Bangladesh Customs tariff 2026–2027 reference.
-                </small>
+              <div class="field">
+                <label for="hsCode"><span>HS Code <em>(optional)</em></span></label>
+                <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="e.g. 52010000" />
+                <button id="lookupHsCode" class="text-button" type="button">Verify HS Code</button>
+                <small id="hsCodeDescription" aria-live="polite">Bangladesh Customs tariff 2026–2027 reference.</small>
               </div>
 
               <label class="field">
                 <span>Quantity</span>
-
-                <input
-                  id="quantity"
-                  name="quantity"
-                  type="number"
-                  min="0"
-                  step="any"
-                  placeholder="100000"
-                  required
-                />
+                <input id="quantity" name="quantity" type="number" min="0" step="any" placeholder="100000" required />
               </label>
 
               <label class="field">
-                <span>Declared unit price (USD)</span>
-
-                <input
-                  id="invoicePrice"
-                  name="invoicePrice"
-                  type="number"
-                  min="0"
-                  step="any"
-                  placeholder="50"
-                  required
-                />
+                <span>Declared unit price</span>
+                <input id="invoicePrice" name="invoicePrice" type="number" min="0" step="any" placeholder="50" required />
               </label>
 
               <label class="field">
-                <span>Market lower range (USD)</span>
-
-                <input
-                  id="marketLow"
-                  name="marketLow"
-                  type="number"
-                  min="0"
-                  step="any"
-                  placeholder="10"
-                  required
-                />
+                <span>Market lower range</span>
+                <input id="marketLow" name="marketLow" type="number" min="0" step="any" placeholder="10" required />
               </label>
 
               <label class="field">
-                <span>Market upper range (USD)</span>
-
-                <input
-                  id="marketHigh"
-                  name="marketHigh"
-                  type="number"
-                  min="0"
-                  step="any"
-                  placeholder="12"
-                  required
-                />
+                <span>Market upper range</span>
+                <input id="marketHigh" name="marketHigh" type="number" min="0" step="any" placeholder="12" required />
               </label>
 
               <label class="field">
                 <span>Origin country</span>
-
-                <select
-                  id="originCountry"
-                  name="originCountry"
-                  data-default-country="Bangladesh"
-                >
+                <select id="originCountry" name="originCountry" data-default-country="Bangladesh" required>
                   <option value="">Select origin country</option>
                 </select>
               </label>
 
               <label class="field">
                 <span>Destination country</span>
-
-                <select
-                  id="destinationCountry"
-                  name="destinationCountry"
-                  data-default-country="United Arab Emirates"
-                >
+                <select id="destinationCountry" name="destinationCountry" data-default-country="United Arab Emirates" required>
                   <option value="">Select destination country</option>
                 </select>
               </label>
+
+              <details class="optional-section field-wide" open>
+                <summary>Optional: Product and goods details</summary>
+                <div class="optional-grid">
+                  <label class="field field-wide">
+                    <span>Product / goods description</span>
+                    <textarea id="productDescription" rows="3" placeholder="Quality, grade, composition, intended use and other goods details"></textarea>
+                  </label>
+                  <label class="field">
+                    <span>Quality / grade</span>
+                    <input id="qualityGrade" type="text" placeholder="e.g. Grade A" />
+                  </label>
+                  <label class="field">
+                    <span>Material / composition</span>
+                    <input id="material" type="text" placeholder="e.g. 100% cotton" />
+                  </label>
+                  <label class="field">
+                    <span>Model / brand</span>
+                    <input id="modelBrand" type="text" placeholder="If applicable" />
+                  </label>
+                  <label class="field">
+                    <span>Unit of measure</span>
+                    <select id="unitOfMeasure">
+                      <option value="">Select unit</option>
+                      <option>Piece</option>
+                      <option>Kilogram</option>
+                      <option>Tonne</option>
+                      <option>Metre</option>
+                      <option>Yard</option>
+                      <option>Litre</option>
+                      <option>Carton</option>
+                      <option>Set</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                  <label class="field field-wide">
+                    <span>Technical specification</span>
+                    <textarea id="specification" rows="2" placeholder="Dimensions, technical standards, packing or other specifications"></textarea>
+                  </label>
+                </div>
+              </details>
+
+              <details class="optional-section field-wide">
+                <summary>Optional: Price and valuation details</summary>
+                <div class="optional-grid">
+                  <label class="field">
+                    <span>Total declared value</span>
+                    <input id="totalValue" type="number" min="0" step="any" placeholder="Optional total value" />
+                  </label>
+                  <label class="field">
+                    <span>Currency</span>
+                    <select id="currency">
+                      <option value="">Select currency</option>
+                      <option>USD</option>
+                      <option>EUR</option>
+                      <option>GBP</option>
+                      <option>BDT</option>
+                      <option>CNY</option>
+                      <option>AED</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Market-price source</span>
+                    <input id="marketSource" type="text" placeholder="Source, publication or database" />
+                  </label>
+                  <label class="field">
+                    <span>Market-price date</span>
+                    <input id="marketSourceDate" type="date" />
+                  </label>
+                  <label class="field field-wide">
+                    <span>Valuation basis</span>
+                    <select id="valuationBasis">
+                      <option value="">Select valuation basis</option>
+                      <option>Commercial invoice</option>
+                      <option>Sales contract</option>
+                      <option>Supplier quotation</option>
+                      <option>Independent benchmark</option>
+                      <option>Customs reference</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+
+              <details class="optional-section field-wide">
+                <summary>Optional: Trade and payment details</summary>
+                <div class="optional-grid">
+                  <label class="field">
+                    <span>Incoterms</span>
+                    <select id="incoterms">
+                      <option value="">Select Incoterms</option>
+                      <option>EXW</option><option>FCA</option><option>FOB</option>
+                      <option>CFR</option><option>CIF</option><option>CPT</option>
+                      <option>CIP</option><option>DAP</option><option>DDP</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Payment terms</span>
+                    <select id="paymentTerms">
+                      <option value="">Select payment terms</option>
+                      <option>Sight LC</option>
+                      <option>Usance LC</option>
+                      <option>Advance payment</option>
+                      <option>Open account</option>
+                      <option>Documentary collection</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Buyer reference</span>
+                    <input id="buyerReference" type="text" placeholder="Use a reference, not personal data" />
+                  </label>
+                  <label class="field">
+                    <span>Seller reference</span>
+                    <input id="sellerReference" type="text" placeholder="Use a reference, not personal data" />
+                  </label>
+                  <label class="field">
+                    <span>Beneficial ownership</span>
+                    <select id="beneficialOwnership">
+                      <option value="">Select status</option>
+                      <option>Verified</option>
+                      <option>Partially verified</option>
+                      <option>Not verified</option>
+                      <option>Unknown</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Related-party relationship</span>
+                    <select id="relatedPartyRelationship">
+                      <option value="">Select status</option>
+                      <option>No known relationship</option>
+                      <option>Possible relationship</option>
+                      <option>Confirmed relationship</option>
+                      <option>Unknown</option>
+                    </select>
+                  </label>
+                  <label class="field field-wide">
+                    <span>Payer relationship</span>
+                    <select id="payerRelationship">
+                      <option value="">Select payer relationship</option>
+                      <option>Buyer</option>
+                      <option>Seller</option>
+                      <option>Third party</option>
+                      <option>Unknown</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+
+              <details class="optional-section field-wide">
+                <summary>Optional: Shipment and document details</summary>
+                <p class="optional-note">Do not upload or enter confidential documents in this public demo.</p>
+                <div class="optional-grid">
+                  <label class="field">
+                    <span>Port of loading</span>
+                    <input id="portLoading" type="text" placeholder="e.g. Chattogram" />
+                  </label>
+                  <label class="field">
+                    <span>Port of discharge</span>
+                    <input id="portDischarge" type="text" placeholder="e.g. Jebel Ali" />
+                  </label>
+                  <label class="field field-wide">
+                    <span>Route details</span>
+                    <textarea id="routeDetails" rows="2" placeholder="Trans-shipment, expected route or business rationale"></textarea>
+                  </label>
+                  <label class="field">
+                    <span>Invoice consistency</span>
+                    <select id="invoiceConsistency">
+                      <option value="">Select status</option><option>Consistent</option><option>Needs review</option><option>Not provided</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Packing-list consistency</span>
+                    <select id="packingListConsistency">
+                      <option value="">Select status</option><option>Consistent</option><option>Needs review</option><option>Not provided</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Bill of Lading consistency</span>
+                    <select id="billOfLadingConsistency">
+                      <option value="">Select status</option><option>Consistent</option><option>Needs review</option><option>Not provided</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
             </div>
 
             <div class="check-section">
-              <div class="check-section-title">
-                Additional review indicators
-              </div>
-
+              <div class="check-section-title">Additional review indicators</div>
               <div class="check-grid">
-                <label class="check-card">
-                  <input id="relatedParty" type="checkbox" />
-
-                  <span>
-                    <strong>Related party</strong>
-                    <small>Buyer/seller may be connected</small>
-                  </span>
-                </label>
-
-                <label class="check-card">
-                  <input id="thirdPartyPayment" type="checkbox" />
-
-                  <span>
-                    <strong>Third-party payment</strong>
-                    <small>Payer differs from buyer</small>
-                  </span>
-                </label>
-
-                <label class="check-card">
-                  <input id="routeMismatch" type="checkbox" />
-
-                  <span>
-                    <strong>Route anomaly</strong>
-                    <small>Shipping route needs review</small>
-                  </span>
-                </label>
-
-                <label class="check-card">
-                  <input id="documentMismatch" type="checkbox" />
-
-                  <span>
-                    <strong>Document mismatch</strong>
-                    <small>Key fields do not align</small>
-                  </span>
-                </label>
-
-                <label class="check-card">
-                  <input id="duplicateInvoice" type="checkbox" />
-
-                  <span>
-                    <strong>Duplicate invoice</strong>
-                    <small>Similar invoice may exist</small>
-                  </span>
-                </label>
+                <label class="check-card"><input id="relatedParty" type="checkbox" /><span><strong>Related party</strong><small>Buyer/seller may be connected</small></span></label>
+                <label class="check-card"><input id="thirdPartyPayment" type="checkbox" /><span><strong>Third-party payment</strong><small>Payer differs from buyer</small></span></label>
+                <label class="check-card"><input id="routeMismatch" type="checkbox" /><span><strong>Route anomaly</strong><small>Shipping route needs review</small></span></label>
+                <label class="check-card"><input id="documentMismatch" type="checkbox" /><span><strong>Document mismatch</strong><small>Key fields do not align</small></span></label>
+                <label class="check-card"><input id="duplicateInvoice" type="checkbox" /><span><strong>Duplicate invoice</strong><small>Similar invoice may exist</small></span></label>
               </div>
             </div>
 
-            <div
-              id="formMessage"
-              class="form-message"
-              role="status"
-              aria-live="polite"
-            ></div>
-
-            <button class="button button-primary button-full" type="submit">
-              Analyse sample transaction <span>→</span>
-            </button>
+            <div id="formMessage" class="form-message" role="status" aria-live="polite"></div>
+            <button class="button button-primary button-full" type="submit">Analyse sample transaction <span>→</span></button>
           </form>
 
-          <section
-            id="reportPanel"
-            class="panel report-panel is-empty"
-            aria-live="polite"
-          >
+          <section id="reportPanel" class="panel report-panel is-empty" aria-live="polite">
             <div class="panel-heading">
               <div>
                 <span class="panel-kicker">STEP 02</span>
                 <h3>Risk intelligence report</h3>
               </div>
-
-              <button
-                id="copyReportButton"
-                class="text-button"
-                type="button"
-                disabled
-              >
-                Copy summary
-              </button>
+              <button id="copyReportButton" class="text-button" type="button" disabled>Copy summary</button>
             </div>
 
             <div id="emptyReport" class="empty-report">
               <div class="empty-icon">✦</div>
-
               <h3>Your review result will appear here</h3>
-
-              <p>
-                Complete the sample transaction fields and run the risk check.
-              </p>
+              <p>Complete the sample transaction fields and run the risk check.</p>
             </div>
 
             <div id="reportContent" class="report-content" hidden>
               <div class="report-overview">
                 <div>
                   <span class="mini-label">OVERALL SIGNAL</span>
-
-                  <div class="report-score">
-                    <span id="reportScore">0</span>
-                    <small>/100</small>
-                  </div>
-
+                  <div class="report-score"><span id="reportScore">0</span><small>/100</small></div>
                   <span id="reportBand" class="status-pill">LOW</span>
                 </div>
-
-                <div class="report-gauge">
-                  <span id="reportGauge"></span>
-                </div>
+                <div class="report-gauge"><span id="reportGauge"></span></div>
               </div>
-
               <div id="reportSummary" class="report-summary"></div>
 
-              <div class="report-subheading">
-                <span>Detected indicators</span>
-                <span id="flagCount">0 flags</span>
+              <div class="data-completeness-card">
+                <div class="completeness-header">
+                  <span>DATA COMPLETENESS</span>
+                  <strong id="dataCompletenessValue">0%</strong>
+                </div>
+                <div class="completeness-bar"><span id="dataCompletenessBar"></span></div>
+                <p id="dataCompletenessMessage"></p>
               </div>
 
+              <div id="reviewContext" class="review-context"></div>
+              <div class="report-subheading"><span>Detected indicators</span><span id="flagCount">0 flags</span></div>
               <div id="flagList" class="flag-list"></div>
-
               <div class="recommendation-box">
                 <span class="recommendation-icon">✓</span>
-
-                <div>
-                  <strong>Suggested next step</strong>
-                  <p id="recommendationText"></p>
-                </div>
+                <div><strong>Suggested next step</strong><p id="recommendationText"></p></div>
               </div>
-
-              <div class="report-footer-note">
-                Demo output only. Final transaction decisions remain with the
-                authorised reviewer.
-              </div>
+              <div class="report-footer-note">Demo output only. Final transaction decisions remain with the authorised reviewer.</div>
             </div>
           </section>
         </div>
@@ -498,40 +401,12 @@
             <div class="eyebrow">From signal to action</div>
             <h2>A practical review workflow</h2>
           </div>
-
-          <p>
-            TradeGuard is designed to support people who review trade
-            transactions—not replace them.
-          </p>
+          <p>TradeGuard is designed to support people who review trade transactions—not replace them.</p>
         </div>
-
         <div class="feature-grid">
-          <article class="feature-card">
-            <span class="feature-number">01</span>
-            <h3>Structure the evidence</h3>
-            <p>
-              Bring the commercial terms, parties, documents and route into one
-              review context.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <span class="feature-number">02</span>
-            <h3>Prioritise the signal</h3>
-            <p>
-              Use transparent rules to surface material inconsistencies and
-              connected risk indicators.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <span class="feature-number">03</span>
-            <h3>Document the action</h3>
-            <p>
-              Turn the review into an explainable case note that can be
-              challenged, escalated and audited.
-            </p>
-          </article>
+          <article class="feature-card"><span class="feature-number">01</span><h3>Structure the evidence</h3><p>Bring the commercial terms, parties, documents and route into one review context.</p></article>
+          <article class="feature-card"><span class="feature-number">02</span><h3>Prioritise the signal</h3><p>Use transparent rules to surface material inconsistencies and connected risk indicators.</p></article>
+          <article class="feature-card"><span class="feature-number">03</span><h3>Document the action</h3><p>Turn the review into an explainable case note that can be challenged, escalated and audited.</p></article>
         </div>
       </section>
 
@@ -539,30 +414,16 @@
         <div class="pilot-card">
           <div>
             <div class="eyebrow">Early access</div>
-
             <h2>Test the workflow with your own review team.</h2>
-
-            <p>
-              Request a pilot conversation for a bank, exporter, importer, C&F
-              agent or compliance team.
+            <p>Request a pilot conversation for a bank, exporter, importer, C&F agent or compliance team.</p>
+            <p class="pilot-email-note">
+              Or email us directly:
+              <a href="mailto:regtechnexusai@gmail.com?subject=TradeGuard%20pilot%20request">regtechnexusai@gmail.com</a>
             </p>
           </div>
-
           <form id="pilotForm" class="pilot-form">
-            <input
-              id="pilotName"
-              type="text"
-              placeholder="Your name"
-              required
-            />
-
-            <input
-              id="pilotOrganisation"
-              type="text"
-              placeholder="Organisation"
-              required
-            />
-
+            <input id="pilotName" type="text" placeholder="Your name" required />
+            <input id="pilotOrganisation" type="text" placeholder="Organisation" required />
             <select id="pilotType" required>
               <option value="">Organisation type</option>
               <option>Bank / financial institution</option>
@@ -570,20 +431,8 @@
               <option>C&F / trade consultant</option>
               <option>Compliance / audit team</option>
             </select>
-
-            <button
-              class="button button-light button-full"
-              type="submit"
-            >
-              Prepare pilot request <span>→</span>
-            </button>
-
-            <div
-              id="pilotMessage"
-              class="pilot-message"
-              role="status"
-              aria-live="polite"
-            ></div>
+            <button class="button button-light button-full" type="submit">Email pilot request <span>→</span></button>
+            <div id="pilotMessage" class="pilot-message" role="status" aria-live="polite"></div>
           </form>
         </div>
       </section>
@@ -591,345 +440,12 @@
 
     <footer class="site-footer section-shell">
       <div class="footer-brand">
-        <img
-          class="footer-logo"
-          src="./regtech-nexus-ai-logo.png"
-          alt="RegTech Nexus AI — TradeGuard"
-        />
+        <img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
       </div>
-
-      <a
-        class="footer-link"
-        href="https://regtechnexusai.github.io/tradeguard/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        regtechnexusai.github.io/tradeguard/
-      </a>
-
-      <p>
-        AI-assisted review support. Not a regulatory determination or legal
-        interpretation.
-      </p>
-
-      <span>
-        © <span id="year"></span> RegTech Nexus AI
-      </span>
+      <a class="footer-link" href="https://regtechnexusai.github.io/tradeguard/" target="_blank" rel="noopener noreferrer">regtechnexusai.github.io/tradeguard/</a>
+      <p>AI-assisted review support. Not a regulatory determination or legal interpretation.</p>
+      <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
-
-    <script>
-      (() => {
-        const countries = [
-          "Afghanistan",
-          "Albania",
-          "Algeria",
-          "Andorra",
-          "Angola",
-          "Antigua and Barbuda",
-          "Argentina",
-          "Armenia",
-          "Australia",
-          "Austria",
-          "Azerbaijan",
-          "Bahamas",
-          "Bahrain",
-          "Bangladesh",
-          "Barbados",
-          "Belarus",
-          "Belgium",
-          "Belize",
-          "Benin",
-          "Bhutan",
-          "Bolivia",
-          "Bosnia and Herzegovina",
-          "Botswana",
-          "Brazil",
-          "Brunei",
-          "Bulgaria",
-          "Burkina Faso",
-          "Burundi",
-          "Cabo Verde",
-          "Cambodia",
-          "Cameroon",
-          "Canada",
-          "Central African Republic",
-          "Chad",
-          "Chile",
-          "China",
-          "Colombia",
-          "Comoros",
-          "Costa Rica",
-          "Côte d'Ivoire",
-          "Croatia",
-          "Cuba",
-          "Cyprus",
-          "Czechia",
-          "Democratic Republic of the Congo",
-          "Denmark",
-          "Djibouti",
-          "Dominica",
-          "Dominican Republic",
-          "Ecuador",
-          "Egypt",
-          "El Salvador",
-          "Equatorial Guinea",
-          "Eritrea",
-          "Estonia",
-          "Eswatini",
-          "Ethiopia",
-          "Fiji",
-          "Finland",
-          "France",
-          "Gabon",
-          "Gambia",
-          "Georgia",
-          "Germany",
-          "Ghana",
-          "Greece",
-          "Grenada",
-          "Guatemala",
-          "Guinea",
-          "Guinea-Bissau",
-          "Guyana",
-          "Haiti",
-          "Honduras",
-          "Hungary",
-          "Iceland",
-          "India",
-          "Indonesia",
-          "Iran",
-          "Iraq",
-          "Ireland",
-          "Israel",
-          "Italy",
-          "Jamaica",
-          "Japan",
-          "Jordan",
-          "Kazakhstan",
-          "Kenya",
-          "Kiribati",
-          "Kuwait",
-          "Kyrgyzstan",
-          "Laos",
-          "Latvia",
-          "Lebanon",
-          "Lesotho",
-          "Liberia",
-          "Libya",
-          "Liechtenstein",
-          "Lithuania",
-          "Luxembourg",
-          "Madagascar",
-          "Malawi",
-          "Malaysia",
-          "Maldives",
-          "Mali",
-          "Malta",
-          "Marshall Islands",
-          "Mauritania",
-          "Mauritius",
-          "Mexico",
-          "Micronesia",
-          "Moldova",
-          "Monaco",
-          "Mongolia",
-          "Montenegro",
-          "Morocco",
-          "Mozambique",
-          "Myanmar",
-          "Namibia",
-          "Nauru",
-          "Nepal",
-          "Netherlands",
-          "New Zealand",
-          "Nicaragua",
-          "Niger",
-          "Nigeria",
-          "North Korea",
-          "North Macedonia",
-          "Norway",
-          "Oman",
-          "Pakistan",
-          "Palau",
-          "Panama",
-          "Papua New Guinea",
-          "Paraguay",
-          "Peru",
-          "Philippines",
-          "Poland",
-          "Portugal",
-          "Qatar",
-          "Republic of the Congo",
-          "Romania",
-          "Russia",
-          "Rwanda",
-          "Saint Kitts and Nevis",
-          "Saint Lucia",
-          "Saint Vincent and the Grenadines",
-          "Samoa",
-          "San Marino",
-          "Sao Tome and Principe",
-          "Saudi Arabia",
-          "Senegal",
-          "Serbia",
-          "Seychelles",
-          "Sierra Leone",
-          "Singapore",
-          "Slovakia",
-          "Slovenia",
-          "Solomon Islands",
-          "Somalia",
-          "South Africa",
-          "South Korea",
-          "South Sudan",
-          "Spain",
-          "Sri Lanka",
-          "Sudan",
-          "Suriname",
-          "Sweden",
-          "Switzerland",
-          "Syria",
-          "Tajikistan",
-          "Tanzania",
-          "Thailand",
-          "Timor-Leste",
-          "Togo",
-          "Tonga",
-          "Trinidad and Tobago",
-          "Tunisia",
-          "Türkiye",
-          "Turkmenistan",
-          "Tuvalu",
-          "Uganda",
-          "Ukraine",
-          "United Arab Emirates",
-          "United Kingdom",
-          "United States",
-          "Uruguay",
-          "Uzbekistan",
-          "Vanuatu",
-          "Venezuela",
-          "Vietnam",
-          "Yemen",
-          "Zambia",
-          "Zimbabwe",
-          "Holy See (Vatican City)",
-          "State of Palestine"
-        ];
-
-        let hsCodeIndex = new Map();
-        let hsCodesLoaded = false;
-
-        const cleanCode = (value) =>
-          String(value || "").replace(/\s/g, "");
-
-        function populateCountries() {
-          ["originCountry", "destinationCountry"].forEach((id) => {
-            const select = document.getElementById(id);
-
-            if (!select) return;
-
-            const defaultCountry = select.dataset.defaultCountry;
-
-            select.innerHTML =
-              '<option value="">Select country</option>';
-
-            countries.forEach((country) => {
-              const option = document.createElement("option");
-
-              option.value = country;
-              option.textContent = country;
-
-              select.appendChild(option);
-            });
-
-            select.value = defaultCountry || "";
-          });
-        }
-
-        async function loadHsCodes() {
-          try {
-            const response = await fetch("./hs-codes.json");
-
-            if (!response.ok) {
-              throw new Error("HS code file could not be loaded");
-            }
-
-            const data = await response.json();
-
-            const items = Array.isArray(data.items)
-              ? data.items
-              : [];
-
-            hsCodeIndex = new Map(
-              items.map((item) => [
-                cleanCode(item.hsCode),
-                item
-              ])
-            );
-
-            hsCodesLoaded = true;
-          } catch (error) {
-            hsCodesLoaded = false;
-            console.warn("HS code dataset error:", error);
-          }
-        }
-
-        function verifyHsCode() {
-          const input = document.getElementById("hsCode");
-          const description =
-            document.getElementById("hsCodeDescription");
-
-          if (!input || !description) return;
-
-          const code = cleanCode(input.value);
-
-          if (!/^[0-9]{8}$/.test(code)) {
-            description.textContent =
-              "HS Code must contain exactly 8 digits.";
-
-            description.style.color = "#b42318";
-            return;
-          }
-
-          if (!hsCodesLoaded) {
-            description.textContent =
-              "HS Code reference file is still loading. Please try again.";
-
-            description.style.color = "#b42318";
-            return;
-          }
-
-          const item = hsCodeIndex.get(code);
-
-          if (!item) {
-            description.textContent =
-              "HS Code was not found in the Bangladesh Customs tariff file.";
-
-            description.style.color = "#b42318";
-            return;
-          }
-
-          description.textContent =
-            `${item.tariffDescription} — Chapter ${item.chapter}`;
-
-          description.style.color = "#167c62";
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-          populateCountries();
-          loadHsCodes();
-
-          document
-            .getElementById("lookupHsCode")
-            ?.addEventListener("click", verifyHsCode);
-
-          document
-            .getElementById("hsCode")
-            ?.addEventListener("change", verifyHsCode);
-        });
-      })();
-    </script>
 
     <script type="module" src="./main.js"></script>
   </body>

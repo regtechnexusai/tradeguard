@@ -61,6 +61,8 @@ button { cursor: pointer; }
 }
 
 .brand { display: inline-flex; align-items: center; gap: 11px; }
+.brand-image { min-width: 0; }
+.brand-logo { display: block; width: 125px; max-width: 38vw; height: auto; object-fit: contain; background: transparent; mix-blend-mode: multiply; }
 .brand-mark {
   display: grid;
   width: 38px;
@@ -147,9 +149,17 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
 .field { display: grid; gap: 7px; }
 .field-wide { grid-column: 1 / -1; }
+.field em { color: var(--muted); font-size: 9px; font-style: normal; font-weight: 600; }
 .field > span { color: var(--muted); font-size: 11px; font-weight: 700; }
 .field input, .field select, .pilot-form input, .pilot-form select { width: 100%; height: 43px; padding: 0 12px; border: 1px solid #d6e4ef; border-radius: 10px; outline: 0; color: var(--navy); background: #fbfdff; font-size: 12px; transition: border-color .2s ease, box-shadow .2s ease; }
+.field textarea { width: 100%; min-height: 72px; padding: 11px 12px; border: 1px solid #d6e4ef; border-radius: 10px; outline: 0; resize: vertical; color: var(--navy); background: #fbfdff; font-size: 12px; line-height: 1.45; transition: border-color .2s ease, box-shadow .2s ease; }
 .field input:focus, .field select:focus, .pilot-form input:focus, .pilot-form select:focus { border-color: #6ebce2; box-shadow: 0 0 0 4px rgba(73,198,229,.12); }
+.field textarea:focus { border-color: #6ebce2; box-shadow: 0 0 0 4px rgba(73,198,229,.12); }
+.optional-section { overflow: hidden; border: 1px solid #dfeaf3; border-radius: 13px; background: #fbfdff; }
+.optional-section summary { padding: 13px 14px; color: var(--navy); cursor: pointer; font-size: 11px; font-weight: 800; list-style-position: inside; }
+.optional-section summary::marker { color: var(--blue); }
+.optional-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; padding: 0 14px 15px; }
+.optional-note { margin: 0; padding: 0 14px 12px; color: var(--muted); font-size: 10px; line-height: 1.45; }
 .check-section { margin: 22px 0; padding-top: 20px; border-top: 1px solid #e7eef5; }
 .check-section-title { margin-bottom: 12px; color: var(--navy); font-size: 11px; font-weight: 800; }
 .check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; }
@@ -172,6 +182,14 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .report-gauge { overflow: hidden; width: 125px; height: 125px; border: 9px solid #dcecf6; border-radius: 50%; background: conic-gradient(var(--blue) 0deg, #dcecf6 0deg); transform: rotate(-45deg); }
 .report-gauge span { display: block; width: 100%; height: 100%; border-radius: 50%; background: #f9fcff; }
 .report-summary { margin: 20px 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.data-completeness-card { margin: 18px 0; padding: 14px; border: 1px solid #dceaf3; border-radius: 13px; background: #f8fcff; }
+.completeness-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 9px; font-weight: 850; letter-spacing: .12em; }
+.completeness-header strong { color: var(--blue); font-size: 15px; letter-spacing: 0; }
+.completeness-bar { overflow: hidden; height: 7px; margin-top: 9px; border-radius: 9px; background: #e3eef5; }
+.completeness-bar span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #49c6e5, #1967d2); transition: width .3s ease; }
+.data-completeness-card p { margin: 8px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.review-context { margin: 14px 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+.review-context strong { color: var(--navy); }
 .report-subheading { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 10px; color: var(--navy); font-size: 11px; font-weight: 800; }
 .report-subheading span:last-child { color: var(--muted); font-size: 10px; font-weight: 650; }
 .flag-list { display: grid; gap: 9px; }
@@ -197,11 +215,17 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .pilot-card .eyebrow { color: #8ad9ec; }
 .pilot-card h2 { max-width: 450px; margin: 13px 0 12px; font-size: clamp(27px, 4vw, 42px); letter-spacing: -.05em; line-height: 1.1; }
 .pilot-card p { max-width: 430px; margin: 0; color: #bbd2e8; font-size: 13px; line-height: 1.7; }
+.pilot-email-note { margin-top: 12px !important; }
+.pilot-email-note a { color: #b9f2e1; text-decoration: underline; text-underline-offset: 3px; }
 .pilot-form { display: grid; gap: 10px; padding: 18px; border: 1px solid rgba(255,255,255,.18); border-radius: 17px; background: rgba(255,255,255,.08); }
 .pilot-form input, .pilot-form select { border-color: rgba(255,255,255,.22); color: var(--navy); background: rgba(255,255,255,.95); }
 .pilot-message { min-height: 20px; color: #b9f2e1; font-size: 10px; line-height: 1.45; }
 
 .site-footer { display: flex; align-items: center; justify-content: space-between; gap: 22px; padding: 25px 0 30px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+.footer-brand { display: flex; align-items: center; }
+.footer-logo { display: block; width: 125px; max-width: 42vw; height: auto; object-fit: contain; background: transparent; mix-blend-mode: multiply; }
+.footer-link { color: var(--navy); font-size: 10px; overflow-wrap: anywhere; }
+.footer-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 .site-footer strong { margin-right: 8px; color: var(--navy); font-size: 12px; }
 .site-footer p { margin: 0; text-align: center; }
 
@@ -235,10 +259,13 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   .section-heading > p { margin-top: 15px; }
   .form-panel, .report-panel { padding: 19px; }
   .form-grid, .check-grid, .feature-grid { grid-template-columns: 1fr; }
+  .optional-grid { grid-template-columns: 1fr; }
   .field-wide { grid-column: auto; }
   .report-overview { align-items: start; }
   .report-gauge { width: 90px; height: 90px; border-width: 7px; }
   .pilot-card { padding: 25px 19px; }
   .site-footer { display: grid; padding-bottom: 25px; }
   .site-footer p { text-align: left; }
+  .brand-logo { width: 115px; max-width: 38vw; }
+  .footer-logo { width: 120px; max-width: 42vw; }
 }

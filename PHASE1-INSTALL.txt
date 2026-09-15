@@ -1,0 +1,22 @@
+TradeGuard Phase 1 update
+
+Replace these files in the GitHub repository:
+index.html
+main.js
+report.js
+rules.js
+style.css
+
+Keep these existing files in the repository:
+regtech-nexus-ai-logo.png
+hs-codes.json (or the existing data/hs-codes.json)
+
+The new fields are optional. Only the core transaction fields remain required.
+Use fictional or anonymised information only. Do not upload confidential LC,
+invoice, passport, NID, bank or SWIFT documents to this public demo.
+
+After uploading, commit the changes to the main branch and open:
+https://regtechnexusai.github.io/tradeguard/?v=5
+
+The pilot button opens a pre-filled email draft to regtechnexusai@gmail.com;
+it does not send automatically.

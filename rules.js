@@ -1,4 +1,5 @@
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const formatPrice = (value) => Number(value || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
 function outsideRangePercentage(price, low, high) {
   if (price >= low && price <= high) return 0;
@@ -12,27 +13,28 @@ export function calculateRisk(input) {
   const marketHigh = Number(input.marketHigh);
   const flags = [];
   const deviation = outsideRangePercentage(invoicePrice, marketLow, marketHigh);
-  const priceDetail = invoicePrice > marketHigh
-  ? `The declared unit price is approximately ${Math.round(deviation)}% above the upper bound of the supplied market range (USD ${marketHigh} per unit).`
-  : `The declared unit price is approximately ${Math.round(deviation)}% below the lower bound of the supplied market range (USD ${marketLow} per unit).`;
+  const suppliedRange = input.currency
+    ? ` (${input.currency} ${formatPrice(marketLow)}–${formatPrice(marketHigh)} per ${input.unitOfMeasure || "unit"})`
+    : "";
 
   if (deviation >= 100) {
-  flags.push({
-    id: "price-material",
-    title: "Material price deviation",
-    points: 25,
-    detail: priceDetail,
-    action: "Obtain independent price evidence, product specifications and commercial rationale."
-  });
-} else if (deviation >= 50) {
-  flags.push({
-    id: "price-significant",
-    title: "Significant price deviation",
-    points: 15,
-    detail: priceDetail,
-    action: "Validate the benchmark, grade, quality, Incoterms and pricing rationale."
-  });
-}
+    flags.push({
+      id: "price-material",
+      title: "Material price deviation",
+      points: 25,
+      detail: `The declared price is approximately ${Math.round(deviation)}% outside the supplied market range${suppliedRange}.`,
+      action: "Obtain independent price evidence, product specifications and commercial rationale."
+    });
+  } else if (deviation >= 50) {
+    flags.push({
+      id: "price-significant",
+      title: "Significant price deviation",
+      points: 15,
+      detail: `The declared price is approximately ${Math.round(deviation)}% outside the supplied market range${suppliedRange}.`,
+      action: "Validate the benchmark, grade, quality, Incoterms and pricing rationale."
+    });
+  }
+
   if (input.relatedParty) {
     flags.push({
       id: "related-party",
