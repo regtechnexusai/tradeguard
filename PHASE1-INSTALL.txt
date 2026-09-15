@@ -16,15 +16,19 @@ commodity field is populated automatically from the tariff description.
 Quantity, declared price, market range, origin and destination are also required.
 For the price component, the benchmark source, source date, currency, unit of
 measure and valuation basis are required. The expected unit profile is derived
-from the verified HS Code for configured product groups. If the HS Code,
-goods description, unit or benchmark metadata is not comparable, the report
-still shows an indicative review result but withholds the price component.
+from the verified HS Code for configured product groups, including HS 0206
+edible offal on a weight basis. The unit selector is limited to the verified
+profile where one is configured. If the HS Code, goods description, unit or
+benchmark metadata is not comparable, the price component is withheld and the
+overall risk grade is marked “Not decision-ready”.
 If a mandatory field is empty or invalid, Submit shows a red border and an
 inline error; after correction, the form can be submitted again.
 Use “Start new case” to clear all previous transaction inputs and selections.
 Route/port concerns require ports, business context and a documented route
 rationale. Manual TBML indicator selections require confidence, evidence
-status and a reviewer evidence/rationale note.
+status other than “Not provided”, and a reviewer evidence/rationale note.
+The overall risk grade is withheld unless selected indicators have evidence
+available for review; raw indicator points remain visible for QA purposes.
 The form also includes a structured, multi-select TBML red-flag indicator
 module. Selected indicators add explainable, non-duplicative review flags for
 price/valuation, goods/HS Code, quantity/unit, documents, route/ports,
@@ -34,7 +38,7 @@ Use fictional or anonymised information only. Do not upload confidential LC,
 invoice, passport, NID, bank or SWIFT documents to this public demo.
 
 After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=9
+https://regtechnexusai.github.io/tradeguard/?v=10
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and

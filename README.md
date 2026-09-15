@@ -6,11 +6,13 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 
 - Presents the TradeGuard product concept.
 - Accepts fictional or anonymised sample transaction inputs.
-- Applies transparent rule-based red-flag scoring.
-- Shows a risk band and reviewer-oriented next step.
+- Applies transparent rule-based red-flag scoring with raw and capped points.
+- Shows a risk band only when the case passes the decision-readiness gates; otherwise the score is withheld.
 - Separates data completeness from data integrity/comparability.
 - Withholds price scoring when HS Code, goods description, unit or benchmark metadata cannot be compared reliably.
-- Requires evidence and rationale for manually selected indicators and business context for route concerns.
+- Withholds the overall risk grade when price comparability or selected-indicator evidence is not decision-ready.
+- Requires available evidence, confidence and rationale for manually selected indicators, plus business context for route concerns.
+- Maps HS 0206 edible offal to a weight-based unit profile and limits the unit selector to the verified HS profile.
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
 

@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=9";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=9";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=10";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=10";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -19,6 +19,7 @@ const unitProfileNote = document.querySelector("#unitProfileNote");
 let latestReport = "";
 let hsCodeIndex = new Map();
 let hsCodesLoaded = false;
+const allUnitOptions = ["Piece", "Kilogram", "Tonne", "Metre", "Yard", "Litre", "Carton", "Set", "Other"];
 
 function clearFieldError(id) {
   const control = document.querySelector(`#${id}`);
@@ -79,6 +80,18 @@ function clearCommoditySensitiveFields() {
     const element = document.querySelector(`#${id}`);
     if (element) element.checked = false;
   });
+}
+
+function setUnitOptions(expectedUnits = []) {
+  if (!unitInput) return;
+
+  const currentValue = unitInput.value;
+  const options = expectedUnits.length ? expectedUnits : allUnitOptions;
+  unitInput.innerHTML = [
+    '<option value="">Select unit</option>',
+    ...options.map((unit) => `<option>${unit}</option>`)
+  ].join("");
+  unitInput.value = options.includes(currentValue) ? currentValue : "";
 }
 
 const countries = [
@@ -214,6 +227,7 @@ function verifyHsCode() {
   const tariffDescription = String(item.tariffDescription || `HS Code ${code}`).trim();
   const unitProfile = getExpectedUnitsForHsCode(code);
   if (previousVerifiedCode && previousVerifiedCode !== code) clearCommoditySensitiveFields();
+  setUnitOptions(unitProfile.units);
   commodityInput.value = tariffDescription;
   commodityField.hidden = false;
   hsCodeInput.dataset.verified = "true";
@@ -278,6 +292,7 @@ resetButton?.addEventListener("click", () => {
   hsCodeInput.dataset.expectedUnits = "[]";
   commodityInput.value = "";
   commodityField.hidden = true;
+  setUnitOptions();
   unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
   unitProfileNote.style.color = "";
   document.querySelectorAll("#riskForm input[type='checkbox']").forEach((checkbox) => {
@@ -339,6 +354,7 @@ hsCodeInput?.addEventListener("input", () => {
   hsCodeInput.dataset.expectedUnits = "[]";
   commodityInput.value = "";
   commodityField.hidden = true;
+  setUnitOptions();
   unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
   unitProfileNote.style.color = "";
   if (cleanCode(hsCodeInput.value).length === 8) verifyHsCode();

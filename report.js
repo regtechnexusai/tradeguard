@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=9";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=10";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -94,9 +94,14 @@ export function renderReport(result, input) {
   const emptyReport = document.querySelector("#emptyReport");
   const reportContent = document.querySelector("#reportContent");
   const score = document.querySelector("#reportScore");
+  const scoreSuffix = document.querySelector("#reportScoreSuffix");
   const band = document.querySelector("#reportBand");
   const gauge = document.querySelector("#reportGauge");
   const gaugeShell = gauge.parentElement;
+  const decisionReadiness = document.querySelector("#decisionReadiness");
+  const decisionStatus = document.querySelector("#decisionStatus");
+  const decisionStatusMessage = document.querySelector("#decisionStatusMessage");
+  const rawScoreValue = document.querySelector("#rawScoreValue");
   const summary = document.querySelector("#reportSummary");
   const flagCount = document.querySelector("#flagCount");
   const flagList = document.querySelector("#flagList");
@@ -116,11 +121,20 @@ export function renderReport(result, input) {
   reportPanel.classList.remove("is-empty");
   emptyReport.hidden = true;
   reportContent.hidden = false;
-  score.textContent = result.score;
-  band.textContent = result.band.toUpperCase();
+  score.textContent = result.decisionReady ? result.score : "—";
+  score.classList.toggle("score-withheld", !result.decisionReady);
+  scoreSuffix.textContent = result.decisionReady ? "/100" : "withheld";
+  band.textContent = result.decisionReady ? result.band.toUpperCase() : "NOT READY";
   band.className = `status-pill ${bandClass(result.band)}`;
-  gaugeShell.style.background = `conic-gradient(#1967d2 ${result.score * 3.6}deg, #dcecf6 0deg)`;
+  gaugeShell.style.background = `conic-gradient(#1967d2 ${(result.decisionReady ? result.score : 0) * 3.6}deg, #dcecf6 0deg)`;
   flagCount.textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
+  rawScoreValue.textContent = result.rawScore;
+  decisionStatus.textContent = result.decisionStatus;
+  decisionStatusMessage.textContent = result.decisionReady
+    ? `The score passed the current data-integrity and evidence gates. It remains an indicative review signal.${result.scoreCapApplied ? " Raw indicator points exceeded 100, so the issued score is capped at 100." : ""}`
+    : result.readinessIssues.join(" ");
+  decisionReadiness.classList.toggle("is-blocked", !result.decisionReady);
+  decisionReadiness.classList.toggle("is-ready", result.decisionReady);
 
   const priceText = result.deviation === null
     ? "Price comparison was withheld because the supplied benchmark is not comparable to the verified HS Code and unit."
@@ -135,7 +149,10 @@ export function renderReport(result, input) {
     ? ` ${selectedIndicatorCount} structured TBML indicator${selectedIndicatorCount === 1 ? " is" : "s are"} selected.`
     : " No structured TBML indicator was selected.";
 
-  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText}${indicatorText} This is a prioritisation signal, not a final TBML determination.`;
+  const readinessText = result.decisionReady
+    ? "This is a prioritisation signal, not a final TBML determination."
+    : "The risk score is withheld because this case is not decision-ready. Resolve the listed issues before relying on the output.";
+  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText}${indicatorText} ${readinessText}`;
 
   completenessValue.textContent = `${completeness.percent}%`;
   completenessBar.style.width = `${completeness.percent}%`;
@@ -147,14 +164,14 @@ export function renderReport(result, input) {
   integrityList.innerHTML = [...integrity.issues, ...integrity.warnings]
     .map((item) => `<li>${escapeHtml(item)}</li>`)
     .join("");
-  integrityCard.classList.toggle("is-blocked", !integrity.priceScoringEligible);
+  integrityCard.classList.toggle("is-blocked", !integrity.priceScoringEligible || !result.decisionReady);
 
   const contextItems = [
     input.productDescription && `Goods: ${input.productDescription}`,
     input.qualityGrade && `Grade: ${input.qualityGrade}`,
     input.material && `Material: ${input.material}`,
     input.unitOfMeasure && `Unit: ${input.unitOfMeasure}`,
-    input.expectedUnits?.length && `Expected unit profile: ${input.expectedUnits.join(" or ")}`,
+    integrity.expectedUnits?.length && `Expected unit profile: ${integrity.expectedUnits.join(" or ")}`,
     input.currency && `Currency: ${input.currency}`,
     input.totalValue && `Total value: ${formatNumber(input.totalValue)}`,
     input.marketSource && `Market source: ${input.marketSource}`,
@@ -197,7 +214,13 @@ export function renderReport(result, input) {
     `Product: ${input.productName}`,
     `Route: ${input.originCountry} → ${input.destinationCountry}`,
     input.hsCode ? `HS Code: ${input.hsCode}` : "HS Code: Not provided",
-    `Risk score: ${result.score}/100 (${result.band})`,
+    `Decision status: ${result.decisionStatus}`,
+    `Raw indicator points: ${result.rawScore}`,
+    result.decisionReady
+      ? `Risk score: ${result.score}/100 (${result.band})`
+      : "Risk score: Not issued — withheld until decision-readiness conditions are met",
+    `Score cap applied: ${result.scoreCapApplied ? "Yes — raw indicator points exceeded 100" : "No"}`,
+    result.readinessIssues.length ? `Readiness issues: ${result.readinessIssues.join(" | ")}` : "Readiness issues: None identified by configured gates",
     `Data completeness: ${completeness.percent}%`,
     `Data integrity / comparability: ${integrity.status}`,
     integrity.issues.length ? `Integrity issues: ${integrity.issues.join(" | ")}` : "Integrity issues: None identified by configured checks",
@@ -398,7 +421,9 @@ export function validateInput(input) {
   const hasManualIndicator = (input.tbmlIndicators || []).length > 0 || input.relatedParty || input.thirdPartyPayment || input.routeMismatch || input.documentMismatch || input.duplicateInvoice;
   if (hasManualIndicator) {
     if (!input.indicatorConfidence) errors.indicatorConfidence = "Select the confidence level for the selected indicators.";
-    if (!input.evidenceStatus) errors.evidenceStatus = "Select the evidence status for the selected indicators.";
+    if (!input.evidenceStatus || input.evidenceStatus === "Not provided") {
+      errors.evidenceStatus = "Evidence status cannot be ‘Not provided’ when an indicator is selected.";
+    }
     if (!input.reviewerEvidenceNote) errors.reviewerEvidenceNote = "Add a short reviewer evidence or rationale note for the selected indicators.";
   }
 

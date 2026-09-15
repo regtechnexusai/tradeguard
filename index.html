@@ -450,10 +450,17 @@
               <div class="report-overview">
                 <div>
                   <span class="mini-label">OVERALL SIGNAL / RISK GRADE</span>
-                  <div class="report-score"><span id="reportScore">0</span><small>/100</small></div>
-                  <span id="reportBand" class="status-pill">LOW</span>
+                  <div class="report-score"><span id="reportScore">—</span><small id="reportScoreSuffix">withheld</small></div>
+                  <span id="reportBand" class="status-pill status-not-ready">NOT READY</span>
                 </div>
                 <div class="report-gauge"><span id="reportGauge"></span></div>
+              </div>
+              <div id="decisionReadiness" class="decision-readiness is-blocked">
+                <div>
+                  <strong id="decisionStatus">Not assessed</strong>
+                  <p id="decisionStatusMessage">The report will identify whether the supplied data and evidence pass the decision-readiness gates.</p>
+                </div>
+                <div class="raw-score"><span>RAW INDICATOR POINTS</span><strong id="rawScoreValue">0</strong></div>
               </div>
               <div id="reportSummary" class="report-summary"></div>
 
@@ -540,6 +547,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=9"></script>
+    <script type="module" src="./main.js?v=10"></script>
   </body>
 </html>

@@ -3,6 +3,11 @@ const formatPrice = (value) => Number(value || 0).toLocaleString("en-US", { maxi
 
 const UNIT_PROFILES = [
   {
+    test: /^0206/,
+    units: ["Kilogram", "Tonne"],
+    basis: "HS 0206 edible offal is assessed on a weight basis for this demo; confirm the applicable tariff, product condition and contract unit."
+  },
+  {
     test: /^0205/,
     units: ["Kilogram", "Tonne"],
     basis: "HS 0205 meat is assessed on a weight basis for this demo; confirm the applicable tariff and contract unit."
@@ -26,6 +31,7 @@ const UNIT_PROFILES = [
 
 const CATEGORY_RULES = [
   { test: /^0205/, conflicts: ["cotton", "textile", "fabric", "yarn", "cloth"], label: "animal-protein goods" },
+  { test: /^0206/, conflicts: ["cotton", "textile", "fabric", "yarn", "cloth", "garment"], label: "edible-offal goods" },
   { test: /^5201/, conflicts: ["horse", "meat", "beef", "poultry", "animal"], label: "raw cotton" }
 ];
 
@@ -53,9 +59,9 @@ function hasConflict(text, conflicts) {
 }
 
 export function assessDataIntegrity(input) {
-  const expected = input.expectedUnits?.length
-    ? input.expectedUnits
-    : getExpectedUnitsForHsCode(input.hsCode).units;
+  const configuredProfile = getExpectedUnitsForHsCode(input.hsCode);
+  const expected = configuredProfile.units;
+  const profileConfigured = configuredProfile.configured;
   const issues = [];
   const warnings = [];
   let priceScoringEligible = true;
@@ -63,7 +69,7 @@ export function assessDataIntegrity(input) {
   if (!input.unitOfMeasure) {
     issues.push("Unit of measure is not provided.");
     priceScoringEligible = false;
-  } else if (!expected.length) {
+  } else if (!profileConfigured || !expected.length) {
     issues.push("The expected unit profile for this HS Code is not configured.");
     priceScoringEligible = false;
   } else if (!expected.includes(input.unitOfMeasure)) {
@@ -104,6 +110,7 @@ export function assessDataIntegrity(input) {
     issues,
     warnings,
     expectedUnits: expected,
+    profileConfigured,
     priceScoringEligible,
     message: priceScoringEligible
       ? "The price component can be calculated for the supplied unit and benchmark metadata. This remains an indicative signal."
@@ -331,11 +338,43 @@ export function calculateRisk(input) {
     action: "Obtain the rationale, contractual basis and supporting approval for the payment terms."
   });
 
-  const score = clamp(flags.reduce((total, flag) => total + flag.points, 0), 0, 100);
-  let band = "Low";
-  if (score >= 75) band = "Critical";
-  else if (score >= 50) band = "High";
-  else if (score >= 25) band = "Medium";
+  const rawScore = flags.reduce((total, flag) => total + flag.points, 0);
+  const cappedScore = clamp(rawScore, 0, 100);
+  const hasManualIndicator = selectedIndicators.size > 0 || [
+    input.relatedParty,
+    input.thirdPartyPayment,
+    input.routeMismatch,
+    input.documentMismatch,
+    input.duplicateInvoice
+  ].some(Boolean);
+  const evidenceReady = !hasManualIndicator || Boolean(
+    input.indicatorConfidence &&
+    input.evidenceStatus === "Available for review" &&
+    String(input.reviewerEvidenceNote || "").trim()
+  );
+  const readinessIssues = [];
+
+  if (!integrity.priceScoringEligible) {
+    readinessIssues.push("Price scoring is withheld because the supplied data is not comparable.");
+  }
+
+  if (hasManualIndicator && !evidenceReady) {
+    readinessIssues.push("Selected indicators require available evidence, confidence and a reviewer rationale note.");
+  }
+
+  if (input.hsCodeVerified === false) {
+    readinessIssues.push("The HS Code has not been verified against the tariff reference.");
+  }
+
+  const decisionReady = readinessIssues.length === 0;
+  const score = decisionReady ? cappedScore : null;
+  let band = "Not decision-ready";
+  if (decisionReady) {
+    band = "Low";
+    if (score >= 75) band = "Critical";
+    else if (score >= 50) band = "High";
+    else if (score >= 25) band = "Medium";
+  }
 
   const recommendations = {
     Low: "Proceed with normal controls, while retaining the supporting documents and review rationale.",
@@ -344,19 +383,32 @@ export function calculateRisk(input) {
     Critical: "Pause routine processing and escalate for senior compliance review under the institution's approved procedure."
   };
 
+  const recommendation = decisionReady
+    ? recommendations[band]
+    : "Do not use this output for a compliance decision. Resolve the data-integrity and evidence issues, then rerun the case.";
+
   return {
     score,
+    rawScore,
+    cappedScore,
+    scoreCapApplied: rawScore > 100,
     band,
+    decisionReady,
+    decisionStatus: decisionReady ? "Ready for authorised review" : "Not decision-ready",
+    evidenceReady,
+    readinessIssues,
     flags,
     deviation,
     integrity,
     priceScoringEligible: integrity.priceScoringEligible,
     suppressedIndicators,
     selectedIndicatorCount: selectedIndicators.size,
-    recommendation: recommendations[band]
+    recommendation
   };
 }
 
 export function bandClass(band) {
-  return `status-${band.toLowerCase()}`;
+  return band === "Not decision-ready"
+    ? "status-not-ready"
+    : `status-${band.toLowerCase()}`;
 }
