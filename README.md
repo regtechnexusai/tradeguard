@@ -8,6 +8,10 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Accepts fictional or anonymised sample transaction inputs.
 - Applies transparent rule-based red-flag scoring.
 - Shows a risk band and reviewer-oriented next step.
+- Separates data completeness from data integrity/comparability.
+- Withholds price scoring when HS Code, goods description, unit or benchmark metadata cannot be compared reliably.
+- Requires evidence and rationale for manually selected indicators and business context for route concerns.
+- Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
 
 This version does **not** upload or store documents, call an AI API, connect to a bank, or make a regulatory determination.

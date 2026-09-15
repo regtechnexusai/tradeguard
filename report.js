@@ -1,4 +1,4 @@
-import { bandClass } from "./rules.js?v=8";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=9";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -23,6 +23,7 @@ const completenessFields = [
   ["Material / composition", "material"],
   ["Model / brand", "modelBrand"],
   ["Technical specification", "specification"],
+  ["Business profile / trade rationale", "businessProfile"],
   ["Quantity", "quantity"],
   ["Unit of measure", "unitOfMeasure"],
   ["Declared unit price", "invoicePrice"],
@@ -50,6 +51,7 @@ const completenessFields = [
   ["Bill of Lading consistency", "billOfLadingConsistency"]
   , ["Indicator confidence", "indicatorConfidence"]
   , ["Evidence status", "evidenceStatus"]
+  , ["Reviewer evidence note", "reviewerEvidenceNote"]
 ];
 
 export const TBML_INDICATOR_LABELS = {
@@ -102,9 +104,14 @@ export function renderReport(result, input) {
   const completenessValue = document.querySelector("#dataCompletenessValue");
   const completenessBar = document.querySelector("#dataCompletenessBar");
   const completenessMessage = document.querySelector("#dataCompletenessMessage");
+  const integrityCard = document.querySelector("#dataIntegrityCard");
+  const integrityValue = document.querySelector("#dataIntegrityValue");
+  const integrityMessage = document.querySelector("#dataIntegrityMessage");
+  const integrityList = document.querySelector("#dataIntegrityList");
   const reviewContext = document.querySelector("#reviewContext");
 
   const completeness = calculateDataCompleteness(input);
+  const integrity = result.integrity || assessDataIntegrity(input);
 
   reportPanel.classList.remove("is-empty");
   emptyReport.hidden = true;
@@ -115,9 +122,11 @@ export function renderReport(result, input) {
   gaugeShell.style.background = `conic-gradient(#1967d2 ${result.score * 3.6}deg, #dcecf6 0deg)`;
   flagCount.textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
 
-  const priceText = result.deviation > 0
-    ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
-    : "The declared price falls inside the supplied market range.";
+  const priceText = result.deviation === null
+    ? "Price comparison was withheld because the supplied benchmark is not comparable to the verified HS Code and unit."
+    : result.deviation > 0
+      ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
+      : "The declared price falls inside the supplied market range.";
 
   const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; product/commodity was populated from the verified tariff description.`;
 
@@ -132,21 +141,34 @@ export function renderReport(result, input) {
   completenessBar.style.width = `${completeness.percent}%`;
   completenessMessage.textContent = completeness.message;
 
+  integrityValue.textContent = integrity.status;
+  integrityValue.className = integrity.priceScoringEligible ? "integrity-good" : "integrity-blocked";
+  integrityMessage.textContent = integrity.message;
+  integrityList.innerHTML = [...integrity.issues, ...integrity.warnings]
+    .map((item) => `<li>${escapeHtml(item)}</li>`)
+    .join("");
+  integrityCard.classList.toggle("is-blocked", !integrity.priceScoringEligible);
+
   const contextItems = [
     input.productDescription && `Goods: ${input.productDescription}`,
     input.qualityGrade && `Grade: ${input.qualityGrade}`,
     input.material && `Material: ${input.material}`,
     input.unitOfMeasure && `Unit: ${input.unitOfMeasure}`,
+    input.expectedUnits?.length && `Expected unit profile: ${input.expectedUnits.join(" or ")}`,
     input.currency && `Currency: ${input.currency}`,
     input.totalValue && `Total value: ${formatNumber(input.totalValue)}`,
+    input.marketSource && `Market source: ${input.marketSource}`,
+    input.marketSourceDate && `Market source date: ${input.marketSourceDate}`,
     input.valuationBasis && `Valuation basis: ${input.valuationBasis}`,
     input.incoterms && `Incoterms: ${input.incoterms}`,
     input.paymentTerms && `Payment: ${input.paymentTerms}`,
     input.portLoading && `Loading port: ${input.portLoading}`,
     input.portDischarge && `Discharge port: ${input.portDischarge}`,
+    input.businessProfile && `Business profile / rationale: ${input.businessProfile}`,
     input.tbmlIndicators?.length && `TBML indicators: ${input.tbmlIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}`,
     input.indicatorConfidence && `Indicator confidence: ${input.indicatorConfidence}`,
-    input.evidenceStatus && `Evidence status: ${input.evidenceStatus}`
+    input.evidenceStatus && `Evidence status: ${input.evidenceStatus}`,
+    input.reviewerEvidenceNote && `Reviewer evidence note: ${input.reviewerEvidenceNote}`
   ].filter(Boolean);
 
   reviewContext.innerHTML = contextItems.length
@@ -168,7 +190,7 @@ export function renderReport(result, input) {
     `).join("");
   }
 
-  recommendation.textContent = `${result.recommendation} ${completeness.percent < 80 ? "Obtain additional supporting information before relying on this result." : ""}`.trim();
+  recommendation.textContent = `${result.recommendation} ${!result.priceScoringEligible ? "Do not rely on the price component until the data-integrity issues are corrected." : ""} ${completeness.percent < 80 ? "Obtain additional supporting information before relying on this result." : ""}`.trim();
 
   return [
     "TradeGuard by RegTech Nexus AI",
@@ -177,6 +199,9 @@ export function renderReport(result, input) {
     input.hsCode ? `HS Code: ${input.hsCode}` : "HS Code: Not provided",
     `Risk score: ${result.score}/100 (${result.band})`,
     `Data completeness: ${completeness.percent}%`,
+    `Data integrity / comparability: ${integrity.status}`,
+    integrity.issues.length ? `Integrity issues: ${integrity.issues.join(" | ")}` : "Integrity issues: None identified by configured checks",
+    `Price component: ${result.priceScoringEligible ? "Calculated" : "Withheld"}`,
     `TBML indicators selected: ${(input.tbmlIndicators || []).map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ") || "None"}`,
     `Indicator confidence: ${input.indicatorConfidence || "Not provided"}`,
     `Evidence status: ${input.evidenceStatus || "Not provided"}`,
@@ -191,19 +216,20 @@ export function renderReport(result, input) {
 export function setSampleValues() {
   const values = {
     hsCode: "52010000",
-    productDescription: "Cotton, not carded or combed; illustrative textile shipment",
+    productDescription: "Cotton, not carded or combed; illustrative raw cotton shipment",
     qualityGrade: "Commercial grade",
     material: "100% cotton",
     modelBrand: "Demo product",
     specification: "Illustrative sample goods description",
     quantity: "100000",
-    unitOfMeasure: "Yard",
+    unitOfMeasure: "Kilogram",
     invoicePrice: "50",
     totalValue: "5000000",
     currency: "USD",
     marketLow: "10",
     marketHigh: "12",
-    marketSource: "Illustrative market range",
+    marketSource: "Illustrative demo benchmark — replace with a verified market source",
+    marketSourceDate: "2026-09-14",
     valuationBasis: "Commercial invoice",
     originCountry: "Bangladesh",
     destinationCountry: "United Arab Emirates",
@@ -217,11 +243,13 @@ export function setSampleValues() {
     portLoading: "Chattogram",
     portDischarge: "Jebel Ali",
     routeDetails: "Illustrative direct commercial route",
+    businessProfile: "Illustrative textile/raw-cotton trading business",
     invoiceConsistency: "Needs review",
     packingListConsistency: "Consistent",
     billOfLadingConsistency: "Not provided"
     , indicatorConfidence: "Medium"
-    , evidenceStatus: "Partially available"
+    , evidenceStatus: "Partially available",
+    reviewerEvidenceNote: "Illustrative demo note only; validate selected indicators against genuine commercial and transport evidence."
   };
 
   Object.entries(values).forEach(([id, value]) => {
@@ -259,6 +287,7 @@ export function collectInput() {
     productName: value("productCommodity"),
     hsCode: value("hsCode"),
     hsCodeVerified: document.querySelector("#hsCode")?.dataset.verified === "true",
+    expectedUnits: JSON.parse(document.querySelector("#hsCode")?.dataset.expectedUnits || "[]"),
     productDescription: value("productDescription"),
     qualityGrade: value("qualityGrade"),
     material: value("material"),
@@ -286,12 +315,14 @@ export function collectInput() {
     portLoading: value("portLoading"),
     portDischarge: value("portDischarge"),
     routeDetails: value("routeDetails"),
+    businessProfile: value("businessProfile"),
     invoiceConsistency: value("invoiceConsistency"),
     packingListConsistency: value("packingListConsistency"),
     billOfLadingConsistency: value("billOfLadingConsistency"),
     tbmlIndicators,
     indicatorConfidence: value("indicatorConfidence"),
     evidenceStatus: value("evidenceStatus"),
+    reviewerEvidenceNote: value("reviewerEvidenceNote"),
     relatedParty: checked("relatedParty") || ["Possible relationship", "Confirmed relationship"].includes(relatedPartyRelationship),
     thirdPartyPayment: checked("thirdPartyPayment") || payerRelationship === "Third party",
     routeMismatch: checked("routeMismatch"),
@@ -327,6 +358,26 @@ export function validateInput(input) {
     errors.marketHigh = "Enter the upper market range greater than zero.";
   }
 
+  if (!input.unitOfMeasure) {
+    errors.unitOfMeasure = "Select the unit used by both the declared price and the market benchmark.";
+  }
+
+  if (!input.currency) {
+    errors.currency = "Select the benchmark currency.";
+  }
+
+  if (!input.marketSource) {
+    errors.marketSource = "Enter the market-price source or reference.";
+  }
+
+  if (!input.marketSourceDate) {
+    errors.marketSourceDate = "Enter the market-price source date.";
+  }
+
+  if (!input.valuationBasis) {
+    errors.valuationBasis = "Select the valuation basis.";
+  }
+
   if (
     input.marketLow &&
     input.marketHigh &&
@@ -342,6 +393,21 @@ export function validateInput(input) {
 
   if (!input.destinationCountry) {
     errors.destinationCountry = "Select the country of destination.";
+  }
+
+  const hasManualIndicator = (input.tbmlIndicators || []).length > 0 || input.relatedParty || input.thirdPartyPayment || input.routeMismatch || input.documentMismatch || input.duplicateInvoice;
+  if (hasManualIndicator) {
+    if (!input.indicatorConfidence) errors.indicatorConfidence = "Select the confidence level for the selected indicators.";
+    if (!input.evidenceStatus) errors.evidenceStatus = "Select the evidence status for the selected indicators.";
+    if (!input.reviewerEvidenceNote) errors.reviewerEvidenceNote = "Add a short reviewer evidence or rationale note for the selected indicators.";
+  }
+
+  const routeConcernSelected = input.routeMismatch || (input.tbmlIndicators || []).includes("route-port-anomaly");
+  if (routeConcernSelected) {
+    if (!input.portLoading) errors.portLoading = "Enter the port of loading when a route concern is selected.";
+    if (!input.portDischarge) errors.portDischarge = "Enter the port of discharge when a route concern is selected.";
+    if (!input.routeDetails) errors.routeDetails = "Describe the route evidence or commercial rationale.";
+    if (!input.businessProfile) errors.businessProfile = "Enter the relevant customer business profile or trade rationale.";
   }
 
   const count = Object.keys(errors).length;

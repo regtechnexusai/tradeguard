@@ -1,8 +1,9 @@
-import { calculateRisk } from "./rules.js?v=8";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=8";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=9";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=9";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
+const resetButton = document.querySelector("#resetButton");
 const formMessage = document.querySelector("#formMessage");
 const copyReportButton = document.querySelector("#copyReportButton");
 const pilotForm = document.querySelector("#pilotForm");
@@ -12,6 +13,8 @@ const hsCodeInput = document.querySelector("#hsCode");
 const hsCodeDescription = document.querySelector("#hsCodeDescription");
 const commodityField = document.querySelector("#commodityField");
 const commodityInput = document.querySelector("#productCommodity");
+const unitInput = document.querySelector("#unitOfMeasure");
+const unitProfileNote = document.querySelector("#unitProfileNote");
 
 let latestReport = "";
 let hsCodeIndex = new Map();
@@ -57,10 +60,25 @@ function setFieldError(id, message) {
 
 function showValidationErrors(errors) {
   clearValidationErrors();
-  Object.entries(errors).forEach(([id, message]) => setFieldError(id, message));
+  Object.entries(errors).forEach(([id, message]) => {
+    const control = document.querySelector(`#${id}`);
+    control?.closest("details")?.setAttribute("open", "");
+    setFieldError(id, message);
+  });
 
   const firstInvalid = document.querySelector("#riskForm .input-invalid");
   firstInvalid?.focus({ preventScroll: true });
+}
+
+function clearCommoditySensitiveFields() {
+  ["productDescription", "qualityGrade", "material", "modelBrand", "specification", "unitOfMeasure", "invoicePrice", "totalValue", "marketLow", "marketHigh", "marketSource", "marketSourceDate", "currency", "valuationBasis"].forEach((id) => {
+    const element = document.querySelector(`#${id}`);
+    if (element) element.value = "";
+  });
+  ["tbmlPriceValue", "tbmlGoodsHsMismatch"].forEach((id) => {
+    const element = document.querySelector(`#${id}`);
+    if (element) element.checked = false;
+  });
 }
 
 const countries = [
@@ -158,9 +176,12 @@ function verifyHsCode() {
   if (!hsCodeInput || !hsCodeDescription) return false;
 
   const code = cleanCode(hsCodeInput.value);
+  const previousVerifiedCode = hsCodeInput.dataset.verifiedCode || "";
   hsCodeInput.dataset.verified = "false";
+  hsCodeInput.dataset.expectedUnits = "[]";
   commodityInput.value = "";
   commodityField.hidden = true;
+  if (unitProfileNote) unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
 
   if (!code) {
     hsCodeDescription.textContent = "Required: enter an 8-digit HS Code from the tariff reference.";
@@ -191,12 +212,23 @@ function verifyHsCode() {
   }
 
   const tariffDescription = String(item.tariffDescription || `HS Code ${code}`).trim();
+  const unitProfile = getExpectedUnitsForHsCode(code);
+  if (previousVerifiedCode && previousVerifiedCode !== code) clearCommoditySensitiveFields();
   commodityInput.value = tariffDescription;
   commodityField.hidden = false;
   hsCodeInput.dataset.verified = "true";
+  hsCodeInput.dataset.verifiedCode = code;
+  hsCodeInput.dataset.expectedUnits = JSON.stringify(unitProfile.units);
   hsCodeDescription.textContent =
     `Verified — Chapter ${item.chapter}. Product / commodity populated from the tariff description.`;
   hsCodeDescription.style.color = "#167c62";
+  if (unitProfileNote) {
+    unitProfileNote.textContent = unitProfile.units.length
+      ? `Expected unit profile: ${unitProfile.units.join(" or ")}. ${unitProfile.basis}`
+      : unitProfile.basis;
+    unitProfileNote.style.color = unitProfile.configured ? "#167c62" : "#b56a0c";
+  }
+  clearFieldError("unitOfMeasure");
   clearFieldError("hsCode");
   return true;
 }
@@ -221,9 +253,43 @@ riskForm.addEventListener("submit", (event) => {
 });
 
 sampleButton.addEventListener("click", () => {
+  hsCodeInput.dataset.verifiedCode = "";
   setSampleValues();
   verifyHsCode();
+  clearValidationErrors();
   formMessage.textContent = "Sample case loaded. Press Analyse sample transaction.";
+});
+
+function resetReport() {
+  const reportPanel = document.querySelector("#reportPanel");
+  const emptyReport = document.querySelector("#emptyReport");
+  const reportContent = document.querySelector("#reportContent");
+  reportPanel.classList.add("is-empty");
+  emptyReport.hidden = false;
+  reportContent.hidden = true;
+  copyReportButton.disabled = true;
+  latestReport = "";
+}
+
+resetButton?.addEventListener("click", () => {
+  riskForm.reset();
+  hsCodeInput.dataset.verified = "false";
+  hsCodeInput.dataset.verifiedCode = "";
+  hsCodeInput.dataset.expectedUnits = "[]";
+  commodityInput.value = "";
+  commodityField.hidden = true;
+  unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
+  unitProfileNote.style.color = "";
+  document.querySelectorAll("#riskForm input[type='checkbox']").forEach((checkbox) => {
+    checkbox.checked = false;
+  });
+  document.querySelectorAll("#riskForm select").forEach((select) => {
+    if (["originCountry", "destinationCountry"].includes(select.id)) select.value = "";
+  });
+  clearValidationErrors();
+  formMessage.textContent = "New case started. Previous transaction inputs were cleared.";
+  resetReport();
+  hsCodeInput.focus();
 });
 
 copyReportButton.addEventListener("click", async () => {
@@ -270,8 +336,11 @@ lookupHsCode?.addEventListener("click", verifyHsCode);
 hsCodeInput?.addEventListener("input", () => {
   clearFieldError("hsCode");
   hsCodeInput.dataset.verified = "false";
+  hsCodeInput.dataset.expectedUnits = "[]";
   commodityInput.value = "";
   commodityField.hidden = true;
+  unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
+  unitProfileNote.style.color = "";
   if (cleanCode(hsCodeInput.value).length === 8) verifyHsCode();
 });
 hsCodeInput?.addEventListener("change", verifyHsCode);

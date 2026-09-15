@@ -144,6 +144,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .form-panel, .report-panel { padding: 26px; }
 .panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
 .panel-heading h3 { margin: 6px 0 0; color: var(--navy); font-size: 19px; letter-spacing: -.02em; }
+.panel-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 13px; }
 .text-button { padding: 4px 0; border: 0; color: var(--blue); background: transparent; font-size: 11px; font-weight: 750; }
 .text-button:disabled { cursor: not-allowed; opacity: .42; }
 .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
@@ -156,6 +157,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .field input:focus, .field select:focus, .pilot-form input:focus, .pilot-form select:focus { border-color: #6ebce2; box-shadow: 0 0 0 4px rgba(73,198,229,.12); }
 .field textarea:focus { border-color: #6ebce2; box-shadow: 0 0 0 4px rgba(73,198,229,.12); }
 .derived-field input[readonly] { color: var(--navy); background: #eef8ff; }
+.unit-profile-note { color: var(--muted); font-size: 9px; line-height: 1.45; }
 .field.has-error > input, .field.has-error > select, .field.has-error > textarea, .field.has-error .input-invalid { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(195,63,72,.12) !important; }
 .field-error { color: var(--red); font-size: 10px; font-weight: 750; line-height: 1.35; }
 .optional-section { overflow: hidden; border: 1px solid #dfeaf3; border-radius: 13px; background: #fbfdff; }
@@ -194,6 +196,14 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .completeness-bar { overflow: hidden; height: 7px; margin-top: 9px; border-radius: 9px; background: #e3eef5; }
 .completeness-bar span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #49c6e5, #1967d2); transition: width .3s ease; }
 .data-completeness-card p { margin: 8px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.data-integrity-card { margin: 18px 0; padding: 14px; border: 1px solid #ccefe5; border-radius: 13px; background: #f7fffc; }
+.data-integrity-card.is-blocked { border-color: #f0c6ca; background: #fff8f8; }
+.integrity-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 9px; font-weight: 850; letter-spacing: .12em; }
+.integrity-header strong { color: var(--green); font-size: 11px; letter-spacing: 0; text-align: right; }
+.integrity-header strong.integrity-blocked { color: var(--red); }
+.data-integrity-card p { margin: 8px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.integrity-list { display: grid; gap: 4px; margin: 8px 0 0; padding-left: 16px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.data-integrity-card.is-blocked .integrity-list { color: #8f3940; }
 .review-context { margin: 14px 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
 .review-context strong { color: var(--navy); }
 .report-subheading { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 10px; color: var(--navy); font-size: 11px; font-weight: 800; }

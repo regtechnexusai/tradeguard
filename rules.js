@@ -1,6 +1,116 @@
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const formatPrice = (value) => Number(value || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
+const UNIT_PROFILES = [
+  {
+    test: /^0205/,
+    units: ["Kilogram", "Tonne"],
+    basis: "HS 0205 meat is assessed on a weight basis for this demo; confirm the applicable tariff and contract unit."
+  },
+  {
+    test: /^5201/,
+    units: ["Kilogram", "Tonne"],
+    basis: "HS 5201 raw cotton is assessed on a weight basis for this demo; confirm the applicable tariff and contract unit."
+  },
+  {
+    test: /^(5208|5209|5210|5211|5212)/,
+    units: ["Metre", "Yard"],
+    basis: "Woven textile fabric is commonly benchmarked by length; confirm the applicable tariff and contract unit."
+  },
+  {
+    test: /^52/,
+    units: ["Kilogram", "Tonne", "Metre", "Yard"],
+    basis: "Chapter 52 contains multiple cotton products; confirm the product-specific tariff and contract unit."
+  }
+];
+
+const CATEGORY_RULES = [
+  { test: /^0205/, conflicts: ["cotton", "textile", "fabric", "yarn", "cloth"], label: "animal-protein goods" },
+  { test: /^5201/, conflicts: ["horse", "meat", "beef", "poultry", "animal"], label: "raw cotton" }
+];
+
+export function getExpectedUnitsForHsCode(hsCode) {
+  const code = String(hsCode || "").replace(/\s/g, "");
+  const profile = UNIT_PROFILES.find((item) => item.test.test(code));
+
+  return profile
+    ? { units: profile.units, basis: profile.basis, configured: true }
+    : {
+        units: [],
+        basis: "No product-specific unit profile is configured for this HS Code. Confirm the unit from the applicable tariff, contract and supporting documents.",
+        configured: false
+      };
+}
+
+function getCategoryRule(hsCode) {
+  const code = String(hsCode || "").replace(/\s/g, "");
+  return CATEGORY_RULES.find((item) => item.test.test(code));
+}
+
+function hasConflict(text, conflicts) {
+  const normalized = String(text || "").toLowerCase();
+  return conflicts.some((term) => normalized.includes(term));
+}
+
+export function assessDataIntegrity(input) {
+  const expected = input.expectedUnits?.length
+    ? input.expectedUnits
+    : getExpectedUnitsForHsCode(input.hsCode).units;
+  const issues = [];
+  const warnings = [];
+  let priceScoringEligible = true;
+
+  if (!input.unitOfMeasure) {
+    issues.push("Unit of measure is not provided.");
+    priceScoringEligible = false;
+  } else if (!expected.length) {
+    issues.push("The expected unit profile for this HS Code is not configured.");
+    priceScoringEligible = false;
+  } else if (!expected.includes(input.unitOfMeasure)) {
+    issues.push(`Selected unit “${input.unitOfMeasure}” does not match the expected unit profile: ${expected.join(" or ")}.`);
+    priceScoringEligible = false;
+  }
+
+  [
+    ["marketSource", "Market-price source"],
+    ["marketSourceDate", "Market-price date"],
+    ["currency", "Benchmark currency"],
+    ["valuationBasis", "Valuation basis"]
+  ].forEach(([key, label]) => {
+    if (!String(input[key] || "").trim()) {
+      issues.push(`${label} is not provided.`);
+      priceScoringEligible = false;
+    }
+  });
+
+  const categoryRule = getCategoryRule(input.hsCode);
+  if (categoryRule && input.productDescription && hasConflict(input.productDescription, categoryRule.conflicts)) {
+    issues.push(`The entered goods description appears inconsistent with the tariff-linked ${categoryRule.label} profile.`);
+    priceScoringEligible = false;
+  } else if (!input.productDescription) {
+    warnings.push("Extended goods description is not provided; HS-linked commodity text is being used as the minimum reference.");
+  }
+
+  if (input.marketLow && input.marketHigh && input.unitOfMeasure && expected.length && expected.includes(input.unitOfMeasure)) {
+    warnings.push("Benchmark comparability still depends on the source, date, grade/specification and valuation basis being genuine and applicable.");
+  }
+
+  let status = "Comparable for supplied benchmark";
+  if (issues.length) status = "Not comparable — price score withheld";
+  else if (warnings.length) status = "Comparable with limitations";
+
+  return {
+    status,
+    issues,
+    warnings,
+    expectedUnits: expected,
+    priceScoringEligible,
+    message: priceScoringEligible
+      ? "The price component can be calculated for the supplied unit and benchmark metadata. This remains an indicative signal."
+      : "The price component is withheld because the HS Code, unit, goods description or benchmark metadata cannot yet be treated as comparable."
+  };
+}
+
 function outsideRangePercentage(price, low, high) {
   if (price >= low && price <= high) return 0;
   if (price > high) return ((price - high) / high) * 100;
@@ -11,13 +121,17 @@ export function calculateRisk(input) {
   const invoicePrice = Number(input.invoicePrice);
   const marketLow = Number(input.marketLow);
   const marketHigh = Number(input.marketHigh);
+  const integrity = assessDataIntegrity(input);
   const flags = [];
-  const deviation = outsideRangePercentage(invoicePrice, marketLow, marketHigh);
+  const suppressedIndicators = [];
+  const deviation = integrity.priceScoringEligible
+    ? outsideRangePercentage(invoicePrice, marketLow, marketHigh)
+    : null;
   const suppliedRange = input.currency
     ? ` (${input.currency} ${formatPrice(marketLow)}–${formatPrice(marketHigh)} per ${input.unitOfMeasure || "unit"})`
     : "";
 
-  if (deviation >= 100) {
+  if (integrity.priceScoringEligible && deviation >= 100) {
     flags.push({
       id: "price-material",
       title: "Material price deviation",
@@ -25,7 +139,7 @@ export function calculateRisk(input) {
       detail: `The declared price is approximately ${Math.round(deviation)}% outside the supplied market range${suppliedRange}.`,
       action: "Obtain independent price evidence, product specifications and commercial rationale."
     });
-  } else if (deviation >= 50) {
+  } else if (integrity.priceScoringEligible && deviation >= 50) {
     flags.push({
       id: "price-significant",
       title: "Significant price deviation",
@@ -33,6 +147,10 @@ export function calculateRisk(input) {
       detail: `The declared price is approximately ${Math.round(deviation)}% outside the supplied market range${suppliedRange}.`,
       action: "Validate the benchmark, grade, quality, Incoterms and pricing rationale."
     });
+  }
+
+  if (!integrity.priceScoringEligible && (input.tbmlIndicators || []).includes("price-value-anomaly")) {
+    suppressedIndicators.push("price-value-anomaly");
   }
 
   if (input.relatedParty) {
@@ -85,9 +203,25 @@ export function calculateRisk(input) {
     });
   }
 
+  const categoryRule = getCategoryRule(input.hsCode);
+  if (categoryRule && input.productDescription && hasConflict(input.productDescription, categoryRule.conflicts)) {
+    flags.push({
+      id: "goods-hs-mismatch-auto",
+      title: "Goods / HS Code mismatch concern",
+      points: 15,
+      detail: "The entered goods description contains terms that appear inconsistent with the tariff-linked HS Code profile.",
+      action: "Reconcile the HS Code, goods description, specification and supporting commercial documents.",
+      source: "Automatic data-integrity check"
+    });
+  }
+
   const selectedIndicators = new Set(input.tbmlIndicators || []);
-  const addManualIndicator = ({ key, id, title, points, detail, action, coveredBy }) => {
+  const addManualIndicator = ({ key, id, title, points, detail, action, coveredBy, suppressWhen }) => {
     if (!selectedIndicators.has(key)) return;
+    if (suppressWhen?.()) {
+      suppressedIndicators.push(key);
+      return;
+    }
     if (coveredBy && coveredBy()) return;
 
     flags.push({
@@ -107,7 +241,8 @@ export function calculateRisk(input) {
     points: 10,
     detail: "The supplied information indicates a possible price or valuation concern requiring supporting commercial evidence.",
     action: "Confirm the valuation basis, benchmark source, product grade, Incoterms and pricing rationale.",
-    coveredBy: () => flags.some((flag) => flag.id.startsWith("price-"))
+    coveredBy: () => flags.some((flag) => flag.id.startsWith("price-")),
+    suppressWhen: () => !integrity.priceScoringEligible
   });
 
   addManualIndicator({
@@ -116,7 +251,8 @@ export function calculateRisk(input) {
     title: "Goods / HS Code mismatch concern",
     points: 15,
     detail: "The goods description, specification or classification may not align with the declared HS Code.",
-    action: "Reconcile the HS Code with the goods, quality, composition, model and supporting commercial documents."
+    action: "Reconcile the HS Code with the goods, quality, composition, model and supporting commercial documents.",
+    coveredBy: () => flags.some((flag) => flag.id === "goods-hs-mismatch-auto")
   });
 
   addManualIndicator({
@@ -213,6 +349,9 @@ export function calculateRisk(input) {
     band,
     flags,
     deviation,
+    integrity,
+    priceScoringEligible: integrity.priceScoringEligible,
+    suppressedIndicators,
     selectedIndicatorCount: selectedIndicators.size,
     recommendation: recommendations[band]
   };

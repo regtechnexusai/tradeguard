@@ -1,4 +1,4 @@
-TradeGuard Phase 1 update
+TradeGuard Phase 1 update — data-integrity and review controls
 
 Replace these files in the GitHub repository:
 index.html
@@ -14,8 +14,17 @@ hs-codes.json (or the existing data/hs-codes.json)
 HS Code is now mandatory. After a valid HS Code is verified, the Product /
 commodity field is populated automatically from the tariff description.
 Quantity, declared price, market range, origin and destination are also required.
+For the price component, the benchmark source, source date, currency, unit of
+measure and valuation basis are required. The expected unit profile is derived
+from the verified HS Code for configured product groups. If the HS Code,
+goods description, unit or benchmark metadata is not comparable, the report
+still shows an indicative review result but withholds the price component.
 If a mandatory field is empty or invalid, Submit shows a red border and an
 inline error; after correction, the form can be submitted again.
+Use “Start new case” to clear all previous transaction inputs and selections.
+Route/port concerns require ports, business context and a documented route
+rationale. Manual TBML indicator selections require confidence, evidence
+status and a reviewer evidence/rationale note.
 The form also includes a structured, multi-select TBML red-flag indicator
 module. Selected indicators add explainable, non-duplicative review flags for
 price/valuation, goods/HS Code, quantity/unit, documents, route/ports,
@@ -25,7 +34,7 @@ Use fictional or anonymised information only. Do not upload confidential LC,
 invoice, passport, NID, bank or SWIFT documents to this public demo.
 
 After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=5
+https://regtechnexusai.github.io/tradeguard/?v=9
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and

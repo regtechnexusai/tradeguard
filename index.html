@@ -94,7 +94,10 @@
                 <span class="panel-kicker">STEP 01</span>
                 <h3>Transaction inputs</h3>
               </div>
-              <button id="sampleButton" class="text-button" type="button">Load sample case</button>
+              <div class="panel-actions">
+                <button id="resetButton" class="text-button" type="button">Start new case</button>
+                <button id="sampleButton" class="text-button" type="button">Load sample case</button>
+              </div>
             </div>
 
             <div class="form-grid">
@@ -165,7 +168,7 @@
                     <input id="modelBrand" type="text" placeholder="If applicable" />
                   </label>
                   <label class="field">
-                    <span>Unit of measure</span>
+                    <span>Unit of measure <em>(required for price comparison)</em></span>
                     <select id="unitOfMeasure">
                       <option value="">Select unit</option>
                       <option>Piece</option>
@@ -178,6 +181,7 @@
                       <option>Set</option>
                       <option>Other</option>
                     </select>
+                    <small id="unitProfileNote" class="unit-profile-note">Verify the HS Code to display the expected unit profile.</small>
                   </label>
                   <label class="field field-wide">
                     <span>Technical specification</span>
@@ -186,15 +190,16 @@
                 </div>
               </details>
 
-              <details class="optional-section field-wide">
-                <summary>Optional: Price and valuation details</summary>
+              <details class="optional-section field-wide" open>
+                <summary>Price and valuation details — required for price comparison</summary>
+                <p class="optional-note">These fields are required before TradeGuard can calculate a price-risk component. The benchmark remains illustrative unless independently verified.</p>
                 <div class="optional-grid">
                   <label class="field">
                     <span>Total declared value</span>
                     <input id="totalValue" type="number" min="0" step="any" placeholder="Optional total value" />
                   </label>
                   <label class="field">
-                    <span>Currency</span>
+                    <span>Currency <em>(required)</em></span>
                     <select id="currency">
                       <option value="">Select currency</option>
                       <option>USD</option>
@@ -207,15 +212,15 @@
                     </select>
                   </label>
                   <label class="field">
-                    <span>Market-price source</span>
+                    <span>Market-price source <em>(required)</em></span>
                     <input id="marketSource" type="text" placeholder="Source, publication or database" />
                   </label>
                   <label class="field">
-                    <span>Market-price date</span>
+                    <span>Market-price date <em>(required)</em></span>
                     <input id="marketSourceDate" type="date" />
                   </label>
                   <label class="field field-wide">
-                    <span>Valuation basis</span>
+                    <span>Valuation basis <em>(required)</em></span>
                     <select id="valuationBasis">
                       <option value="">Select valuation basis</option>
                       <option>Commercial invoice</option>
@@ -291,6 +296,10 @@
                       <option>Third party</option>
                       <option>Unknown</option>
                     </select>
+                  </label>
+                  <label class="field field-wide">
+                    <span>Customer business profile / trade rationale</span>
+                    <textarea id="businessProfile" rows="2" placeholder="Relevant business activity, capacity or rationale for this trade route"></textarea>
                   </label>
                 </div>
               </details>
@@ -398,6 +407,10 @@
                       <option>Available for review</option>
                     </select>
                   </label>
+                  <label class="field field-wide">
+                    <span>Reviewer evidence / rationale note</span>
+                    <textarea id="reviewerEvidenceNote" rows="3" placeholder="Required when an indicator is selected: state the evidence, source or reviewer rationale supporting the selection."></textarea>
+                  </label>
                 </div>
               </details>
             </div>
@@ -451,6 +464,15 @@
                 </div>
                 <div class="completeness-bar"><span id="dataCompletenessBar"></span></div>
                 <p id="dataCompletenessMessage"></p>
+              </div>
+
+              <div id="dataIntegrityCard" class="data-integrity-card">
+                <div class="integrity-header">
+                  <span>DATA INTEGRITY / COMPARABILITY</span>
+                  <strong id="dataIntegrityValue">Not assessed</strong>
+                </div>
+                <p id="dataIntegrityMessage"></p>
+                <ul id="dataIntegrityList" class="integrity-list"></ul>
               </div>
 
               <div id="reviewContext" class="review-context"></div>
@@ -518,6 +540,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=8"></script>
+    <script type="module" src="./main.js?v=9"></script>
   </body>
 </html>
