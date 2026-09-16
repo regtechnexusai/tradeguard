@@ -10,14 +10,14 @@
     <title>TradeGuard | RegTech Nexus AI</title>
     <link rel="stylesheet" href="./style.css" />
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-10WQVBN61X"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-10WQVBN61X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-  gtag('config', 'G-10WQVBN61X');
-</script>
+      gtag('config', 'G-10WQVBN61X');
+    </script>
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -102,6 +102,7 @@
               <div>
                 <span class="panel-kicker">STEP 01</span>
                 <h3>Transaction inputs</h3>
+                <p class="form-intro">Start with the core case context. The remaining fields are optional and improve the quality of the indicative assessment.</p>
               </div>
               <div class="panel-actions">
                 <button id="resetButton" class="text-button" type="button">Start new case</button>
@@ -111,7 +112,7 @@
 
             <div class="form-grid">
               <div class="field">
-                <label for="hsCode"><span>HS Code <em>(required)</em></span></label>
+                <label for="hsCode"><span>HS Code <em>(required to start demo)</em></span></label>
                 <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="e.g. 52010000" required aria-describedby="hsCodeDescription" />
                 <button id="lookupHsCode" class="text-button" type="button">Verify HS Code</button>
                 <small id="hsCodeDescription" aria-live="polite">Required: enter an 8-digit HS Code from the Bangladesh Customs tariff reference.</small>
@@ -124,34 +125,34 @@
               </div>
 
               <label class="field">
-                <span>Quantity</span>
-                <input id="quantity" name="quantity" type="number" min="0" step="any" placeholder="100000" required />
+                <span>Quantity <em>(optional)</em></span>
+                <input id="quantity" name="quantity" type="number" min="0" step="any" placeholder="100000" />
               </label>
 
               <label class="field">
-                <span>Declared unit price</span>
-                <input id="invoicePrice" name="invoicePrice" type="number" min="0" step="any" placeholder="50" required />
+                <span>Declared unit price <em>(optional)</em></span>
+                <input id="invoicePrice" name="invoicePrice" type="number" min="0" step="any" placeholder="50" />
               </label>
 
               <label class="field">
-                <span>Market lower range</span>
-                <input id="marketLow" name="marketLow" type="number" min="0" step="any" placeholder="10" required />
+                <span>Market lower range <em>(optional)</em></span>
+                <input id="marketLow" name="marketLow" type="number" min="0" step="any" placeholder="10" />
               </label>
 
               <label class="field">
-                <span>Market upper range</span>
-                <input id="marketHigh" name="marketHigh" type="number" min="0" step="any" placeholder="12" required />
+                <span>Market upper range <em>(optional)</em></span>
+                <input id="marketHigh" name="marketHigh" type="number" min="0" step="any" placeholder="12" />
               </label>
 
               <label class="field">
-                <span>Origin country</span>
+                <span>Origin country <em>(required to start demo)</em></span>
                 <select id="originCountry" name="originCountry" data-default-country="Bangladesh" required>
                   <option value="">Select origin country</option>
                 </select>
               </label>
 
               <label class="field">
-                <span>Destination country</span>
+                <span>Destination country <em>(required to start demo)</em></span>
                 <select id="destinationCountry" name="destinationCountry" data-default-country="United Arab Emirates" required>
                   <option value="">Select destination country</option>
                 </select>
@@ -177,7 +178,7 @@
                     <input id="modelBrand" type="text" placeholder="If applicable" />
                   </label>
                   <label class="field">
-                    <span>Unit of measure <em>(required for price comparison)</em></span>
+                    <span>Unit of measure <em>(optional — used for price comparison)</em></span>
                     <select id="unitOfMeasure">
                       <option value="">Select unit</option>
                       <option>Piece</option>
@@ -200,15 +201,15 @@
               </details>
 
               <details class="optional-section field-wide" open>
-                <summary>Price and valuation details — required for price comparison</summary>
-                <p class="optional-note">These fields are required before TradeGuard can calculate a price-risk component. The benchmark remains illustrative unless independently verified.</p>
+                <summary>Optional: Price and valuation details</summary>
+                <p class="optional-note">Complete the declared price, market range, unit and currency to enable an indicative price comparison. Source, date and valuation basis improve comparability but do not block this demo.</p>
                 <div class="optional-grid">
                   <label class="field">
                     <span>Total declared value</span>
                     <input id="totalValue" type="number" min="0" step="any" placeholder="Optional total value" />
                   </label>
                   <label class="field">
-                    <span>Currency <em>(required)</em></span>
+                    <span>Currency <em>(optional)</em></span>
                     <select id="currency">
                       <option value="">Select currency</option>
                       <option>USD</option>
@@ -221,15 +222,15 @@
                     </select>
                   </label>
                   <label class="field">
-                    <span>Market-price source <em>(required)</em></span>
+                    <span>Market-price source <em>(optional)</em></span>
                     <input id="marketSource" type="text" placeholder="Source, publication or database" />
                   </label>
                   <label class="field">
-                    <span>Market-price date <em>(required)</em></span>
+                    <span>Market-price date <em>(optional)</em></span>
                     <input id="marketSourceDate" type="date" />
                   </label>
                   <label class="field field-wide">
-                    <span>Valuation basis <em>(required)</em></span>
+                    <span>Valuation basis <em>(optional)</em></span>
                     <select id="valuationBasis">
                       <option value="">Select valuation basis</option>
                       <option>Commercial invoice</option>
@@ -238,6 +239,43 @@
                       <option>Independent benchmark</option>
                       <option>Customs reference</option>
                       <option>Other</option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+
+              <details class="optional-section field-wide" open>
+                <summary>Core counterparty context — required to start demo</summary>
+                <p class="optional-note">Select the known status. If the information is not available, choose “Unknown / not provided” and continue with an indicative result.</p>
+                <div class="optional-grid">
+                  <label class="field">
+                    <span>Beneficial ownership <em>(required)</em></span>
+                    <select id="beneficialOwnership" required>
+                      <option value="">Select status</option>
+                      <option>Verified</option>
+                      <option>Partially verified</option>
+                      <option>Not verified</option>
+                      <option value="Unknown" selected>Unknown / not provided</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Buyer–seller relationship <em>(required)</em></span>
+                    <select id="relatedPartyRelationship" required>
+                      <option value="">Select status</option>
+                      <option>No known relationship</option>
+                      <option>Possible relationship</option>
+                      <option>Confirmed relationship</option>
+                      <option value="Unknown" selected>Unknown / not provided</option>
+                    </select>
+                  </label>
+                  <label class="field field-wide">
+                    <span>Payer relationship <em>(required)</em></span>
+                    <select id="payerRelationship" required>
+                      <option value="">Select payer relationship</option>
+                      <option>Buyer</option>
+                      <option>Seller</option>
+                      <option>Third party</option>
+                      <option value="Unknown" selected>Unknown / not provided</option>
                     </select>
                   </label>
                 </div>
@@ -275,36 +313,6 @@
                   <label class="field">
                     <span>Seller reference</span>
                     <input id="sellerReference" type="text" placeholder="Use a reference, not personal data" />
-                  </label>
-                  <label class="field">
-                    <span>Beneficial ownership</span>
-                    <select id="beneficialOwnership">
-                      <option value="">Select status</option>
-                      <option>Verified</option>
-                      <option>Partially verified</option>
-                      <option>Not verified</option>
-                      <option>Unknown</option>
-                    </select>
-                  </label>
-                  <label class="field">
-                    <span>Related-party relationship</span>
-                    <select id="relatedPartyRelationship">
-                      <option value="">Select status</option>
-                      <option>No known relationship</option>
-                      <option>Possible relationship</option>
-                      <option>Confirmed relationship</option>
-                      <option>Unknown</option>
-                    </select>
-                  </label>
-                  <label class="field field-wide">
-                    <span>Payer relationship</span>
-                    <select id="payerRelationship">
-                      <option value="">Select payer relationship</option>
-                      <option>Buyer</option>
-                      <option>Seller</option>
-                      <option>Third party</option>
-                      <option>Unknown</option>
-                    </select>
                   </label>
                   <label class="field field-wide">
                     <span>Customer business profile / trade rationale</span>
@@ -437,7 +445,7 @@
             </div>
 
             <div id="formMessage" class="form-message" role="status" aria-live="polite"></div>
-            <button class="button button-primary button-full" type="submit">Analyse sample transaction <span>→</span></button>
+            <button class="button button-primary button-full" type="submit">Run indicative demo <span>→</span></button>
           </form>
 
           <section id="reportPanel" class="panel report-panel is-empty" aria-live="polite">
@@ -452,7 +460,7 @@
             <div id="emptyReport" class="empty-report">
               <div class="empty-icon">✦</div>
               <h3>Your review result will appear here</h3>
-              <p>Complete the sample transaction fields and run the risk check.</p>
+              <p>Enter the HS Code and core case context, then run the indicative demo. Additional information can be added to improve the assessment.</p>
             </div>
 
             <div id="reportContent" class="report-content" hidden>
@@ -469,7 +477,7 @@
                   <strong id="decisionStatus">Not assessed</strong>
                   <p id="decisionStatusMessage">The report will identify whether the supplied data and evidence pass the decision-readiness gates.</p>
                 </div>
-                <div class="raw-score"><span>RAW INDICATOR POINTS</span><strong id="rawScoreValue">0</strong></div>
+                <div class="raw-score"><span>RAW INDICATIVE POINTS</span><strong id="rawScoreValue">—</strong></div>
               </div>
               <div id="reportSummary" class="report-summary"></div>
 
@@ -556,6 +564,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=10"></script>
+    <script type="module" src="./main.js?v=11"></script>
   </body>
 </html>

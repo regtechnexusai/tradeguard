@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=10";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=10";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=11";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=11";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -271,7 +271,7 @@ sampleButton.addEventListener("click", () => {
   setSampleValues();
   verifyHsCode();
   clearValidationErrors();
-  formMessage.textContent = "Sample case loaded. Press Analyse sample transaction.";
+  formMessage.textContent = "Sample case loaded. Press Run indicative demo.";
 });
 
 function resetReport() {

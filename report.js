@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=10";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=11";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -121,23 +121,41 @@ export function renderReport(result, input) {
   reportPanel.classList.remove("is-empty");
   emptyReport.hidden = true;
   reportContent.hidden = false;
-  score.textContent = result.decisionReady ? result.score : "—";
-  score.classList.toggle("score-withheld", !result.decisionReady);
-  scoreSuffix.textContent = result.decisionReady ? "/100" : "withheld";
-  band.textContent = result.decisionReady ? result.band.toUpperCase() : "NOT READY";
-  band.className = `status-pill ${bandClass(result.band)}`;
-  gaugeShell.style.background = `conic-gradient(#1967d2 ${(result.decisionReady ? result.score : 0) * 3.6}deg, #dcecf6 0deg)`;
+  const hasFlags = result.flags.length > 0;
+  const indicativeScore = hasFlags ? result.indicativeScore : null;
+  const hasIndicativeScore = Number.isFinite(indicativeScore);
+  const hasIssuedScore = result.decisionReady && hasFlags;
+  score.textContent = hasIssuedScore || hasIndicativeScore ? (result.decisionReady ? result.score : indicativeScore) : "—";
+  score.classList.toggle("score-withheld", !result.decisionReady && !hasIndicativeScore);
+  score.classList.toggle("score-indicative", !result.decisionReady && hasIndicativeScore);
+  score.classList.toggle("score-no-signal", !hasFlags);
+  scoreSuffix.textContent = result.decisionReady
+    ? (hasFlags ? "/100" : "no scoreable signal")
+    : (hasIndicativeScore ? "indicative" : "no scoreable inputs");
+  band.textContent = result.decisionReady
+    ? (hasFlags ? result.band.toUpperCase() : "NO SIGNAL")
+    : (hasIndicativeScore ? "INDICATIVE ONLY" : "NOT READY");
+  band.className = `status-pill ${result.decisionReady ? (hasFlags ? bandClass(result.band) : "status-no-signal") : (hasIndicativeScore ? "status-medium" : "status-not-ready")}`;
+  const gaugeScore = result.decisionReady ? result.score : (indicativeScore || 0);
+  gaugeShell.style.background = `conic-gradient(#1967d2 ${gaugeScore * 3.6}deg, #dcecf6 0deg)`;
   flagCount.textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
-  rawScoreValue.textContent = result.rawScore;
+  rawScoreValue.textContent = hasFlags ? result.rawScore : "—";
   decisionStatus.textContent = result.decisionStatus;
   decisionStatusMessage.textContent = result.decisionReady
-    ? `The score passed the current data-integrity and evidence gates. It remains an indicative review signal.${result.scoreCapApplied ? " Raw indicator points exceeded 100, so the issued score is capped at 100." : ""}`
-    : result.readinessIssues.join(" ");
+    ? (hasFlags
+      ? `The score passed the current data-integrity and evidence gates. It remains an indicative review signal.${result.scoreCapApplied ? " Raw indicator points exceeded 100, so the issued score is capped at 100." : ""}`
+      : "No configured risk indicator was triggered by the supplied inputs. This is not a finding of low risk.")
+    : (hasIndicativeScore
+      ? `An indicative score is shown from the supplied inputs. The decision-ready score remains withheld until the listed conditions are resolved.`
+      : "No numeric scoreable signal was available from the supplied inputs. Add optional price data or select supported review indicators to generate an indicative signal.");
   decisionReadiness.classList.toggle("is-blocked", !result.decisionReady);
-  decisionReadiness.classList.toggle("is-ready", result.decisionReady);
+  decisionReadiness.classList.toggle("is-ready", result.decisionReady && hasFlags);
+  decisionReadiness.classList.toggle("is-neutral", result.decisionReady && !hasFlags);
 
   const priceText = result.deviation === null
-    ? "Price comparison was withheld because the supplied benchmark is not comparable to the verified HS Code and unit."
+    ? (integrity.priceDataProvided
+      ? "Price comparison was not issued because the supplied price inputs are incomplete or not comparable to the verified HS Code and unit."
+      : "Price comparison was not run because the optional price fields were not provided.")
     : result.deviation > 0
       ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
       : "The declared price falls inside the supplied market range.";
@@ -150,8 +168,12 @@ export function renderReport(result, input) {
     : " No structured TBML indicator was selected.";
 
   const readinessText = result.decisionReady
-    ? "This is a prioritisation signal, not a final TBML determination."
-    : "The risk score is withheld because this case is not decision-ready. Resolve the listed issues before relying on the output.";
+    ? (hasFlags
+      ? "This is a prioritisation signal, not a final TBML determination."
+      : "No configured signal was triggered by the supplied inputs; this is not a finding of low risk.")
+    : (hasIndicativeScore
+      ? "An indicative signal is shown, but the decision-ready risk score remains withheld until the listed issues are resolved."
+      : "No numeric score was issued because the supplied inputs did not produce a scoreable signal.");
   summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText}${indicatorText} ${readinessText}`;
 
   completenessValue.textContent = `${completeness.percent}%`;
@@ -193,7 +215,7 @@ export function renderReport(result, input) {
     : "No optional supporting details were provided.";
 
   if (!result.flags.length) {
-    flagList.innerHTML = `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured red flag was triggered</strong><p>Retain the supporting evidence and continue normal controls.</p></div><span class="flag-points" style="color:#14866b">0</span></div>`;
+    flagList.innerHTML = `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured red flag was triggered</strong><p>This is not a finding of low risk. Add optional transaction data and supporting evidence for a more specific review signal.</p></div><span class="flag-points" style="color:#14866b">—</span></div>`;
   } else {
     flagList.innerHTML = result.flags.map((flag) => `
       <article class="flag-item">
@@ -207,7 +229,7 @@ export function renderReport(result, input) {
     `).join("");
   }
 
-  recommendation.textContent = `${result.recommendation} ${!result.priceScoringEligible ? "Do not rely on the price component until the data-integrity issues are corrected." : ""} ${completeness.percent < 80 ? "Obtain additional supporting information before relying on this result." : ""}`.trim();
+  recommendation.textContent = `${result.recommendation} ${integrity.priceDataProvided && !result.priceScoringEligible ? "Do not rely on the price component until the data-integrity issues are corrected." : ""} ${completeness.percent < 80 ? "Obtain additional supporting information before relying on this result." : ""}`.trim();
 
   return [
     "TradeGuard by RegTech Nexus AI",
@@ -216,15 +238,17 @@ export function renderReport(result, input) {
     input.hsCode ? `HS Code: ${input.hsCode}` : "HS Code: Not provided",
     `Decision status: ${result.decisionStatus}`,
     `Raw indicator points: ${result.rawScore}`,
-    result.decisionReady
+    result.decisionReady && result.flags.length
       ? `Risk score: ${result.score}/100 (${result.band})`
-      : "Risk score: Not issued — withheld until decision-readiness conditions are met",
+      : result.indicativeScore !== null && result.indicativeScore !== undefined
+        ? `Indicative score: ${result.indicativeScore}/100 — decision-ready score withheld`
+        : "Risk score: No scoreable signal from the supplied inputs",
     `Score cap applied: ${result.scoreCapApplied ? "Yes — raw indicator points exceeded 100" : "No"}`,
     result.readinessIssues.length ? `Readiness issues: ${result.readinessIssues.join(" | ")}` : "Readiness issues: None identified by configured gates",
     `Data completeness: ${completeness.percent}%`,
     `Data integrity / comparability: ${integrity.status}`,
     integrity.issues.length ? `Integrity issues: ${integrity.issues.join(" | ")}` : "Integrity issues: None identified by configured checks",
-    `Price component: ${result.priceScoringEligible ? "Calculated" : "Withheld"}`,
+    `Price component: ${result.priceScoringEligible ? "Calculated" : integrity.priceDataProvided ? "Not comparable / withheld" : "Not assessed — optional data not provided"}`,
     `TBML indicators selected: ${(input.tbmlIndicators || []).map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ") || "None"}`,
     `Indicator confidence: ${input.indicatorConfidence || "Not provided"}`,
     `Evidence status: ${input.evidenceStatus || "Not provided"}`,
@@ -365,45 +389,11 @@ export function validateInput(input) {
     errors.hsCode = "Verify a valid HS Code from the tariff reference.";
   }
 
-  if (!input.quantity || !Number.isFinite(Number(input.quantity)) || Number(input.quantity) <= 0) {
-    errors.quantity = "Enter a quantity greater than zero.";
-  }
-
-  if (!input.invoicePrice || !Number.isFinite(Number(input.invoicePrice)) || Number(input.invoicePrice) <= 0) {
-    errors.invoicePrice = "Enter a declared unit price greater than zero.";
-  }
-
-  if (!input.marketLow || !Number.isFinite(Number(input.marketLow)) || Number(input.marketLow) <= 0) {
-    errors.marketLow = "Enter the lower market range greater than zero.";
-  }
-
-  if (!input.marketHigh || !Number.isFinite(Number(input.marketHigh)) || Number(input.marketHigh) <= 0) {
-    errors.marketHigh = "Enter the upper market range greater than zero.";
-  }
-
-  if (!input.unitOfMeasure) {
-    errors.unitOfMeasure = "Select the unit used by both the declared price and the market benchmark.";
-  }
-
-  if (!input.currency) {
-    errors.currency = "Select the benchmark currency.";
-  }
-
-  if (!input.marketSource) {
-    errors.marketSource = "Enter the market-price source or reference.";
-  }
-
-  if (!input.marketSourceDate) {
-    errors.marketSourceDate = "Enter the market-price source date.";
-  }
-
-  if (!input.valuationBasis) {
-    errors.valuationBasis = "Select the valuation basis.";
-  }
-
   if (
     input.marketLow &&
     input.marketHigh &&
+    Number.isFinite(Number(input.marketLow)) &&
+    Number.isFinite(Number(input.marketHigh)) &&
     Number(input.marketHigh) < Number(input.marketLow)
   ) {
     errors.marketLow = "Lower range cannot exceed the upper range.";
@@ -418,21 +408,16 @@ export function validateInput(input) {
     errors.destinationCountry = "Select the country of destination.";
   }
 
-  const hasManualIndicator = (input.tbmlIndicators || []).length > 0 || input.relatedParty || input.thirdPartyPayment || input.routeMismatch || input.documentMismatch || input.duplicateInvoice;
-  if (hasManualIndicator) {
-    if (!input.indicatorConfidence) errors.indicatorConfidence = "Select the confidence level for the selected indicators.";
-    if (!input.evidenceStatus || input.evidenceStatus === "Not provided") {
-      errors.evidenceStatus = "Evidence status cannot be ‘Not provided’ when an indicator is selected.";
-    }
-    if (!input.reviewerEvidenceNote) errors.reviewerEvidenceNote = "Add a short reviewer evidence or rationale note for the selected indicators.";
+  if (!input.beneficialOwnership) {
+    errors.beneficialOwnership = "Select a beneficial-ownership status, or choose Unknown / not provided.";
   }
 
-  const routeConcernSelected = input.routeMismatch || (input.tbmlIndicators || []).includes("route-port-anomaly");
-  if (routeConcernSelected) {
-    if (!input.portLoading) errors.portLoading = "Enter the port of loading when a route concern is selected.";
-    if (!input.portDischarge) errors.portDischarge = "Enter the port of discharge when a route concern is selected.";
-    if (!input.routeDetails) errors.routeDetails = "Describe the route evidence or commercial rationale.";
-    if (!input.businessProfile) errors.businessProfile = "Enter the relevant customer business profile or trade rationale.";
+  if (!input.relatedPartyRelationship) {
+    errors.relatedPartyRelationship = "Select the buyer–seller relationship status, or choose Unknown / not provided.";
+  }
+
+  if (!input.payerRelationship) {
+    errors.payerRelationship = "Select the payer relationship, or choose Unknown / not provided.";
   }
 
   const count = Object.keys(errors).length;

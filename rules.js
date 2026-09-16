@@ -64,46 +64,61 @@ export function assessDataIntegrity(input) {
   const profileConfigured = configuredProfile.configured;
   const issues = [];
   const warnings = [];
-  let priceScoringEligible = true;
+  const hasValue = (value) => String(value ?? "").trim() !== "";
+  const isPositiveNumber = (value) => hasValue(value) && Number.isFinite(Number(value)) && Number(value) > 0;
+  const priceFields = ["invoicePrice", "marketLow", "marketHigh"];
+  const priceDataProvided = priceFields.some((key) => hasValue(input[key]));
+  const priceInputsComplete = priceFields.every((key) => isPositiveNumber(input[key]));
+  const validPriceRange = priceInputsComplete && Number(input.marketHigh) >= Number(input.marketLow);
+  const benchmarkMetadataKeys = ["marketSource", "marketSourceDate", "valuationBasis"];
+  let priceScoringEligible = false;
+  let priceStatus = "Not assessed — optional price data not provided";
 
-  if (!input.unitOfMeasure) {
-    issues.push("Unit of measure is not provided.");
-    priceScoringEligible = false;
+  if (!priceDataProvided) {
+    warnings.push("Optional price data was not provided; price comparison was not assessed.");
+  } else if (!priceInputsComplete || !validPriceRange) {
+    warnings.push("Complete positive values for declared price and market lower/upper range to enable price comparison.");
+    priceStatus = "Incomplete — price score not assessed";
+  } else if (!input.unitOfMeasure) {
+    issues.push("Unit of measure is not provided for the supplied price data.");
+    priceStatus = "Not comparable — price score withheld";
   } else if (!profileConfigured || !expected.length) {
     issues.push("The expected unit profile for this HS Code is not configured.");
-    priceScoringEligible = false;
+    priceStatus = "Not comparable — price score withheld";
   } else if (!expected.includes(input.unitOfMeasure)) {
-    issues.push(`Selected unit “${input.unitOfMeasure}” does not match the expected unit profile: ${expected.join(" or ")}.`);
-    priceScoringEligible = false;
-  }
-
-  [
-    ["marketSource", "Market-price source"],
-    ["marketSourceDate", "Market-price date"],
-    ["currency", "Benchmark currency"],
-    ["valuationBasis", "Valuation basis"]
-  ].forEach(([key, label]) => {
-    if (!String(input[key] || "").trim()) {
-      issues.push(`${label} is not provided.`);
-      priceScoringEligible = false;
+    issues.push("Selected unit “" + input.unitOfMeasure + "” does not match the expected unit profile: " + expected.join(" or ") + ".");
+    priceStatus = "Not comparable — price score withheld";
+  } else if (!hasValue(input.currency)) {
+    warnings.push("Currency is not provided; the numeric price comparison was withheld.");
+    priceStatus = "Incomplete — currency required for price comparison";
+  } else {
+    priceScoringEligible = true;
+    priceStatus = "Comparable for supplied unit and range";
+    const missingMetadata = benchmarkMetadataKeys
+      .filter((key) => !hasValue(input[key]))
+      .map((key) => key === "marketSource" ? "source" : key === "marketSourceDate" ? "date" : "valuation basis");
+    if (missingMetadata.length) {
+      warnings.push("Benchmark metadata is incomplete (" + missingMetadata.join(", ") + "); the price signal remains indicative.");
     }
-  });
+  }
 
   const categoryRule = getCategoryRule(input.hsCode);
   if (categoryRule && input.productDescription && hasConflict(input.productDescription, categoryRule.conflicts)) {
     issues.push(`The entered goods description appears inconsistent with the tariff-linked ${categoryRule.label} profile.`);
     priceScoringEligible = false;
-  } else if (!input.productDescription) {
+    priceStatus = "Not comparable — goods / HS Code mismatch";
+  } else if (!hasValue(input.productDescription)) {
     warnings.push("Extended goods description is not provided; HS-linked commodity text is being used as the minimum reference.");
   }
 
-  if (input.marketLow && input.marketHigh && input.unitOfMeasure && expected.length && expected.includes(input.unitOfMeasure)) {
+  if (priceScoringEligible) {
     warnings.push("Benchmark comparability still depends on the source, date, grade/specification and valuation basis being genuine and applicable.");
   }
 
-  let status = "Comparable for supplied benchmark";
+  const benchmarkMetadataComplete = priceScoringEligible && benchmarkMetadataKeys.every((key) => hasValue(input[key]));
+  let status = priceStatus;
+  if (priceScoringEligible && !benchmarkMetadataComplete) status = "Comparable with limitations";
   if (issues.length) status = "Not comparable — price score withheld";
-  else if (warnings.length) status = "Comparable with limitations";
 
   return {
     status,
@@ -112,9 +127,15 @@ export function assessDataIntegrity(input) {
     expectedUnits: expected,
     profileConfigured,
     priceScoringEligible,
+    priceDataProvided,
+    priceInputsComplete,
+    benchmarkMetadataComplete,
+    priceStatus,
     message: priceScoringEligible
-      ? "The price component can be calculated for the supplied unit and benchmark metadata. This remains an indicative signal."
-      : "The price component is withheld because the HS Code, unit, goods description or benchmark metadata cannot yet be treated as comparable."
+      ? "The price component can be calculated for the supplied unit and range. Source, date and valuation basis improve comparability but do not block this demo."
+      : priceDataProvided
+        ? "The price component was not calculated because the optional price inputs are incomplete or cannot be compared to the verified HS Code and unit."
+        : "No price component was calculated because the optional price data was not provided."
   };
 }
 
@@ -354,12 +375,26 @@ export function calculateRisk(input) {
   );
   const readinessIssues = [];
 
-  if (!integrity.priceScoringEligible) {
-    readinessIssues.push("Price scoring is withheld because the supplied data is not comparable.");
+  if (integrity.issues.length) {
+    readinessIssues.push("Data-integrity issues must be resolved before relying on an overall score.");
+  }
+
+  if (selectedIndicators.has("price-value-anomaly") && !integrity.priceScoringEligible) {
+    readinessIssues.push("The selected price / valuation indicator needs comparable price inputs before it can be assessed.");
+  }
+
+  if (flags.some((flag) => flag.id.startsWith("price-")) && !integrity.benchmarkMetadataComplete) {
+    readinessIssues.push("The price signal is indicative because benchmark source, date or valuation basis is incomplete.");
   }
 
   if (hasManualIndicator && !evidenceReady) {
     readinessIssues.push("Selected indicators require available evidence, confidence and a reviewer rationale note.");
+  }
+
+  const routeConcernSelected = input.routeMismatch || selectedIndicators.has("route-port-anomaly");
+  const routeContextReady = Boolean(input.portLoading && input.portDischarge && input.routeDetails && input.businessProfile);
+  if (routeConcernSelected && !routeContextReady) {
+    readinessIssues.push("Route concerns remain indicative until ports, route evidence and business context are provided.");
   }
 
   if (input.hsCodeVerified === false) {
@@ -368,6 +403,7 @@ export function calculateRisk(input) {
 
   const decisionReady = readinessIssues.length === 0;
   const score = decisionReady ? cappedScore : null;
+  const indicativeScore = flags.length ? cappedScore : null;
   let band = "Not decision-ready";
   if (decisionReady) {
     band = "Low";
@@ -383,18 +419,23 @@ export function calculateRisk(input) {
     Critical: "Pause routine processing and escalate for senior compliance review under the institution's approved procedure."
   };
 
-  const recommendation = decisionReady
-    ? recommendations[band]
-    : "Do not use this output for a compliance decision. Resolve the data-integrity and evidence issues, then rerun the case.";
+  const recommendation = !flags.length
+    ? "No configured risk indicator was triggered by the supplied inputs. This is not a finding of low risk; add optional transaction data and supporting evidence for a more specific signal."
+    : decisionReady
+      ? recommendations[band]
+      : "Do not use this output for a compliance decision. Resolve the listed evidence and data-integrity issues, then rerun the case.";
 
   return {
     score,
+    indicativeScore,
     rawScore,
     cappedScore,
     scoreCapApplied: rawScore > 100,
     band,
     decisionReady,
-    decisionStatus: decisionReady ? "Ready for authorised review" : "Not decision-ready",
+    decisionStatus: decisionReady
+      ? (flags.length ? "Ready for authorised review" : "Indicative demo complete — no scoreable signal")
+      : "Not decision-ready",
     evidenceReady,
     readinessIssues,
     flags,

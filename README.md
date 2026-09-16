@@ -7,11 +7,12 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Presents the TradeGuard product concept.
 - Accepts fictional or anonymised sample transaction inputs.
 - Applies transparent rule-based red-flag scoring with raw and capped points.
-- Shows a risk band only when the case passes the decision-readiness gates; otherwise the score is withheld.
+- Lets a visitor run an indicative demo with only HS Code, route countries and core counterparty status; detailed fields remain optional.
+- Shows an indicative score when supported signals are available, while withholding the decision-ready score when evidence or integrity gates are not met.
 - Separates data completeness from data integrity/comparability.
-- Withholds price scoring when HS Code, goods description, unit or benchmark metadata cannot be compared reliably.
-- Withholds the overall risk grade when price comparability or selected-indicator evidence is not decision-ready.
-- Requires available evidence, confidence and rationale for manually selected indicators, plus business context for route concerns.
+- Withholds price scoring when HS Code, goods description, unit or price inputs cannot be compared reliably; missing optional benchmark metadata is shown as a limitation rather than a form blocker.
+- Does not display a misleading 0/100 when no scoreable signal is available.
+- Keeps evidence, confidence and rationale as readiness information for manually selected indicators instead of blocking the public demo.
 - Maps HS 0206 edible offal to a weight-based unit profile and limits the unit selector to the verified HS profile.
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
