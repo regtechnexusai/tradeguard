@@ -271,7 +271,7 @@ sampleButton.addEventListener("click", () => {
   setSampleValues();
   verifyHsCode();
   clearValidationErrors();
-  formMessage.textContent = "Sample case loaded. Press Run indicative demo.";
+  formMessage.textContent = "Sample case loaded. Press Run Risk Check.";
 });
 
 function resetReport() {

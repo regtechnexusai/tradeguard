@@ -43,7 +43,9 @@ business-profile mismatch and unusual payment terms.
 Use fictional or anonymised information only. Do not upload confidential LC,
 invoice, passport, NID, bank or SWIFT documents to this public demo.
 
-After uploading, commit the changes to the main branch and open:
+The main transaction button in this package is labelled “Run Risk Check”.
+Upload the extracted files themselves; GitHub Pages will not extract a ZIP
+automatically. After uploading, commit the changes to the main branch and open:
 https://regtechnexusai.github.io/tradeguard/?v=11
 
 The “Email pilot request” button opens a pre-filled email draft to

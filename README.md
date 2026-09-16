@@ -7,7 +7,7 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Presents the TradeGuard product concept.
 - Accepts fictional or anonymised sample transaction inputs.
 - Applies transparent rule-based red-flag scoring with raw and capped points.
-- Lets a visitor run an indicative demo with only HS Code, route countries and core counterparty status; detailed fields remain optional.
+- Lets a visitor run an indicative risk check with only HS Code, route countries and core counterparty status; detailed fields remain optional.
 - Shows an indicative score when supported signals are available, while withholding the decision-ready score when evidence or integrity gates are not met.
 - Separates data completeness from data integrity/comparability.
 - Withholds price scoring when HS Code, goods description, unit or price inputs cannot be compared reliably; missing optional benchmark metadata is shown as a limitation rather than a form blocker.
