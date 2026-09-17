@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=12";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=12";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=14";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=14";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -25,6 +25,11 @@ const profileFieldIds = {
 let latestReport = "";
 let hsCodeIndex = new Map();
 let hsCodesLoaded = false;
+const setCopyButtonLabel = (label) => {
+  const labelElement = copyReportButton?.querySelector(".action-box-label");
+  if (labelElement) labelElement.textContent = label;
+  else if (copyReportButton) copyReportButton.textContent = label;
+};
 const allUnitOptions = [
   "Piece", "Head", "Pair", "Dozen", "Colony", "Package", "Pack", "Bag", "Carton", "Kilogram", "Gram",
   "Tonne", "Litre", "Kilolitre", "Metre", "Yard", "Square metre", "Cubic metre", "Ream", "Carat", "Set", "Other"
@@ -287,6 +292,7 @@ riskForm.addEventListener("submit", (event) => {
   formMessage.textContent = "";
   const result = calculateRisk(input);
   latestReport = renderReport(result, input);
+  setCopyButtonLabel("Copy summary");
   copyReportButton.disabled = false;
   document.querySelector("#reportPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -295,6 +301,7 @@ sampleButton.addEventListener("click", () => {
   hsCodeInput.dataset.verifiedCode = "";
   setSampleValues();
   verifyHsCode();
+  resetReport();
   clearValidationErrors();
   formMessage.textContent = "Sample case loaded. Press Run Risk Check.";
 });
@@ -307,6 +314,7 @@ function resetReport() {
   emptyReport.hidden = false;
   reportContent.hidden = true;
   copyReportButton.disabled = true;
+  setCopyButtonLabel("Copy summary");
   latestReport = "";
 }
 
@@ -338,12 +346,12 @@ copyReportButton.addEventListener("click", async () => {
 
   try {
     await navigator.clipboard.writeText(latestReport);
-    copyReportButton.textContent = "Copied ✓";
+    setCopyButtonLabel("Copied ✓");
     window.setTimeout(() => {
-      copyReportButton.textContent = "Copy summary";
+      setCopyButtonLabel("Copy summary");
     }, 1800);
   } catch {
-    copyReportButton.textContent = "Select report manually";
+    setCopyButtonLabel("Select report manually");
   }
 });
 

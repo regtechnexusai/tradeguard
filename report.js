@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass, getExpectedUnitsForHsCode } from "./rules.js?v=12";
+import { assessDataIntegrity, bandClass, getExpectedUnitsForHsCode, RULESET_VERSION } from "./rules.js?v=14";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -68,12 +68,44 @@ export const TBML_INDICATOR_LABELS = {
   "unusual-payment-terms": "Unusual payment terms"
 };
 
+const sourceTypeLabels = {
+  automatic: "Automatic check",
+  "reviewer-observation": "Reviewer observation",
+  selected: "Selected TBML indicator"
+};
+
+function flagSourceText(flag) {
+  const base = flag.source || sourceTypeLabels[flag.sourceType] || "Review signal";
+  if (flag.sourceType === "automatic" && flag.selectedIndicator) return `${base} + selected TBML indicator`;
+  if (flag.sourceType === "automatic") return `${base} — not in selected list`;
+  if (flag.sourceType === "reviewer-observation" && flag.selectedIndicator) return "Selected TBML indicator + reviewer observation";
+  if (flag.sourceType === "reviewer-observation") return `${base} — outside selected list`;
+  return base;
+}
+
+function sourceClass(flag) {
+  return flag.sourceType === "reviewer-observation" && !flag.selectedIndicator
+    ? "source-outside"
+    : `source-${flag.sourceType || "review"}`;
+}
+
+function mappingStatusText(status) {
+  return {
+    represented: "represented in review signals",
+    "not-assessed": "not assessed",
+    "selected-only": "selected; no separate signal recorded"
+  }[status] || status;
+}
+
 export function calculateDataCompleteness(input) {
   const profile = getExpectedUnitsForHsCode(input.hsCode);
   const applicableFields = completenessFields.filter(([, key]) => profile.fields?.[key] !== "not-applicable");
+  const knownValueFields = new Set(["beneficialOwnership", "relatedPartyRelationship", "payerRelationship"]);
   const completed = applicableFields.filter(([, key]) => {
     const value = input[key];
-    return value !== undefined && value !== null && String(value).trim() !== "";
+    const normalized = String(value ?? "").trim().toLowerCase();
+    if (!normalized) return false;
+    return !knownValueFields.has(key) || !["unknown", "unknown / not provided", "not provided"].includes(normalized);
   }).length;
 
   const percent = applicableFields.length
@@ -89,6 +121,15 @@ export function calculateDataCompleteness(input) {
   } else if (percent >= 50) {
     message =
       `Applicable fields completed: ${completed}/${applicableFields.length}. Additional information is recommended before relying on the assessment for a material decision.`;
+  }
+
+  const unknownCoreFields = [
+    ["Beneficial ownership", input.beneficialOwnership],
+    ["Buyer–seller relationship", input.relatedPartyRelationship],
+    ["Payer relationship", input.payerRelationship]
+  ].filter(([, value]) => ["unknown", "unknown / not provided", "not provided"].includes(String(value || "").trim().toLowerCase()));
+  if (unknownCoreFields.length) {
+    message += ` ${unknownCoreFields.map(([label]) => label).join(", ")} ${unknownCoreFields.length === 1 ? "is" : "are"} marked unknown; this supports triage but not a decision-ready review.`;
   }
 
   return { completed, total: applicableFields.length, percent, message, excluded: completenessFields.length - applicableFields.length };
@@ -119,6 +160,8 @@ export function renderReport(result, input) {
   const integrityMessage = document.querySelector("#dataIntegrityMessage");
   const integrityList = document.querySelector("#dataIntegrityList");
   const reviewContext = document.querySelector("#reviewContext");
+  const indicatorMapping = document.querySelector("#indicatorMapping");
+  const auditMetadata = document.querySelector("#auditMetadata");
 
   const completeness = calculateDataCompleteness(input);
   const integrity = result.integrity || assessDataIntegrity(input);
@@ -130,20 +173,20 @@ export function renderReport(result, input) {
   const indicativeScore = hasFlags ? result.indicativeScore : null;
   const hasIndicativeScore = Number.isFinite(indicativeScore);
   const hasIssuedScore = result.decisionReady && hasFlags;
-  score.textContent = hasIssuedScore || hasIndicativeScore ? (result.decisionReady ? result.score : indicativeScore) : "—";
-  score.classList.toggle("score-withheld", !result.decisionReady && !hasIndicativeScore);
-  score.classList.toggle("score-indicative", !result.decisionReady && hasIndicativeScore);
-  score.classList.toggle("score-no-signal", !hasFlags);
+  score.textContent = hasIssuedScore ? result.score : result.decisionReady ? "—" : "Withheld";
+  score.classList.toggle("score-withheld", !result.decisionReady);
+  score.classList.toggle("score-indicative", false);
+  score.classList.toggle("score-no-signal", !hasFlags && result.decisionReady);
   scoreSuffix.textContent = result.decisionReady
     ? (hasFlags ? "/100" : "no scoreable signal")
-    : (hasIndicativeScore ? (result.scoreCapApplied ? "indicative / capped" : "indicative") : "no scoreable inputs");
+    : "decision-ready score withheld";
   band.textContent = result.decisionReady
     ? (hasFlags ? result.band.toUpperCase() : "NO SIGNAL")
-    : (hasIndicativeScore ? "INDICATIVE ONLY" : "NOT READY");
-  band.className = `status-pill ${result.decisionReady ? (hasFlags ? bandClass(result.band) : "status-no-signal") : (hasIndicativeScore ? "status-medium" : "status-not-ready")}`;
-  const gaugeScore = result.decisionReady ? result.score : (indicativeScore || 0);
+    : (hasIndicativeScore ? `INDICATIVE ${result.indicativeBand.toUpperCase()}` : "NOT READY");
+  band.className = `status-pill ${result.decisionReady ? (hasFlags ? bandClass(result.band) : "status-no-signal") : (hasIndicativeScore ? bandClass(result.indicativeBand) : "status-not-ready")}`;
+  const gaugeScore = result.decisionReady ? result.score : 0;
   gaugeShell.style.background = `conic-gradient(#1967d2 ${gaugeScore * 3.6}deg, #dcecf6 0deg)`;
-  flagCount.textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
+  flagCount.textContent = `${result.flags.length} ${result.flags.length === 1 ? "review signal" : "review signals"}`;
   rawScoreValue.textContent = hasFlags ? result.rawScore : "—";
   decisionStatus.textContent = result.decisionStatus;
   decisionStatusMessage.textContent = result.decisionReady
@@ -151,8 +194,8 @@ export function renderReport(result, input) {
       ? `The score passed the current data-integrity and evidence gates. It remains an indicative review signal.${result.scoreCapApplied ? " Raw indicator points exceeded 100, so the issued score is capped at 100." : ""}`
       : "No configured risk indicator was triggered by the supplied inputs. This is not a finding of low risk.")
     : (hasIndicativeScore
-      ? `An indicative score is shown from the supplied inputs. The decision-ready score remains withheld until the listed conditions are resolved.`
-      : "No numeric scoreable signal was available from the supplied inputs. Add optional price data or select supported review indicators to generate an indicative signal.");
+      ? `The decision-ready score is withheld. Raw indicator points are retained for triage only; the indicative signal band is ${result.indicativeBand.toUpperCase()}. Resolve these gaps before relying on an overall score: ${result.readinessIssues.join(" ")}`
+      : `No numeric scoreable signal was available from the supplied inputs. Add optional price data or select supported review indicators to generate an indicative signal. ${result.readinessIssues.length ? `Resolve these gaps: ${result.readinessIssues.join(" ")}` : ""}`);
   decisionReadiness.classList.toggle("is-blocked", !result.decisionReady);
   decisionReadiness.classList.toggle("is-ready", result.decisionReady && hasFlags);
   decisionReadiness.classList.toggle("is-neutral", result.decisionReady && !hasFlags);
@@ -162,8 +205,8 @@ export function renderReport(result, input) {
       ? "Price comparison was not issued because the supplied price inputs are incomplete or not comparable to the verified HS Code and unit."
       : "Price comparison was not run because the optional price fields were not provided.")
     : result.deviation > 0
-      ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
-      : "The declared price falls inside the supplied market range.";
+      ? `Declared price ${escapeHtml(input.currency)} ${formatNumber(input.invoicePrice)} per ${escapeHtml(input.unitOfMeasure)}; supplied market range ${escapeHtml(input.currency)} ${formatNumber(input.marketLow)}–${formatNumber(input.marketHigh)} per ${escapeHtml(input.unitOfMeasure)}; approximately ${Math.round(result.deviation)}% ${input.invoicePrice > input.marketHigh ? "above the upper bound" : "below the lower bound"}.`
+      : `Declared price ${escapeHtml(input.currency)} ${formatNumber(input.invoicePrice)} per ${escapeHtml(input.unitOfMeasure)}; supplied market range ${escapeHtml(input.currency)} ${formatNumber(input.marketLow)}–${formatNumber(input.marketHigh)} per ${escapeHtml(input.unitOfMeasure)}; inside the supplied range.`;
 
   const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; ${escapeHtml(integrity.family || "Product-family")} tariff-linked profile loaded.`;
 
@@ -177,7 +220,7 @@ export function renderReport(result, input) {
       ? "This is a prioritisation signal, not a final TBML determination."
       : "No configured signal was triggered by the supplied inputs; this is not a finding of low risk.")
     : (hasIndicativeScore
-      ? "An indicative signal is shown, but the decision-ready risk score remains withheld until the listed issues are resolved."
+      ? "The decision-ready score is withheld. Raw indicator points are for triage only; resolve the listed decision-readiness gaps before relying on the assessment."
       : "No numeric score was issued because the supplied inputs did not produce a scoreable signal.");
   const suppressedText = result.suppressedIndicators?.length
     ? ` The following selected indicator${result.suppressedIndicators.length === 1 ? " is" : "s are"} not assessed: ${result.suppressedIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}.`
@@ -189,7 +232,9 @@ export function renderReport(result, input) {
   completenessMessage.textContent = completeness.message;
 
   integrityValue.textContent = integrity.status;
-  integrityValue.className = integrity.priceScoringEligible ? "integrity-good" : "integrity-blocked";
+  const integrityBlocked = integrity.issues.length > 0 || (integrity.priceDataProvided && !integrity.priceScoringEligible);
+  const integrityWarning = !integrityBlocked && integrity.warnings.length > 0;
+  integrityValue.className = integrityBlocked ? "integrity-blocked" : integrityWarning ? "integrity-warning" : "integrity-good";
   integrityMessage.textContent = integrity.message;
   const integrityItems = [...integrity.issues, ...integrity.warnings];
   if (result.suppressedIndicators?.length) {
@@ -198,7 +243,8 @@ export function renderReport(result, input) {
   integrityList.innerHTML = integrityItems
     .map((item) => `<li>${escapeHtml(item)}</li>`)
     .join("");
-  integrityCard.classList.toggle("is-blocked", !integrity.priceScoringEligible || !result.decisionReady);
+  integrityCard.classList.toggle("is-blocked", integrityBlocked);
+  integrityCard.classList.toggle("is-warning", integrityWarning);
 
   const contextItems = [
     input.productDescription && `Goods: ${input.productDescription}`,
@@ -209,6 +255,7 @@ export function renderReport(result, input) {
     integrity.preferredUnit && `Preferred benchmark unit: ${integrity.preferredUnit}`,
     input.currency && `Currency: ${input.currency}`,
     input.totalValue && `Total value: ${formatNumber(input.totalValue)}`,
+    integrity.totalReconciliation && `Value reconciliation: ${formatNumber(input.quantity)} × ${formatNumber(input.invoicePrice)} = ${formatNumber(integrity.totalReconciliation.expectedTotal)} expected vs ${formatNumber(integrity.totalReconciliation.declaredTotal)} declared (${Math.round(integrity.totalReconciliation.differencePercent)}% difference)`,
     input.marketSource && `Market source: ${input.marketSource}`,
     input.marketSourceConfidence && `Market-source confidence: ${input.marketSourceConfidence}%`,
     input.marketSourceDate && `Market source date: ${input.marketSourceDate}`,
@@ -228,26 +275,73 @@ export function renderReport(result, input) {
     ? `<strong>Additional review context:</strong> ${escapeHtml(contextItems.join(" • "))}`
     : "No optional supporting details were provided.";
 
+  const selectedMappings = result.selectedIndicatorMappings || [];
+  const reviewerObservationOnly = result.reviewerObservationOnlyFlags || [];
+  const automaticFlags = result.automaticFlags || [];
+  const selectedMappingItems = selectedMappings.map((mapping) => {
+    const label = TBML_INDICATOR_LABELS[mapping.key] || mapping.key;
+    return `<li><strong>${escapeHtml(label)}</strong><span>${escapeHtml(mappingStatusText(mapping.status))}</span></li>`;
+  }).join("");
+  const outsideObservationItems = reviewerObservationOnly.map((flag) =>
+    `<li><strong>${escapeHtml(flag.title)}</strong><span>${escapeHtml(flag.source || "Reviewer observation")}</span></li>`
+  ).join("");
+  indicatorMapping.innerHTML = `
+    <div class="mapping-header"><strong>Selected vs recorded signal mapping</strong><span>${selectedMappings.length} selected</span></div>
+    <p class="mapping-note">A selected indicator is a reviewer input, not proof of TBML. Automatic checks and quick reviewer observations are shown separately so the source of each signal remains auditable.</p>
+    <div class="mapping-counts">
+      <div><span>Selected indicators</span><strong>${selectedMappings.length}</strong></div>
+      <div><span>Automatic checks</span><strong>${automaticFlags.length}</strong></div>
+      <div><span>Reviewer observations outside selection</span><strong>${reviewerObservationOnly.length}</strong></div>
+    </div>
+    ${selectedMappings.length ? `<div class="mapping-group"><span class="mapping-label">Structured selections</span><ul class="mapping-list">${selectedMappingItems}</ul></div>` : ""}
+    ${reviewerObservationOnly.length ? `<div class="mapping-group"><span class="mapping-label">Reviewer observations outside the selected list</span><ul class="mapping-list">${outsideObservationItems}</ul></div>` : ""}
+  `;
+
+  const auditTimestamp = result.assessmentTimestamp || new Date().toISOString();
+  const auditComplete = Boolean(input.caseReference && input.reviewerIdentity);
+  auditMetadata.innerHTML = `
+    <div class="audit-header"><strong>Audit record</strong><span class="audit-status ${auditComplete ? "audit-complete" : "audit-incomplete"}">${auditComplete ? "Reference details supplied" : "Reference details incomplete"}</span></div>
+    <dl class="audit-grid">
+      <div><dt>Case reference</dt><dd>${escapeHtml(input.caseReference || "Not provided")}</dd></div>
+      <div><dt>Reviewer identity</dt><dd>${escapeHtml(input.reviewerIdentity || "Not provided")}</dd></div>
+      <div><dt>Assessment timestamp (UTC)</dt><dd>${escapeHtml(auditTimestamp)}</dd></div>
+      <div><dt>Tool / ruleset</dt><dd>${escapeHtml(RULESET_VERSION)}</dd></div>
+    </dl>
+    ${auditComplete ? "" : "<p class=\"audit-note\">Add a case reference and reviewer identity before treating this output as an auditable review record.</p>"}
+  `;
+
   if (!result.flags.length) {
-    flagList.innerHTML = `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured red flag was triggered</strong><p>This is not a finding of low risk. Add optional transaction data and supporting evidence for a more specific review signal.</p></div><span class="flag-points" style="color:#14866b">—</span></div>`;
+    flagList.innerHTML = `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured review signal was recorded</strong><p>This is not a finding of low risk. Add optional transaction data and supporting evidence for a more specific review signal.</p></div><span class="flag-points" style="color:#14866b">—</span></div>`;
   } else {
     flagList.innerHTML = result.flags.map((flag) => `
       <article class="flag-item">
         <span class="flag-marker"></span>
         <div>
           <strong>${escapeHtml(flag.title)}</strong>
-          <small class="flag-source">${escapeHtml(flag.source || "Review signal")}</small>
+          <small class="flag-source ${sourceClass(flag)}">${escapeHtml(flagSourceText(flag))}</small>
           <p>${escapeHtml(flag.detail)}</p>
+          ${flag.action ? `<small class="flag-action">Next: ${escapeHtml(flag.action)}</small>` : ""}
         </div>
         <span class="flag-points">+${flag.points}</span>
       </article>
     `).join("");
   }
 
-  recommendation.textContent = `${result.recommendation} ${integrity.priceDataProvided && !result.priceScoringEligible ? "Do not rely on the price component until the data-integrity issues are corrected." : ""} ${completeness.percent < 80 ? "Obtain additional supporting information before relying on this result." : ""}`.trim();
+  const recommendationAdditions = [];
+  if (integrity.priceDataProvided && !result.priceScoringEligible) {
+    recommendationAdditions.push("Do not rely on the price component until the comparability issues are corrected.");
+  }
+  if (completeness.percent < 80) {
+    recommendationAdditions.push("Obtain additional supporting information before relying on this result.");
+  }
+  recommendation.textContent = [result.recommendation, ...recommendationAdditions].join(" ").trim();
 
   return [
     "TradeGuard by RegTech Nexus AI",
+    `Case reference: ${input.caseReference || "Not provided"}`,
+    `Reviewer identity: ${input.reviewerIdentity || "Not provided"}`,
+    `Assessment timestamp (UTC): ${result.assessmentTimestamp || new Date().toISOString()}`,
+    `Tool / ruleset: ${RULESET_VERSION}`,
     `Product: ${input.productName}`,
     `Route: ${input.originCountry} → ${input.destinationCountry}`,
     input.hsCode ? `HS Code: ${input.hsCode}` : "HS Code: Not provided",
@@ -256,22 +350,34 @@ export function renderReport(result, input) {
     result.decisionReady && result.flags.length
       ? `Risk score: ${result.score}/100 (${result.band})`
       : result.indicativeScore !== null && result.indicativeScore !== undefined
-        ? `Indicative score: ${result.indicativeScore}/100 — decision-ready score withheld`
+        ? `Risk score: WITHHELD — raw indicator points retained for triage only (${result.indicativeBand} indicative signal band)`
         : "Risk score: No scoreable signal from the supplied inputs",
     `Score cap applied: ${result.scoreCapApplied ? "Yes — raw indicator points exceeded 100" : "No"}`,
     result.readinessIssues.length ? `Readiness issues: ${result.readinessIssues.join(" | ")}` : "Readiness issues: None identified by configured gates",
     `Data completeness: ${completeness.percent}%`,
     `Data integrity / comparability: ${integrity.status}`,
     integrity.issues.length ? `Integrity issues: ${integrity.issues.join(" | ")}` : "Integrity issues: None identified by configured checks",
+    integrity.totalReconciliation
+      ? `Value reconciliation: ${formatNumber(input.quantity)} × ${formatNumber(input.invoicePrice)} = ${formatNumber(integrity.totalReconciliation.expectedTotal)} expected vs ${formatNumber(integrity.totalReconciliation.declaredTotal)} declared (${Math.round(integrity.totalReconciliation.differencePercent)}% difference)`
+      : null,
     `Price component: ${result.priceScoringEligible ? "Calculated" : integrity.priceDataProvided ? "Not comparable / withheld" : "Not assessed — optional data not provided"}`,
-    `TBML indicators selected: ${(input.tbmlIndicators || []).map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ") || "None"}`,
+    `Structured TBML indicators selected: ${(input.tbmlIndicators || []).map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ") || "None"}`,
+    result.selectedIndicatorMappings?.length
+      ? `Selected indicator mapping: ${result.selectedIndicatorMappings.map((mapping) => `${TBML_INDICATOR_LABELS[mapping.key] || mapping.key} — ${mappingStatusText(mapping.status)}`).join("; ")}`
+      : null,
+    result.reviewerObservationOnlyFlags?.length
+      ? `Reviewer observations outside selected list: ${result.reviewerObservationOnlyFlags.map((flag) => flag.title).join(", ")}`
+      : null,
+    result.automaticFlags?.length
+      ? `Automatic checks: ${result.automaticFlags.map((flag) => flag.title).join(", ")}`
+      : null,
     result.suppressedIndicators?.length
       ? `Selected but not assessed: ${result.suppressedIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}`
       : null,
     `Indicator confidence: ${input.indicatorConfidence || "Not provided"}`,
     `Evidence status: ${input.evidenceStatus || "Not provided"}`,
-    `Detected flags: ${result.flags.length}`,
-    ...result.flags.map((flag) => `- ${flag.title} [${flag.source || "Review signal"}]: ${flag.detail}`),
+    `Review signals recorded: ${result.flags.length}`,
+    ...result.flags.map((flag) => `- ${flag.title} [${flagSourceText(flag)}]: ${flag.detail}${flag.action ? ` Next: ${flag.action}` : ""}`),
     `Suggested next step: ${result.recommendation}`,
     "Assessment is indicative and depends on the quality, completeness and genuineness of the information provided.",
     "Demo output only. Final decisions remain with the authorised reviewer."
@@ -315,7 +421,9 @@ export function setSampleValues() {
     billOfLadingConsistency: "Not provided"
     , indicatorConfidence: "Medium"
     , evidenceStatus: "Partially available",
-    reviewerEvidenceNote: "Illustrative demo note only; validate selected indicators against genuine commercial and transport evidence."
+    reviewerEvidenceNote: "Illustrative demo note only; validate selected indicators against genuine commercial and transport evidence.",
+    caseReference: "DEMO-2026-001",
+    reviewerIdentity: "Demo reviewer"
   };
 
   Object.entries(values).forEach(([id, value]) => {
@@ -390,6 +498,8 @@ export function collectInput() {
     indicatorConfidence: value("indicatorConfidence"),
     evidenceStatus: value("evidenceStatus"),
     reviewerEvidenceNote: value("reviewerEvidenceNote"),
+    caseReference: value("caseReference"),
+    reviewerIdentity: value("reviewerIdentity"),
     relatedParty: checked("relatedParty") || ["Possible relationship", "Confirmed relationship"].includes(relatedPartyRelationship),
     thirdPartyPayment: checked("thirdPartyPayment") || payerRelationship === "Third party",
     routeMismatch: checked("routeMismatch"),

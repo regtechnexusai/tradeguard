@@ -105,8 +105,14 @@
                 <p class="form-intro">Start with the core case context. The remaining fields are optional and improve the quality of the indicative assessment.</p>
               </div>
               <div class="panel-actions">
-                <button id="resetButton" class="text-button" type="button">Start new case</button>
-                <button id="sampleButton" class="text-button" type="button">Load sample case</button>
+                <button id="resetButton" class="action-box action-box-reset" type="button">
+                  <span class="action-box-icon" aria-hidden="true">↻</span>
+                  <span class="action-box-content"><strong>Start new case</strong><small>Clear current inputs</small></span>
+                </button>
+                <button id="sampleButton" class="action-box action-box-sample" type="button">
+                  <span class="action-box-icon" aria-hidden="true">✦</span>
+                  <span class="action-box-content"><strong>Load sample case</strong><small>Try a guided example</small></span>
+                </button>
               </div>
             </div>
 
@@ -215,10 +221,10 @@
 
               <details class="optional-section field-wide" open>
                 <summary>Optional: Price and valuation details</summary>
-                <p class="optional-note">Complete the declared price, market range, unit and currency to enable an indicative price comparison. Source, date and valuation basis improve comparability but do not block this demo.</p>
+                <p class="optional-note">Complete the declared price, market range, unit and currency to enable an indicative price comparison. Total declared value is cross-checked against quantity × declared unit price when all three are supplied.</p>
                 <div class="optional-grid">
                   <label class="field">
-                    <span>Total declared value</span>
+                    <span>Total declared value <em>(optional)</em></span>
                     <input id="totalValue" type="number" min="0" step="any" placeholder="Optional total value" />
                   </label>
                   <label class="field">
@@ -263,10 +269,10 @@
 
               <details class="optional-section field-wide" open>
                 <summary>Core counterparty context — required to start demo</summary>
-                <p class="optional-note">Select the known status. If the information is not available, choose “Unknown / not provided” and continue with an indicative result.</p>
+                <p class="optional-note">These fields are required to start the demo. “Unknown / not provided” is valid for triage, but it is not sufficient for a decision-ready review.</p>
                 <div class="optional-grid">
                   <label class="field">
-                    <span>Beneficial ownership <em>(required)</em></span>
+                    <span>Beneficial ownership <em>(required to start demo)</em></span>
                     <select id="beneficialOwnership" required>
                       <option value="">Select status</option>
                       <option>Verified</option>
@@ -276,7 +282,7 @@
                     </select>
                   </label>
                   <label class="field">
-                    <span>Buyer–seller relationship <em>(required)</em></span>
+                    <span>Buyer–seller relationship <em>(required to start demo)</em></span>
                     <select id="relatedPartyRelationship" required>
                       <option value="">Select status</option>
                       <option>No known relationship</option>
@@ -286,7 +292,7 @@
                     </select>
                   </label>
                   <label class="field field-wide">
-                    <span>Payer relationship <em>(required)</em></span>
+                    <span>Payer relationship <em>(required to start demo)</em></span>
                     <select id="payerRelationship" required>
                       <option value="">Select payer relationship</option>
                       <option>Buyer</option>
@@ -352,7 +358,8 @@
                   </label>
                   <label class="field field-wide">
                     <span>Route details</span>
-                    <textarea id="routeDetails" rows="2" placeholder="Trans-shipment, expected route or business rationale"></textarea>
+                    <textarea id="routeDetails" rows="2" placeholder="Expected route, trans-shipment, vessel or business rationale"></textarea>
+                    <small>Ports are recorded separately; this note explains why the route is commercially expected.</small>
                   </label>
                   <label class="field">
                     <span>Invoice consistency</span>
@@ -378,7 +385,7 @@
               <details class="optional-section field-wide" open>
                 <summary>TBML red-flag indicators — select all that apply</summary>
                 <p class="optional-note">
-                  Select only indicators supported by the information available. These are review signals, not proof of TBML.
+                  Select only indicators supported by the information available. A selection is a reviewer hypothesis, not proof of TBML. Automatic checks and quick reviewer observations are reconciled and labelled separately in the report.
                 </p>
                 <div class="tbml-indicator-grid">
                   <label class="check-card">
@@ -445,13 +452,21 @@
                     <span>Reviewer evidence / rationale note</span>
                     <textarea id="reviewerEvidenceNote" rows="3" placeholder="Required when an indicator is selected: state the evidence, source or reviewer rationale supporting the selection."></textarea>
                   </label>
+                  <label class="field">
+                    <span>Case reference <em>(recommended for audit record)</em></span>
+                    <input id="caseReference" type="text" placeholder="e.g. TG-2026-0001" />
+                  </label>
+                  <label class="field">
+                    <span>Reviewer identity <em>(recommended for audit record)</em></span>
+                    <input id="reviewerIdentity" type="text" placeholder="Name or reviewer ID" />
+                  </label>
                 </div>
               </details>
             </div>
 
             <div class="check-section">
               <div class="check-section-title">Additional quick review toggles</div>
-              <p class="optional-note check-section-note">Use these for direct reviewer observations. Related concepts are reconciled with the structured TBML indicators above.</p>
+              <p class="optional-note check-section-note">Use these for direct reviewer observations. They may overlap with structured selections; the report will show both sources when they refer to the same concept.</p>
               <div class="check-grid">
                 <label class="check-card"><input id="relatedParty" type="checkbox" /><span><strong>Related party</strong><small>Buyer/seller may be connected</small></span></label>
                 <label class="check-card"><input id="thirdPartyPayment" type="checkbox" /><span><strong>Third-party payment</strong><small>Payer differs from buyer</small></span></label>
@@ -471,7 +486,10 @@
                 <span class="panel-kicker">STEP 02</span>
                 <h3>Risk intelligence report</h3>
               </div>
-              <button id="copyReportButton" class="text-button" type="button" disabled>Copy summary</button>
+              <button id="copyReportButton" class="action-box action-box-copy" type="button" disabled>
+                <span class="action-box-icon" aria-hidden="true">⧉</span>
+                <span class="action-box-content"><strong class="action-box-label">Copy summary</strong><small>Copy review output</small></span>
+              </button>
             </div>
 
             <div id="emptyReport" class="empty-report">
@@ -494,7 +512,7 @@
                   <strong id="decisionStatus">Not assessed</strong>
                   <p id="decisionStatusMessage">The report will identify whether the supplied data and evidence pass the decision-readiness gates.</p>
                 </div>
-                <div class="raw-score"><span>RAW INDICATIVE POINTS</span><strong id="rawScoreValue">—</strong></div>
+                <div class="raw-score"><span>RAW INDICATOR POINTS · TRIAGE ONLY</span><strong id="rawScoreValue">—</strong></div>
               </div>
               <div id="reportSummary" class="report-summary"></div>
 
@@ -517,12 +535,14 @@
               </div>
 
               <div id="reviewContext" class="review-context"></div>
-              <div class="report-subheading"><span>Detected indicators</span><span id="flagCount">0 flags</span></div>
+              <div id="indicatorMapping" class="indicator-mapping"></div>
+              <div class="report-subheading"><span>Review signals recorded</span><span id="flagCount">0 review signals</span></div>
               <div id="flagList" class="flag-list"></div>
               <div class="recommendation-box">
                 <span class="recommendation-icon">✓</span>
                 <div><strong>Suggested next step</strong><p id="recommendationText"></p></div>
               </div>
+              <div id="auditMetadata" class="audit-metadata"></div>
               <div class="report-footer-note">Demo output only. Final transaction decisions remain with the authorised reviewer.</div>
             </div>
           </section>
@@ -578,9 +598,9 @@
       </div>
       <a class="footer-link" href="https://regtechnexusai.github.io/tradeguard/" target="_blank" rel="noopener noreferrer">regtechnexusai.github.io/tradeguard/</a>
       <p>AI-assisted review support. Not a regulatory determination or legal interpretation.</p>
-      <span>© <span id="year"></span> RegTech Nexus AI</span>
+      <span>© <span id="year">2026</span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=12"></script>
+    <script type="module" src="./main.js?v=14"></script>
   </body>
 </html>

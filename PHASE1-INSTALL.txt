@@ -32,7 +32,9 @@ form blocker.
 If a core field is empty or invalid, Submit shows a red border and an inline
 error; after correction, the form can be submitted again. Optional fields never
 block the demo. The report does not display a misleading 0/100 when there is no
-scoreable signal; it shows “No signal” or an indicative score instead.
+scoreable signal; it shows “No signal” or “Withheld” instead. Raw indicator
+points remain available for triage only and never appear as a decision-ready
+score when the readiness gate has not passed.
 Use “Start new case” to clear all previous transaction inputs and selections.
 Route/port concerns and manual TBML selections remain visible as readiness
 issues when supporting context, confidence, evidence or a reviewer rationale is
@@ -40,17 +42,25 @@ missing. The public demo still produces a result, but the decision-ready score
 is withheld until those conditions are resolved; raw points are labelled as
 indicative points for QA purposes.
 The form also includes a structured, multi-select TBML red-flag indicator
-module. Selected indicators add explainable, non-duplicative review flags for
+module. Selected indicators add explainable, non-duplicative review signals for
 price/valuation, goods/HS Code, quantity/unit, documents, route/ports,
 related-party/UBO, third-party payment, multiple/phantom shipment,
 business-profile mismatch and unusual payment terms.
+The report explicitly maps each selected indicator to its recorded signal,
+separates automatic checks from reviewer observations, and labels observations
+outside the selected list. A verified tariff-description match challenges a
+selected goods/HS concern and requires the reviewer to supply a specific
+rationale or clear the selection.
+The report also records case reference, reviewer identity, UTC timestamp and
+the TradeGuard ruleset version. Missing case or reviewer references are shown
+as an incomplete audit record rather than silently implied.
 Use fictional or anonymised information only. Do not upload confidential LC,
 invoice, passport, NID, bank or SWIFT documents to this public demo.
 
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=12
+https://regtechnexusai.github.io/tradeguard/?v=14
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and
