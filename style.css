@@ -196,8 +196,8 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .report-score.score-no-signal { color: var(--muted); font-size: 44px; letter-spacing: -.04em; }
 .report-score.score-no-signal small { color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
 .status-no-signal { color: var(--blue); background: #e9f5ff; }
-.report-gauge { overflow: hidden; width: 125px; height: 125px; border: 9px solid #dcecf6; border-radius: 50%; background: conic-gradient(var(--blue) 0deg, #dcecf6 0deg); transform: rotate(-45deg); }
-.report-gauge span { display: block; width: 100%; height: 100%; border-radius: 50%; background: #f9fcff; }
+.report-gauge { display: grid; place-items: center; overflow: hidden; width: 125px; height: 125px; border: 9px solid #dcecf6; border-radius: 50%; background: conic-gradient(var(--blue) 0deg, #dcecf6 0deg); transform: rotate(-45deg); }
+.report-gauge span { display: block; width: calc(100% - 18px); height: calc(100% - 18px); border-radius: 50%; background: #f9fcff; }
 .report-summary { margin: 20px 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .decision-readiness { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 16px 0 18px; padding: 13px 14px; border: 1px solid #ccefe5; border-radius: 13px; background: #f7fffc; }
 .decision-readiness.is-blocked { border-color: #f0c6ca; background: #fff8f8; }
@@ -231,6 +231,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .flag-item { display: grid; grid-template-columns: 9px 1fr auto; gap: 10px; align-items: start; padding: 11px 12px; border: 1px solid #e4edf4; border-radius: 11px; background: #fcfeff; }
 .flag-marker { width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: #e0a140; box-shadow: 0 0 0 4px rgba(224,161,64,.13); }
 .flag-item strong { display: block; color: var(--navy); font-size: 11px; }
+.flag-source { display: block; margin-top: 2px; color: var(--blue); font-size: 8px; font-weight: 750; letter-spacing: .02em; }
 .flag-item p { margin: 3px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
 .flag-points { color: var(--red); font-size: 11px; font-weight: 850; }
 .recommendation-box { display: flex; gap: 11px; margin-top: 19px; padding: 14px; border: 1px solid #ccefe5; border-radius: 13px; background: #f0fcf8; }

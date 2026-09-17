@@ -6,6 +6,9 @@ main.js
 report.js
 rules.js
 style.css
+hs-profiles.js
+scripts/build-hs-profiles.mjs
+scripts/verify-hs-profiles.mjs
 
 Keep these existing files in the repository:
 regtech-nexus-ai-logo.png
@@ -20,9 +23,10 @@ automatically from the tariff description.
 Quantity, declared price, market range, unit, currency, market source, source
 date and valuation basis are optional. When enough price fields are supplied,
 TradeGuard calculates an indicative price comparison; otherwise it explains
-that the price component was not assessed. The expected unit profile is derived
-from the verified HS Code for configured product groups, including HS 0206
-edible offal on a weight basis. A unit mismatch still withholds price scoring.
+that the price component was not assessed. Product-family unit profiles are
+provided for every HS Code in the 2026–2027 tariff dataset; HS 01064100 has a
+specific live-bee profile covering colony, package, piece and weight bases. A
+unit mismatch still withholds price scoring.
 Missing source/date/valuation metadata is shown as a limitation rather than a
 form blocker.
 If a core field is empty or invalid, Submit shows a red border and an inline
@@ -46,7 +50,7 @@ invoice, passport, NID, bank or SWIFT documents to this public demo.
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=11
+https://regtechnexusai.github.io/tradeguard/?v=12
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and

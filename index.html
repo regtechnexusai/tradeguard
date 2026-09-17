@@ -178,16 +178,29 @@
                     <input id="modelBrand" type="text" placeholder="If applicable" />
                   </label>
                   <label class="field">
-                    <span>Unit of measure <em>(optional — used for price comparison)</em></span>
+                    <span>Unit of measure <em>(product-specific profile; used for price comparison)</em></span>
                     <select id="unitOfMeasure">
                       <option value="">Select unit</option>
                       <option>Piece</option>
+                      <option>Head</option>
+                      <option>Pair</option>
+                      <option>Dozen</option>
+                      <option>Colony</option>
+                      <option>Package</option>
+                      <option>Pack</option>
+                      <option>Bag</option>
                       <option>Kilogram</option>
+                      <option>Gram</option>
                       <option>Tonne</option>
                       <option>Metre</option>
                       <option>Yard</option>
+                      <option>Square metre</option>
+                      <option>Cubic metre</option>
                       <option>Litre</option>
+                      <option>Kilolitre</option>
                       <option>Carton</option>
+                      <option>Ream</option>
+                      <option>Carat</option>
                       <option>Set</option>
                       <option>Other</option>
                     </select>
@@ -222,8 +235,12 @@
                     </select>
                   </label>
                   <label class="field">
-                    <span>Market-price source <em>(optional)</em></span>
-                    <input id="marketSource" type="text" placeholder="Source, publication or database" />
+                    <span>Market-price source / reference <em>(optional)</em></span>
+                    <input id="marketSource" type="text" placeholder="Publication, database, URL or source reference" />
+                  </label>
+                  <label class="field">
+                    <span>Market-source confidence (%) <em>(optional)</em></span>
+                    <input id="marketSourceConfidence" type="number" min="0" max="100" step="any" placeholder="e.g. 85" />
                   </label>
                   <label class="field">
                     <span>Market-price date <em>(optional)</em></span>
@@ -326,12 +343,12 @@
                 <p class="optional-note">Do not upload or enter confidential documents in this public demo.</p>
                 <div class="optional-grid">
                   <label class="field">
-                    <span>Port of loading</span>
-                    <input id="portLoading" type="text" placeholder="e.g. Chattogram" />
+                    <span>Loading point / port</span>
+                    <input id="portLoading" type="text" placeholder="e.g. Kolkata or Petrapole" />
                   </label>
                   <label class="field">
-                    <span>Port of discharge</span>
-                    <input id="portDischarge" type="text" placeholder="e.g. Jebel Ali" />
+                    <span>Discharge point / port</span>
+                    <input id="portDischarge" type="text" placeholder="e.g. Benapole or Jebel Ali" />
                   </label>
                   <label class="field field-wide">
                     <span>Route details</span>
@@ -564,6 +581,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=11"></script>
+    <script type="module" src="./main.js?v=12"></script>
   </body>
 </html>

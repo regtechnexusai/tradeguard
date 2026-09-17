@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=11";
+import { assessDataIntegrity, bandClass, getExpectedUnitsForHsCode } from "./rules.js?v=12";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -32,6 +32,7 @@ const completenessFields = [
   ["Market lower range", "marketLow"],
   ["Market upper range", "marketHigh"],
   ["Market-price source", "marketSource"],
+  ["Market-source confidence", "marketSourceConfidence"],
   ["Market-price date", "marketSourceDate"],
   ["Valuation basis", "valuationBasis"],
   ["Origin country", "originCountry"],
@@ -68,25 +69,29 @@ export const TBML_INDICATOR_LABELS = {
 };
 
 export function calculateDataCompleteness(input) {
-  const completed = completenessFields.filter(([, key]) => {
+  const profile = getExpectedUnitsForHsCode(input.hsCode);
+  const applicableFields = completenessFields.filter(([, key]) => profile.fields?.[key] !== "not-applicable");
+  const completed = applicableFields.filter(([, key]) => {
     const value = input[key];
     return value !== undefined && value !== null && String(value).trim() !== "";
   }).length;
 
-  const percent = Math.round((completed / completenessFields.length) * 100);
+  const percent = applicableFields.length
+    ? Math.round((completed / applicableFields.length) * 100)
+    : 0;
 
   let message =
-    "More supporting information is required for a reliable assessment. Treat this as an indicative risk signal only.";
+    `Applicable fields completed: ${completed}/${applicableFields.length}. This is not a decision-readiness result; supporting evidence and authorised reviewer judgement remain necessary.`;
 
   if (percent >= 80) {
     message =
-      "The supplied information is relatively complete. Supporting evidence and authorised reviewer judgement remain necessary.";
+      `Applicable fields completed: ${completed}/${applicableFields.length}. The information is relatively complete, but completeness does not make the case decision-ready.`;
   } else if (percent >= 50) {
     message =
-      "Additional information is recommended before relying on the assessment for a material decision.";
+      `Applicable fields completed: ${completed}/${applicableFields.length}. Additional information is recommended before relying on the assessment for a material decision.`;
   }
 
-  return { completed, total: completenessFields.length, percent, message };
+  return { completed, total: applicableFields.length, percent, message, excluded: completenessFields.length - applicableFields.length };
 }
 
 export function renderReport(result, input) {
@@ -131,7 +136,7 @@ export function renderReport(result, input) {
   score.classList.toggle("score-no-signal", !hasFlags);
   scoreSuffix.textContent = result.decisionReady
     ? (hasFlags ? "/100" : "no scoreable signal")
-    : (hasIndicativeScore ? "indicative" : "no scoreable inputs");
+    : (hasIndicativeScore ? (result.scoreCapApplied ? "indicative / capped" : "indicative") : "no scoreable inputs");
   band.textContent = result.decisionReady
     ? (hasFlags ? result.band.toUpperCase() : "NO SIGNAL")
     : (hasIndicativeScore ? "INDICATIVE ONLY" : "NOT READY");
@@ -160,7 +165,7 @@ export function renderReport(result, input) {
       ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
       : "The declared price falls inside the supplied market range.";
 
-  const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; product/commodity was populated from the verified tariff description.`;
+  const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; ${escapeHtml(integrity.family || "Product-family")} tariff-linked profile loaded.`;
 
   const selectedIndicatorCount = (input.tbmlIndicators || []).length;
   const indicatorText = selectedIndicatorCount
@@ -174,7 +179,10 @@ export function renderReport(result, input) {
     : (hasIndicativeScore
       ? "An indicative signal is shown, but the decision-ready risk score remains withheld until the listed issues are resolved."
       : "No numeric score was issued because the supplied inputs did not produce a scoreable signal.");
-  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText}${indicatorText} ${readinessText}`;
+  const suppressedText = result.suppressedIndicators?.length
+    ? ` The following selected indicator${result.suppressedIndicators.length === 1 ? " is" : "s are"} not assessed: ${result.suppressedIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}.`
+    : "";
+  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText}${indicatorText}${suppressedText} ${readinessText}`;
 
   completenessValue.textContent = `${completeness.percent}%`;
   completenessBar.style.width = `${completeness.percent}%`;
@@ -183,7 +191,11 @@ export function renderReport(result, input) {
   integrityValue.textContent = integrity.status;
   integrityValue.className = integrity.priceScoringEligible ? "integrity-good" : "integrity-blocked";
   integrityMessage.textContent = integrity.message;
-  integrityList.innerHTML = [...integrity.issues, ...integrity.warnings]
+  const integrityItems = [...integrity.issues, ...integrity.warnings];
+  if (result.suppressedIndicators?.length) {
+    integrityItems.push(`Selected but not assessed: ${result.suppressedIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}.`);
+  }
+  integrityList.innerHTML = integrityItems
     .map((item) => `<li>${escapeHtml(item)}</li>`)
     .join("");
   integrityCard.classList.toggle("is-blocked", !integrity.priceScoringEligible || !result.decisionReady);
@@ -194,15 +206,17 @@ export function renderReport(result, input) {
     input.material && `Material: ${input.material}`,
     input.unitOfMeasure && `Unit: ${input.unitOfMeasure}`,
     integrity.expectedUnits?.length && `Expected unit profile: ${integrity.expectedUnits.join(" or ")}`,
+    integrity.preferredUnit && `Preferred benchmark unit: ${integrity.preferredUnit}`,
     input.currency && `Currency: ${input.currency}`,
     input.totalValue && `Total value: ${formatNumber(input.totalValue)}`,
     input.marketSource && `Market source: ${input.marketSource}`,
+    input.marketSourceConfidence && `Market-source confidence: ${input.marketSourceConfidence}%`,
     input.marketSourceDate && `Market source date: ${input.marketSourceDate}`,
     input.valuationBasis && `Valuation basis: ${input.valuationBasis}`,
     input.incoterms && `Incoterms: ${input.incoterms}`,
     input.paymentTerms && `Payment: ${input.paymentTerms}`,
-    input.portLoading && `Loading port: ${input.portLoading}`,
-    input.portDischarge && `Discharge port: ${input.portDischarge}`,
+    input.portLoading && `Loading point / port: ${input.portLoading}`,
+    input.portDischarge && `Discharge point / port: ${input.portDischarge}`,
     input.businessProfile && `Business profile / rationale: ${input.businessProfile}`,
     input.tbmlIndicators?.length && `TBML indicators: ${input.tbmlIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}`,
     input.indicatorConfidence && `Indicator confidence: ${input.indicatorConfidence}`,
@@ -222,6 +236,7 @@ export function renderReport(result, input) {
         <span class="flag-marker"></span>
         <div>
           <strong>${escapeHtml(flag.title)}</strong>
+          <small class="flag-source">${escapeHtml(flag.source || "Review signal")}</small>
           <p>${escapeHtml(flag.detail)}</p>
         </div>
         <span class="flag-points">+${flag.points}</span>
@@ -250,10 +265,13 @@ export function renderReport(result, input) {
     integrity.issues.length ? `Integrity issues: ${integrity.issues.join(" | ")}` : "Integrity issues: None identified by configured checks",
     `Price component: ${result.priceScoringEligible ? "Calculated" : integrity.priceDataProvided ? "Not comparable / withheld" : "Not assessed — optional data not provided"}`,
     `TBML indicators selected: ${(input.tbmlIndicators || []).map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ") || "None"}`,
+    result.suppressedIndicators?.length
+      ? `Selected but not assessed: ${result.suppressedIndicators.map((id) => TBML_INDICATOR_LABELS[id] || id).join(", ")}`
+      : null,
     `Indicator confidence: ${input.indicatorConfidence || "Not provided"}`,
     `Evidence status: ${input.evidenceStatus || "Not provided"}`,
     `Detected flags: ${result.flags.length}`,
-    ...result.flags.map((flag) => `- ${flag.title}: ${flag.detail}`),
+    ...result.flags.map((flag) => `- ${flag.title} [${flag.source || "Review signal"}]: ${flag.detail}`),
     `Suggested next step: ${result.recommendation}`,
     "Assessment is indicative and depends on the quality, completeness and genuineness of the information provided.",
     "Demo output only. Final decisions remain with the authorised reviewer."
@@ -276,6 +294,7 @@ export function setSampleValues() {
     marketLow: "10",
     marketHigh: "12",
     marketSource: "Illustrative demo benchmark — replace with a verified market source",
+    marketSourceConfidence: "75",
     marketSourceDate: "2026-09-14",
     valuationBasis: "Commercial invoice",
     originCountry: "Bangladesh",
@@ -348,6 +367,7 @@ export function collectInput() {
     marketLow: value("marketLow"),
     marketHigh: value("marketHigh"),
     marketSource: value("marketSource"),
+    marketSourceConfidence: value("marketSourceConfidence"),
     marketSourceDate: value("marketSourceDate"),
     valuationBasis: value("valuationBasis"),
     originCountry: value("originCountry"),
@@ -407,6 +427,19 @@ export function validateInput(input) {
   if (!input.destinationCountry) {
     errors.destinationCountry = "Select the country of destination.";
   }
+
+  const numericFields = [
+    ["quantity", "Quantity"],
+    ["invoicePrice", "Declared unit price"],
+    ["marketLow", "Market lower range"],
+    ["marketHigh", "Market upper range"],
+    ["totalValue", "Total declared value"]
+  ];
+  numericFields.forEach(([key, label]) => {
+    if (input[key] && (!Number.isFinite(Number(input[key])) || Number(input[key]) <= 0)) {
+      errors[key] = `${label} must be a positive number when supplied.`;
+    }
+  });
 
   if (!input.beneficialOwnership) {
     errors.beneficialOwnership = "Select a beneficial-ownership status, or choose Unknown / not provided.";

@@ -13,7 +13,8 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Withholds price scoring when HS Code, goods description, unit or price inputs cannot be compared reliably; missing optional benchmark metadata is shown as a limitation rather than a form blocker.
 - Does not display a misleading 0/100 when no scoreable signal is available.
 - Keeps evidence, confidence and rationale as readiness information for manually selected indicators instead of blocking the public demo.
-- Maps HS 0206 edible offal to a weight-based unit profile and limits the unit selector to the verified HS profile.
+- Configures a product-family unit profile for every HS Code in the Bangladesh Customs 2026–2027 dataset (7,420 tariff records), with an explicit live-bee override for HS 01064100.
+- Applies product-specific field policies, detects obvious goods/HS conflicts, checks quantity × unit-price reconciliation, and labels reviewer observations separately from automatic price or data-integrity signals.
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
 
@@ -22,6 +23,17 @@ This version does **not** upload or store documents, call an AI API, connect to 
 ## Run locally
 
 No database or build step is required.
+
+### Refresh and verify HS profiles
+
+If `hs-codes.json` is updated from a newer tariff reference, regenerate and verify the product profiles:
+
+```bash
+node scripts/build-hs-profiles.mjs
+node scripts/verify-hs-profiles.mjs
+```
+
+The generated profiles are conservative demo guidance. A benchmark is scoreable only when the declared unit matches the benchmark unit and the authorised reviewer confirms the applicable tariff, contract, source, date and product specification.
 
 ### Option 1: VS Code Live Server
 

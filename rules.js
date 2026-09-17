@@ -1,56 +1,61 @@
+import HS_PROFILES from "./hs-profiles.js?v=12";
+
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const formatPrice = (value) => Number(value || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
 
-const UNIT_PROFILES = [
-  {
-    test: /^0206/,
-    units: ["Kilogram", "Tonne"],
-    basis: "HS 0206 edible offal is assessed on a weight basis for this demo; confirm the applicable tariff, product condition and contract unit."
-  },
-  {
-    test: /^0205/,
-    units: ["Kilogram", "Tonne"],
-    basis: "HS 0205 meat is assessed on a weight basis for this demo; confirm the applicable tariff and contract unit."
-  },
-  {
-    test: /^5201/,
-    units: ["Kilogram", "Tonne"],
-    basis: "HS 5201 raw cotton is assessed on a weight basis for this demo; confirm the applicable tariff and contract unit."
-  },
-  {
-    test: /^(5208|5209|5210|5211|5212)/,
-    units: ["Metre", "Yard"],
-    basis: "Woven textile fabric is commonly benchmarked by length; confirm the applicable tariff and contract unit."
-  },
-  {
-    test: /^52/,
-    units: ["Kilogram", "Tonne", "Metre", "Yard"],
-    basis: "Chapter 52 contains multiple cotton products; confirm the product-specific tariff and contract unit."
-  }
+const FIELD_LABELS = {
+  material: "Material / composition",
+  qualityGrade: "Quality / grade",
+  modelBrand: "Model / brand",
+  specification: "Technical specification"
+};
+
+const GOODS_CONFLICT_RULES = [
+  { test: /^01/, conflicts: ["textile", "fabric", "garment", "machinery", "machine", "computer", "smartphone", "steel", "cement", "furniture", "footwear"], label: "live-animal" },
+  { test: /^(02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24)/, conflicts: ["machinery", "machine", "computer", "smartphone", "vehicle", "aircraft", "steel", "cement"], label: "food, plant or animal-product" },
+  { test: /^(50|51|52|53|54|55|56|57|58|59|60|61|62|63)/, conflicts: ["bees", "live animal", "machinery", "machine", "steel", "cement", "smartphone", "computer"], label: "textile" },
+  { test: /^(72|73|74|75|76|78|79|80|81|82|83)/, conflicts: ["bees", "live animal", "cotton", "textile", "fabric", "rice", "wheat"], label: "metal" },
+  { test: /^(84|85|86|87|88|89|90)/, conflicts: ["bees", "live animal", "cotton", "textile", "fabric", "rice", "wheat"], label: "machinery, equipment or transport" }
 ];
 
-const CATEGORY_RULES = [
-  { test: /^0205/, conflicts: ["cotton", "textile", "fabric", "yarn", "cloth"], label: "animal-protein goods" },
-  { test: /^0206/, conflicts: ["cotton", "textile", "fabric", "yarn", "cloth", "garment"], label: "edible-offal goods" },
-  { test: /^5201/, conflicts: ["horse", "meat", "beef", "poultry", "animal"], label: "raw cotton" }
-];
-
-export function getExpectedUnitsForHsCode(hsCode) {
-  const code = String(hsCode || "").replace(/\s/g, "");
-  const profile = UNIT_PROFILES.find((item) => item.test.test(code));
-
-  return profile
-    ? { units: profile.units, basis: profile.basis, configured: true }
-    : {
-        units: [],
-        basis: "No product-specific unit profile is configured for this HS Code. Confirm the unit from the applicable tariff, contract and supporting documents.",
-        configured: false
-      };
+function cleanHsCode(hsCode) {
+  return String(hsCode || "").replace(/\s/g, "");
 }
 
-function getCategoryRule(hsCode) {
-  const code = String(hsCode || "").replace(/\s/g, "");
-  return CATEGORY_RULES.find((item) => item.test.test(code));
+function getHsProfile(hsCode) {
+  return HS_PROFILES[cleanHsCode(hsCode)] || null;
+}
+
+function getUnitBasis(profile) {
+  if (!profile) {
+    return "No product-specific unit profile is configured for this HS Code. Confirm the unit from the applicable tariff, contract and supporting documents.";
+  }
+
+  if (profile.family === "Live bees") {
+    return "Benchmark live bees using the same commercial basis as the transaction—colony, package, piece or weight. Do not compare colony pricing with kilogram pricing.";
+  }
+
+  return `Configured product-family profile: ${profile.family}. Use the same unit for the declared price and the market benchmark, and confirm the applicable tariff, contract and product specification.`;
+}
+
+export function getExpectedUnitsForHsCode(hsCode) {
+  const profile = getHsProfile(hsCode);
+
+  return profile
+    ? {
+        units: profile.units,
+        basis: getUnitBasis(profile),
+        configured: true,
+        preferredUnit: profile.preferredUnit,
+        family: profile.family,
+        confidence: profile.confidence,
+        fields: profile.fields
+      }
+    : {
+        units: [],
+        basis: getUnitBasis(null),
+        configured: false
+      };
 }
 
 function hasConflict(text, conflicts) {
@@ -58,8 +63,18 @@ function hasConflict(text, conflicts) {
   return conflicts.some((term) => normalized.includes(term));
 }
 
+function getGoodsHsMismatch(input) {
+  const code = cleanHsCode(input.hsCode);
+  const description = String(input.productDescription || "").trim();
+  if (!description) return null;
+
+  const rule = GOODS_CONFLICT_RULES.find((item) => item.test.test(code));
+  return rule && hasConflict(description, rule.conflicts) ? rule : null;
+}
+
 export function assessDataIntegrity(input) {
   const configuredProfile = getExpectedUnitsForHsCode(input.hsCode);
+  const profile = getHsProfile(input.hsCode);
   const expected = configuredProfile.units;
   const profileConfigured = configuredProfile.configured;
   const issues = [];
@@ -73,6 +88,63 @@ export function assessDataIntegrity(input) {
   const benchmarkMetadataKeys = ["marketSource", "marketSourceDate", "valuationBasis"];
   let priceScoringEligible = false;
   let priceStatus = "Not assessed — optional price data not provided";
+
+  if (!profileConfigured) {
+    issues.push("The HS Code is not present in the loaded tariff profile catalogue.");
+  }
+
+  if (profile?.fields) {
+    Object.entries(profile.fields).forEach(([key, policy]) => {
+      if (policy === "not-applicable" && hasValue(input[key])) {
+        issues.push(`${FIELD_LABELS[key]} is not applicable to the configured ${profile.family} profile; remove it or provide a product-relevant attribute.`);
+      }
+    });
+  }
+
+  if (hasValue(input.quantity) && !isPositiveNumber(input.quantity)) {
+    issues.push("Quantity must be a positive number when supplied.");
+  }
+
+  const sourceConfidence = Number(input.marketSourceConfidence);
+  if (hasValue(input.marketSourceConfidence) && (!Number.isFinite(sourceConfidence) || sourceConfidence < 0 || sourceConfidence > 100)) {
+    issues.push("Market-source confidence must be a number between 0 and 100.");
+  }
+  if (hasValue(input.marketSource) && /^\d+(?:\.\d+)?%?$/.test(String(input.marketSource).trim())) {
+    warnings.push("Market-price source appears to contain only a numeric value. Record the actual source separately and use the dedicated confidence field for a percentage.");
+  }
+  if (hasValue(input.marketSourceConfidence) && !hasValue(input.marketSource)) {
+    warnings.push("Market-source confidence was supplied without a market source reference.");
+  }
+
+  if (hasValue(input.originCountry) && hasValue(input.destinationCountry) && input.originCountry === input.destinationCountry) {
+    warnings.push("Origin and destination countries are identical; confirm that this is an intended cross-border case.");
+  }
+  if (hasValue(input.portLoading) && hasValue(input.portDischarge) && input.portLoading.trim().toLowerCase() === input.portDischarge.trim().toLowerCase()) {
+    warnings.push("Loading and discharge locations are identical; confirm the route and transport leg.");
+  }
+  if (isPositiveNumber(input.invoicePrice) && isPositiveNumber(input.totalValue) && !isPositiveNumber(input.quantity)) {
+    warnings.push("Total declared value and unit price were supplied without a positive quantity; value reconciliation was not possible.");
+  }
+
+  const priceFieldLabels = {
+    invoicePrice: "Declared unit price",
+    marketLow: "Market lower range",
+    marketHigh: "Market upper range"
+  };
+  priceFields.forEach((key) => {
+    if (hasValue(input[key]) && !isPositiveNumber(input[key])) {
+      issues.push(`${priceFieldLabels[key]} must be a positive number when supplied.`);
+    }
+  });
+
+  if (priceInputsComplete && !validPriceRange) {
+    issues.push("Market lower range cannot exceed the market upper range.");
+  }
+
+  const goodsHsMismatch = getGoodsHsMismatch(input);
+  if (goodsHsMismatch) {
+    issues.push(`The entered goods description appears inconsistent with the tariff-linked ${goodsHsMismatch.label} profile.`);
+  }
 
   if (!priceDataProvided) {
     warnings.push("Optional price data was not provided; price comparison was not assessed.");
@@ -102,13 +174,19 @@ export function assessDataIntegrity(input) {
     }
   }
 
-  const categoryRule = getCategoryRule(input.hsCode);
-  if (categoryRule && input.productDescription && hasConflict(input.productDescription, categoryRule.conflicts)) {
-    issues.push(`The entered goods description appears inconsistent with the tariff-linked ${categoryRule.label} profile.`);
+  if (goodsHsMismatch) {
     priceScoringEligible = false;
     priceStatus = "Not comparable — goods / HS Code mismatch";
   } else if (!hasValue(input.productDescription)) {
     warnings.push("Extended goods description is not provided; HS-linked commodity text is being used as the minimum reference.");
+  }
+
+  if (isPositiveNumber(input.quantity) && isPositiveNumber(input.invoicePrice) && isPositiveNumber(input.totalValue)) {
+    const expectedTotal = Number(input.quantity) * Number(input.invoicePrice);
+    const totalDifference = Math.abs(Number(input.totalValue) - expectedTotal) / expectedTotal;
+    if (totalDifference > 0.1) {
+      warnings.push("Quantity × declared unit price does not reconcile with total declared value; confirm that all values use the same unit, currency and valuation basis.");
+    }
   }
 
   if (priceScoringEligible) {
@@ -126,11 +204,16 @@ export function assessDataIntegrity(input) {
     warnings,
     expectedUnits: expected,
     profileConfigured,
+    profile,
+    family: configuredProfile.family || "Other goods",
+    preferredUnit: configuredProfile.preferredUnit || "",
+    unitConfidence: configuredProfile.confidence || "low",
     priceScoringEligible,
     priceDataProvided,
     priceInputsComplete,
     benchmarkMetadataComplete,
     priceStatus,
+    goodsHsMismatch: Boolean(goodsHsMismatch),
     message: priceScoringEligible
       ? "The price component can be calculated for the supplied unit and range. Source, date and valuation basis improve comparability but do not block this demo."
       : priceDataProvided
@@ -152,6 +235,9 @@ export function calculateRisk(input) {
   const integrity = assessDataIntegrity(input);
   const flags = [];
   const suppressedIndicators = [];
+  const suppressIndicator = (key) => {
+    if (!suppressedIndicators.includes(key)) suppressedIndicators.push(key);
+  };
   const deviation = integrity.priceScoringEligible
     ? outsideRangePercentage(invoicePrice, marketLow, marketHigh)
     : null;
@@ -165,7 +251,8 @@ export function calculateRisk(input) {
       title: "Material price deviation",
       points: 25,
       detail: `The declared price is approximately ${Math.round(deviation)}% outside the supplied market range${suppliedRange}.`,
-      action: "Obtain independent price evidence, product specifications and commercial rationale."
+      action: "Obtain independent price evidence, product specifications and commercial rationale.",
+      source: "Automatic price comparison"
     });
   } else if (integrity.priceScoringEligible && deviation >= 50) {
     flags.push({
@@ -173,12 +260,13 @@ export function calculateRisk(input) {
       title: "Significant price deviation",
       points: 15,
       detail: `The declared price is approximately ${Math.round(deviation)}% outside the supplied market range${suppliedRange}.`,
-      action: "Validate the benchmark, grade, quality, Incoterms and pricing rationale."
+      action: "Validate the benchmark, grade, quality, Incoterms and pricing rationale.",
+      source: "Automatic price comparison"
     });
   }
 
   if (!integrity.priceScoringEligible && (input.tbmlIndicators || []).includes("price-value-anomaly")) {
-    suppressedIndicators.push("price-value-anomaly");
+    suppressIndicator("price-value-anomaly");
   }
 
   if (input.relatedParty) {
@@ -187,7 +275,8 @@ export function calculateRisk(input) {
       title: "Potential related-party transaction",
       points: 15,
       detail: "The buyer and seller may have a relationship that requires additional understanding.",
-      action: "Confirm ownership, control, beneficial ownership and arm's-length pricing."
+      action: "Confirm ownership, control, beneficial ownership and arm's-length pricing.",
+      source: "Reviewer-provided observation"
     });
   }
 
@@ -197,7 +286,8 @@ export function calculateRisk(input) {
       title: "Third-party payment arrangement",
       points: 10,
       detail: "The payer may differ from the buyer or contractual counterparty.",
-      action: "Establish the commercial purpose and documentary basis for the payment chain."
+      action: "Establish the commercial purpose and documentary basis for the payment chain.",
+      source: "Reviewer-provided observation"
     });
   }
 
@@ -207,7 +297,8 @@ export function calculateRisk(input) {
       title: "Shipping route anomaly",
       points: 10,
       detail: "The selected route may not align with the expected commercial flow.",
-      action: "Review ports, trans-shipment points, vessel details and the business rationale."
+      action: "Review ports, trans-shipment points, vessel details and the business rationale.",
+      source: "Reviewer-provided observation"
     });
   }
 
@@ -217,7 +308,8 @@ export function calculateRisk(input) {
       title: "Cross-document inconsistency",
       points: 15,
       detail: "Important values or descriptions may not align across the trade documents.",
-      action: "Reconcile the LC, invoice, packing list, Bill of Lading and supporting documents."
+      action: "Reconcile the LC, invoice, packing list, Bill of Lading and supporting documents.",
+      source: "Reviewer-provided observation"
     });
   }
 
@@ -227,17 +319,18 @@ export function calculateRisk(input) {
       title: "Potential duplicate invoice",
       points: 20,
       detail: "A similar invoice may have been used in another transaction.",
-      action: "Search the internal trade record and confirm unique shipment and document identifiers."
+      action: "Search the internal trade record and confirm unique shipment and document identifiers.",
+      source: "Reviewer-provided observation"
     });
   }
 
-  const categoryRule = getCategoryRule(input.hsCode);
-  if (categoryRule && input.productDescription && hasConflict(input.productDescription, categoryRule.conflicts)) {
+  const goodsHsMismatch = integrity.goodsHsMismatch;
+  if (goodsHsMismatch) {
     flags.push({
       id: "goods-hs-mismatch-auto",
       title: "Goods / HS Code mismatch concern",
       points: 15,
-      detail: "The entered goods description contains terms that appear inconsistent with the tariff-linked HS Code profile.",
+      detail: "The entered goods description contains terms that appear inconsistent with the tariff-linked product-family profile.",
       action: "Reconcile the HS Code, goods description, specification and supporting commercial documents.",
       source: "Automatic data-integrity check"
     });
@@ -247,7 +340,7 @@ export function calculateRisk(input) {
   const addManualIndicator = ({ key, id, title, points, detail, action, coveredBy, suppressWhen }) => {
     if (!selectedIndicators.has(key)) return;
     if (suppressWhen?.()) {
-      suppressedIndicators.push(key);
+      suppressIndicator(key);
       return;
     }
     if (coveredBy && coveredBy()) return;
