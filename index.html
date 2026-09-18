@@ -8,7 +8,7 @@
       content="TradeGuard by RegTech Nexus AI — an explainable trade-finance and TBML risk review demo."
     />
     <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./style.css?v=13" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-10WQVBN61X"></script>
     <script>
@@ -579,57 +579,24 @@
             <div class="eyebrow">Rule register</div>
             <h2>Internationally mapped pre-monitoring controls.</h2>
           </div>
-          <p>All four source sheets are visible here as a review register. Numeric thresholds remain institution-calibrated and require local legal and policy validation.</p>
         </div>
 
-        <div class="standards-notice">
-          <strong>Control boundary:</strong> FATF provides risk-based AML/CFT standards; BCBS supports bank governance and risk management; IFRS 9 supports credit-risk and expected-credit-loss processes. None creates a universal alert threshold for every institution.
-        </div>
-
-        <div class="coverage-grid" aria-label="Rule register coverage">
-          <div class="coverage-card"><strong id="registryTotal">—</strong><span>source indicators</span></div>
-          <div class="coverage-card"><strong id="registryConfigured">—</strong><span>existing source logic</span></div>
-          <div class="coverage-card"><strong id="registryMapped">—</strong><span>standards-mapped rules</span></div>
-          <div class="coverage-card"><strong>Human</strong><span>review required</span></div>
-        </div>
-
-        <div class="registry-layout">
-          <div class="panel registry-panel">
-            <div class="panel-heading">
-              <div>
-                <span class="panel-kicker">RULE LIBRARY</span>
-                <h3>Sheet-by-sheet control register</h3>
-              </div>
-              <label class="registry-filter">
-                <span class="sr-only">Filter by sheet</span>
-                <select id="registryCategory">
-                  <option value="all">All sheets</option>
-                  <option value="General Banking Indicators">General Banking</option>
-                  <option value="Credit Indicators">Credit</option>
-                  <option value="Trade Indicators">Trade</option>
-                  <option value="Remitance Indicators">Remittance</option>
-                </select>
-              </label>
-            </div>
-            <p id="registrySummary" class="registry-summary">Loading the standards-mapped rule register…</p>
-            <div id="registryList" class="registry-list" aria-live="polite"></div>
-          </div>
-
-          <aside class="panel standards-panel">
-            <span class="panel-kicker">CONTROL FRAME</span>
-            <h3>How the standards are used</h3>
-            <ul class="standards-list">
-              <li><strong>FATF:</strong> risk-based CDD, beneficial ownership, payment transparency, suspicious-activity escalation and targeted financial sanctions.</li>
-              <li><strong>BCBS:</strong> governance, three-lines oversight, customer and correspondent-bank risk, controls, monitoring and reporting.</li>
-              <li><strong>IFRS 9:</strong> separate credit-risk / ECL and SICR evidence path; do not mix accounting estimates with AML alert thresholds.</li>
-              <li><strong>Local validation:</strong> calibrate thresholds, data sources, retention, escalation and regulatory reporting to the institution and jurisdiction.</li>
-            </ul>
-            <div class="source-links">
-              <a href="https://www.fatf-gafi.org/en/publications/Fatfrecommendations/Fatf-recommendations.html" target="_blank" rel="noopener noreferrer">FATF Recommendations ↗</a>
-              <a href="https://www.bis.org/publications/201401-guidelines-sound-management-risks-related-money-laundering-and-financing-terrorism" target="_blank" rel="noopener noreferrer">BCBS / BIS AML-CFT guidance ↗</a>
-              <a href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-9-financial-instruments/" target="_blank" rel="noopener noreferrer">IFRS 9 overview ↗</a>
-            </div>
-          </aside>
+        <div class="monitoring-icon-grid" aria-label="TradeGuard monitoring capabilities">
+          <a class="monitoring-card" href="#risk-check">
+            <span class="monitoring-icon monitoring-icon-tbml" aria-hidden="true">
+              <svg viewBox="0 0 48 48" role="img"><path d="M24 4 40 10v11c0 10.5-6.7 19.3-16 23C14.7 40.3 8 31.5 8 21V10l16-6Z"/><path d="m15 24 5.5 5.5L33 17"/></svg>
+            </span>
+            <span class="monitoring-card-copy"><span class="panel-kicker">TRADE-BASED RISK</span><strong>TBML Monitoring</strong><small>Identify unusual value, goods, parties, routes and documents for focused review.</small></span>
+            <span class="monitoring-arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="monitoring-card" href="#risk-check">
+            <span class="monitoring-icon monitoring-icon-proactive" aria-hidden="true">
+              <svg viewBox="0 0 48 48" role="img"><circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="8"/><path d="M24 4v7M24 37v7M4 24h7M37 24h7M35.3 12.7l-5 5M17.7 30.3l-5 5"/></svg>
+            </span>
+            <span class="monitoring-card-copy"><span class="panel-kicker">EARLY SIGNALS</span><strong>Proactive Monitoring</strong><small>Surface emerging transaction patterns before they become difficult cases.</small></span>
+            <span class="monitoring-arrow" aria-hidden="true">→</span>
+          </a>
+          <div class="coverage-card human-review-card"><strong>Human</strong><span>review required</span></div>
         </div>
       </section>
 
@@ -685,7 +652,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./pre-monitoring.js?v=12"></script>
-    <script type="module" src="./main.js?v=12"></script>
+    <script type="module" src="./main.js?v=13"></script>
   </body>
 </html>

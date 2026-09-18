@@ -271,6 +271,20 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .coverage-card { display: grid; gap: 4px; padding: 16px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.72); }
 .coverage-card strong { color: var(--navy); font-size: 22px; letter-spacing: -.04em; }
 .coverage-card span { color: var(--muted); font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.monitoring-icon-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.monitoring-card { display: flex; align-items: center; gap: 14px; min-height: 142px; padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.78); box-shadow: 0 14px 38px rgba(30,73,111,.06); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.monitoring-card:hover { transform: translateY(-3px); border-color: #9bcde5; box-shadow: 0 20px 44px rgba(30,73,111,.11); }
+.monitoring-icon { display: grid; flex: 0 0 51px; width: 51px; height: 51px; place-items: center; border-radius: 15px; }
+.monitoring-icon svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.4; }
+.monitoring-icon-tbml { color: #1967d2; background: #e8f3ff; }
+.monitoring-icon-proactive { color: #14866b; background: #e5f8f0; }
+.monitoring-card-copy { display: grid; gap: 4px; min-width: 0; }
+.monitoring-card-copy strong { color: var(--navy); font-size: 15px; letter-spacing: -.02em; }
+.monitoring-card-copy small { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.monitoring-arrow { margin-left: auto; color: var(--blue); font-size: 20px; font-weight: 500; }
+.human-review-card { display: grid; align-content: center; min-height: 142px; }
+.human-review-card strong { font-size: 20px; }
+.human-review-card span { font-size: 10px; }
 .registry-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(270px, .65fr); gap: 18px; align-items: start; }
 .registry-panel, .standards-panel { padding: 24px; }
 .registry-filter select { height: 38px; padding: 0 10px; border: 1px solid #d6e4ef; border-radius: 9px; outline: 0; color: var(--navy); background: #fbfdff; font-size: 11px; }
@@ -322,6 +336,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   .visual-card-float { right: -2px; bottom: 25px; }
   .trust-strip { grid-template-columns: 1fr; }
   .coverage-grid { grid-template-columns: repeat(2, 1fr); }
+  .monitoring-icon-grid { grid-template-columns: 1fr; }
   .trust-strip > div { padding: 14px 17px; }
   .section-block { padding-top: 75px; }
   .section-heading { display: block; }

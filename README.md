@@ -16,7 +16,8 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Maps HS 0206 edible offal to a weight-based unit profile and limits the unit selector to the verified HS profile.
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
-- Includes a standards-mapped pre-monitoring register for all 181 indicators from the four-sheet monitoring workbook.
+- Shows separate TBML Monitoring and Proactive Monitoring entry points.
+- Keeps “Human review required” visible as the review principle.
 - Adds review-only context controls for jurisdiction risk, PEP/screening, restricted or dual-use goods, payment transparency and source of funds/wealth.
 - Keeps control-only findings outside the numeric score; they require evidence and authorised human review.
 - Separates FATF/AML-CFT controls from BCBS governance and IFRS 9 credit-risk / expected-credit-loss evidence paths.
@@ -59,6 +60,6 @@ After user validation, add:
 3. Secure document upload.
 4. Human-reviewed OCR extraction.
 5. Evidence-linked PDF case reports.
-6. Institution-specific rule calibration, version approval, testing and audit logging for the standards-mapped register.
+6. Institution-specific rule calibration, version approval, testing and audit logging.
 
 Do not upload real bank or customer documents to this demo version.

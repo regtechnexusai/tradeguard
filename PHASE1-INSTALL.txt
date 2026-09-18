@@ -1,14 +1,12 @@
 TradeGuard Phase 1 update — data-integrity and review controls
 
-This package also includes a standards-mapped pre-monitoring register:
-rule-registry.json contains all 181 indicators from the four source sheets,
-with 43 existing source-logic records and 138 records requiring local
-threshold/data calibration. The website's Pre-monitoring section exposes the
-register and its FATF, BCBS/BIS and IFRS 9 control boundary.
+The website's Pre-monitoring section shows separate TBML Monitoring and
+Proactive Monitoring entry points, with Human review required as the review
+principle.
 
-Replace these additional files:
-pre-monitoring.js
-rule-registry.json
+If the GitHub repository still contains the older pre-monitoring.js or
+rule-registry.json files, delete those two unused files after uploading this
+minimal version. They are not loaded by the updated website.
 
 Replace these files in the GitHub repository:
 index.html
@@ -56,7 +54,7 @@ invoice, passport, NID, bank or SWIFT documents to this public demo.
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=12
+https://regtechnexusai.github.io/tradeguard/?v=13
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and

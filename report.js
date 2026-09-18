@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=12";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=13";
 
 function escapeHtml(value) {
   return String(value ?? "")
