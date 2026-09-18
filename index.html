@@ -33,6 +33,7 @@
       </a>
       <nav class="nav-links" aria-label="Main navigation">
         <a href="#risk-check">Risk demo</a>
+        <a href="#pre-monitoring">Pre-monitoring</a>
         <a href="#how-it-works">How it works</a>
         <a class="nav-cta" href="#pilot">Request pilot</a>
       </nav>
@@ -105,14 +106,8 @@
                 <p class="form-intro">Start with the core case context. The remaining fields are optional and improve the quality of the indicative assessment.</p>
               </div>
               <div class="panel-actions">
-                <button id="resetButton" class="action-box action-box-reset" type="button">
-                  <span class="action-box-icon" aria-hidden="true">↻</span>
-                  <span class="action-box-content"><strong>Start new case</strong><small>Clear current inputs</small></span>
-                </button>
-                <button id="sampleButton" class="action-box action-box-sample" type="button">
-                  <span class="action-box-icon" aria-hidden="true">✦</span>
-                  <span class="action-box-content"><strong>Load sample case</strong><small>Try a guided example</small></span>
-                </button>
+                <button id="resetButton" class="text-button" type="button">Start new case</button>
+                <button id="sampleButton" class="text-button" type="button">Load sample case</button>
               </div>
             </div>
 
@@ -184,29 +179,16 @@
                     <input id="modelBrand" type="text" placeholder="If applicable" />
                   </label>
                   <label class="field">
-                    <span>Unit of measure <em>(product-specific profile; used for price comparison)</em></span>
+                    <span>Unit of measure <em>(optional — used for price comparison)</em></span>
                     <select id="unitOfMeasure">
                       <option value="">Select unit</option>
                       <option>Piece</option>
-                      <option>Head</option>
-                      <option>Pair</option>
-                      <option>Dozen</option>
-                      <option>Colony</option>
-                      <option>Package</option>
-                      <option>Pack</option>
-                      <option>Bag</option>
                       <option>Kilogram</option>
-                      <option>Gram</option>
                       <option>Tonne</option>
                       <option>Metre</option>
                       <option>Yard</option>
-                      <option>Square metre</option>
-                      <option>Cubic metre</option>
                       <option>Litre</option>
-                      <option>Kilolitre</option>
                       <option>Carton</option>
-                      <option>Ream</option>
-                      <option>Carat</option>
                       <option>Set</option>
                       <option>Other</option>
                     </select>
@@ -221,10 +203,10 @@
 
               <details class="optional-section field-wide" open>
                 <summary>Optional: Price and valuation details</summary>
-                <p class="optional-note">Complete the declared price, market range, unit and currency to enable an indicative price comparison. Total declared value is cross-checked against quantity × declared unit price when all three are supplied.</p>
+                <p class="optional-note">Complete the declared price, market range, unit and currency to enable an indicative price comparison. Source, date and valuation basis improve comparability but do not block this demo.</p>
                 <div class="optional-grid">
                   <label class="field">
-                    <span>Total declared value <em>(optional)</em></span>
+                    <span>Total declared value</span>
                     <input id="totalValue" type="number" min="0" step="any" placeholder="Optional total value" />
                   </label>
                   <label class="field">
@@ -241,12 +223,8 @@
                     </select>
                   </label>
                   <label class="field">
-                    <span>Market-price source / reference <em>(optional)</em></span>
-                    <input id="marketSource" type="text" placeholder="Publication, database, URL or source reference" />
-                  </label>
-                  <label class="field">
-                    <span>Market-source confidence (%) <em>(optional)</em></span>
-                    <input id="marketSourceConfidence" type="number" min="0" max="100" step="any" placeholder="e.g. 85" />
+                    <span>Market-price source <em>(optional)</em></span>
+                    <input id="marketSource" type="text" placeholder="Source, publication or database" />
                   </label>
                   <label class="field">
                     <span>Market-price date <em>(optional)</em></span>
@@ -269,10 +247,10 @@
 
               <details class="optional-section field-wide" open>
                 <summary>Core counterparty context — required to start demo</summary>
-                <p class="optional-note">These fields are required to start the demo. “Unknown / not provided” is valid for triage, but it is not sufficient for a decision-ready review.</p>
+                <p class="optional-note">Select the known status. If the information is not available, choose “Unknown / not provided” and continue with an indicative result.</p>
                 <div class="optional-grid">
                   <label class="field">
-                    <span>Beneficial ownership <em>(required to start demo)</em></span>
+                    <span>Beneficial ownership <em>(required)</em></span>
                     <select id="beneficialOwnership" required>
                       <option value="">Select status</option>
                       <option>Verified</option>
@@ -282,7 +260,7 @@
                     </select>
                   </label>
                   <label class="field">
-                    <span>Buyer–seller relationship <em>(required to start demo)</em></span>
+                    <span>Buyer–seller relationship <em>(required)</em></span>
                     <select id="relatedPartyRelationship" required>
                       <option value="">Select status</option>
                       <option>No known relationship</option>
@@ -292,7 +270,7 @@
                     </select>
                   </label>
                   <label class="field field-wide">
-                    <span>Payer relationship <em>(required to start demo)</em></span>
+                    <span>Payer relationship <em>(required)</em></span>
                     <select id="payerRelationship" required>
                       <option value="">Select payer relationship</option>
                       <option>Buyer</option>
@@ -349,17 +327,16 @@
                 <p class="optional-note">Do not upload or enter confidential documents in this public demo.</p>
                 <div class="optional-grid">
                   <label class="field">
-                    <span>Loading point / port</span>
-                    <input id="portLoading" type="text" placeholder="e.g. Kolkata or Petrapole" />
+                    <span>Port of loading</span>
+                    <input id="portLoading" type="text" placeholder="e.g. Chattogram" />
                   </label>
                   <label class="field">
-                    <span>Discharge point / port</span>
-                    <input id="portDischarge" type="text" placeholder="e.g. Benapole or Jebel Ali" />
+                    <span>Port of discharge</span>
+                    <input id="portDischarge" type="text" placeholder="e.g. Jebel Ali" />
                   </label>
                   <label class="field field-wide">
                     <span>Route details</span>
-                    <textarea id="routeDetails" rows="2" placeholder="Expected route, trans-shipment, vessel or business rationale"></textarea>
-                    <small>Ports are recorded separately; this note explains why the route is commercially expected.</small>
+                    <textarea id="routeDetails" rows="2" placeholder="Trans-shipment, expected route or business rationale"></textarea>
                   </label>
                   <label class="field">
                     <span>Invoice consistency</span>
@@ -385,7 +362,7 @@
               <details class="optional-section field-wide" open>
                 <summary>TBML red-flag indicators — select all that apply</summary>
                 <p class="optional-note">
-                  Select only indicators supported by the information available. A selection is a reviewer hypothesis, not proof of TBML. Automatic checks and quick reviewer observations are reconciled and labelled separately in the report.
+                  Select only indicators supported by the information available. These are review signals, not proof of TBML.
                 </p>
                 <div class="tbml-indicator-grid">
                   <label class="check-card">
@@ -452,13 +429,65 @@
                     <span>Reviewer evidence / rationale note</span>
                     <textarea id="reviewerEvidenceNote" rows="3" placeholder="Required when an indicator is selected: state the evidence, source or reviewer rationale supporting the selection."></textarea>
                   </label>
+                </div>
+              </details>
+
+              <details class="optional-section field-wide" open>
+                <summary>International AML/CFT control context</summary>
+                <p class="optional-note">
+                  Use these fields to record review context mapped to international standards. They are control findings—not automatic sanctions, STR or legal decisions—and require evidence and authorised reviewer judgement.
+                </p>
+                <div class="optional-grid">
                   <label class="field">
-                    <span>Case reference <em>(recommended for audit record)</em></span>
-                    <input id="caseReference" type="text" placeholder="e.g. TG-2026-0001" />
+                    <span>Jurisdiction risk status</span>
+                    <select id="jurisdictionRisk">
+                      <option value="">Select status</option>
+                      <option>Normal / not identified</option>
+                      <option>Unknown / not assessed</option>
+                      <option>Increased monitoring</option>
+                      <option>Call for action</option>
+                      <option>Sanctions / TF/PF concern</option>
+                    </select>
                   </label>
                   <label class="field">
-                    <span>Reviewer identity <em>(recommended for audit record)</em></span>
-                    <input id="reviewerIdentity" type="text" placeholder="Name or reviewer ID" />
+                    <span>PEP / sanctions screening status</span>
+                    <select id="pepStatus">
+                      <option value="">Select status</option>
+                      <option>No known PEP</option>
+                      <option>Possible PEP</option>
+                      <option>Confirmed PEP</option>
+                      <option>Unknown / not assessed</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Restricted / dual-use goods status</span>
+                    <select id="restrictedGoodsStatus">
+                      <option value="">Select status</option>
+                      <option>Not restricted</option>
+                      <option>Unknown / not assessed</option>
+                      <option>Possible restricted / dual-use</option>
+                      <option>Confirmed restricted / sanctions concern</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Payment transparency status</span>
+                    <select id="paymentInformationStatus">
+                      <option value="">Select status</option>
+                      <option>Complete</option>
+                      <option>Incomplete</option>
+                      <option>Third-party chain</option>
+                      <option>Not provided</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Source of funds / wealth status</span>
+                    <select id="sourceOfFundsStatus">
+                      <option value="">Select status</option>
+                      <option>Supported</option>
+                      <option>Partially supported</option>
+                      <option>Unexplained</option>
+                      <option>Not provided</option>
+                    </select>
                   </label>
                 </div>
               </details>
@@ -466,7 +495,7 @@
 
             <div class="check-section">
               <div class="check-section-title">Additional quick review toggles</div>
-              <p class="optional-note check-section-note">Use these for direct reviewer observations. They may overlap with structured selections; the report will show both sources when they refer to the same concept.</p>
+              <p class="optional-note check-section-note">Use these for direct reviewer observations. Related concepts are reconciled with the structured TBML indicators above.</p>
               <div class="check-grid">
                 <label class="check-card"><input id="relatedParty" type="checkbox" /><span><strong>Related party</strong><small>Buyer/seller may be connected</small></span></label>
                 <label class="check-card"><input id="thirdPartyPayment" type="checkbox" /><span><strong>Third-party payment</strong><small>Payer differs from buyer</small></span></label>
@@ -486,10 +515,7 @@
                 <span class="panel-kicker">STEP 02</span>
                 <h3>Risk intelligence report</h3>
               </div>
-              <button id="copyReportButton" class="action-box action-box-copy" type="button" disabled>
-                <span class="action-box-icon" aria-hidden="true">⧉</span>
-                <span class="action-box-content"><strong class="action-box-label">Copy summary</strong><small>Copy review output</small></span>
-              </button>
+              <button id="copyReportButton" class="text-button" type="button" disabled>Copy summary</button>
             </div>
 
             <div id="emptyReport" class="empty-report">
@@ -512,7 +538,7 @@
                   <strong id="decisionStatus">Not assessed</strong>
                   <p id="decisionStatusMessage">The report will identify whether the supplied data and evidence pass the decision-readiness gates.</p>
                 </div>
-                <div class="raw-score"><span>RAW INDICATOR POINTS · TRIAGE ONLY</span><strong id="rawScoreValue">—</strong></div>
+                <div class="raw-score"><span>RAW INDICATIVE POINTS</span><strong id="rawScoreValue">—</strong></div>
               </div>
               <div id="reportSummary" class="report-summary"></div>
 
@@ -535,17 +561,75 @@
               </div>
 
               <div id="reviewContext" class="review-context"></div>
-              <div id="indicatorMapping" class="indicator-mapping"></div>
-              <div class="report-subheading"><span>Review signals recorded</span><span id="flagCount">0 review signals</span></div>
+              <div class="report-subheading"><span>Detected indicators</span><span id="flagCount">0 flags</span></div>
               <div id="flagList" class="flag-list"></div>
               <div class="recommendation-box">
                 <span class="recommendation-icon">✓</span>
                 <div><strong>Suggested next step</strong><p id="recommendationText"></p></div>
               </div>
-              <div id="auditMetadata" class="audit-metadata"></div>
               <div class="report-footer-note">Demo output only. Final transaction decisions remain with the authorised reviewer.</div>
             </div>
           </section>
+        </div>
+      </section>
+
+      <section id="pre-monitoring" class="section-shell section-block pre-monitoring-section">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Rule register</div>
+            <h2>Internationally mapped pre-monitoring controls.</h2>
+          </div>
+          <p>All four source sheets are visible here as a review register. Numeric thresholds remain institution-calibrated and require local legal and policy validation.</p>
+        </div>
+
+        <div class="standards-notice">
+          <strong>Control boundary:</strong> FATF provides risk-based AML/CFT standards; BCBS supports bank governance and risk management; IFRS 9 supports credit-risk and expected-credit-loss processes. None creates a universal alert threshold for every institution.
+        </div>
+
+        <div class="coverage-grid" aria-label="Rule register coverage">
+          <div class="coverage-card"><strong id="registryTotal">—</strong><span>source indicators</span></div>
+          <div class="coverage-card"><strong id="registryConfigured">—</strong><span>existing source logic</span></div>
+          <div class="coverage-card"><strong id="registryMapped">—</strong><span>standards-mapped rules</span></div>
+          <div class="coverage-card"><strong>Human</strong><span>review required</span></div>
+        </div>
+
+        <div class="registry-layout">
+          <div class="panel registry-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">RULE LIBRARY</span>
+                <h3>Sheet-by-sheet control register</h3>
+              </div>
+              <label class="registry-filter">
+                <span class="sr-only">Filter by sheet</span>
+                <select id="registryCategory">
+                  <option value="all">All sheets</option>
+                  <option value="General Banking Indicators">General Banking</option>
+                  <option value="Credit Indicators">Credit</option>
+                  <option value="Trade Indicators">Trade</option>
+                  <option value="Remitance Indicators">Remittance</option>
+                </select>
+              </label>
+            </div>
+            <p id="registrySummary" class="registry-summary">Loading the standards-mapped rule register…</p>
+            <div id="registryList" class="registry-list" aria-live="polite"></div>
+          </div>
+
+          <aside class="panel standards-panel">
+            <span class="panel-kicker">CONTROL FRAME</span>
+            <h3>How the standards are used</h3>
+            <ul class="standards-list">
+              <li><strong>FATF:</strong> risk-based CDD, beneficial ownership, payment transparency, suspicious-activity escalation and targeted financial sanctions.</li>
+              <li><strong>BCBS:</strong> governance, three-lines oversight, customer and correspondent-bank risk, controls, monitoring and reporting.</li>
+              <li><strong>IFRS 9:</strong> separate credit-risk / ECL and SICR evidence path; do not mix accounting estimates with AML alert thresholds.</li>
+              <li><strong>Local validation:</strong> calibrate thresholds, data sources, retention, escalation and regulatory reporting to the institution and jurisdiction.</li>
+            </ul>
+            <div class="source-links">
+              <a href="https://www.fatf-gafi.org/en/publications/Fatfrecommendations/Fatf-recommendations.html" target="_blank" rel="noopener noreferrer">FATF Recommendations ↗</a>
+              <a href="https://www.bis.org/publications/201401-guidelines-sound-management-risks-related-money-laundering-and-financing-terrorism" target="_blank" rel="noopener noreferrer">BCBS / BIS AML-CFT guidance ↗</a>
+              <a href="https://www.ifrs.org/issued-standards/list-of-standards/ifrs-9-financial-instruments/" target="_blank" rel="noopener noreferrer">IFRS 9 overview ↗</a>
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -598,9 +682,10 @@
       </div>
       <a class="footer-link" href="https://regtechnexusai.github.io/tradeguard/" target="_blank" rel="noopener noreferrer">regtechnexusai.github.io/tradeguard/</a>
       <p>AI-assisted review support. Not a regulatory determination or legal interpretation.</p>
-      <span>© <span id="year">2026</span> RegTech Nexus AI</span>
+      <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=14"></script>
+    <script type="module" src="./pre-monitoring.js?v=12"></script>
+    <script type="module" src="./main.js?v=12"></script>
   </body>
 </html>

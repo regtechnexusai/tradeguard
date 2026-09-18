@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=14";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=14";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=12";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=12";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -15,25 +15,11 @@ const commodityField = document.querySelector("#commodityField");
 const commodityInput = document.querySelector("#productCommodity");
 const unitInput = document.querySelector("#unitOfMeasure");
 const unitProfileNote = document.querySelector("#unitProfileNote");
-const profileFieldIds = {
-  material: "material",
-  qualityGrade: "qualityGrade",
-  modelBrand: "modelBrand",
-  specification: "specification"
-};
 
 let latestReport = "";
 let hsCodeIndex = new Map();
 let hsCodesLoaded = false;
-const setCopyButtonLabel = (label) => {
-  const labelElement = copyReportButton?.querySelector(".action-box-label");
-  if (labelElement) labelElement.textContent = label;
-  else if (copyReportButton) copyReportButton.textContent = label;
-};
-const allUnitOptions = [
-  "Piece", "Head", "Pair", "Dozen", "Colony", "Package", "Pack", "Bag", "Carton", "Kilogram", "Gram",
-  "Tonne", "Litre", "Kilolitre", "Metre", "Yard", "Square metre", "Cubic metre", "Ream", "Carat", "Set", "Other"
-];
+const allUnitOptions = ["Piece", "Kilogram", "Tonne", "Metre", "Yard", "Litre", "Carton", "Set", "Other"];
 
 function clearFieldError(id) {
   const control = document.querySelector(`#${id}`);
@@ -86,7 +72,7 @@ function showValidationErrors(errors) {
 }
 
 function clearCommoditySensitiveFields() {
-  ["productDescription", "qualityGrade", "material", "modelBrand", "specification", "unitOfMeasure", "invoicePrice", "totalValue", "marketLow", "marketHigh", "marketSource", "marketSourceConfidence", "marketSourceDate", "currency", "valuationBasis"].forEach((id) => {
+  ["productDescription", "qualityGrade", "material", "modelBrand", "specification", "unitOfMeasure", "invoicePrice", "totalValue", "marketLow", "marketHigh", "marketSource", "marketSourceDate", "currency", "valuationBasis"].forEach((id) => {
     const element = document.querySelector(`#${id}`);
     if (element) element.value = "";
   });
@@ -106,21 +92,6 @@ function setUnitOptions(expectedUnits = []) {
     ...options.map((unit) => `<option>${unit}</option>`)
   ].join("");
   unitInput.value = options.includes(currentValue) ? currentValue : "";
-}
-
-function applyFieldPolicy(fields = {}) {
-  Object.entries(profileFieldIds).forEach(([key, id]) => {
-    const control = document.querySelector(`#${id}`);
-    const field = control?.closest(".field");
-    if (!control || !field) return;
-
-    const notApplicable = fields[key] === "not-applicable";
-    field.hidden = notApplicable;
-    if (notApplicable) {
-      control.value = "";
-      clearFieldError(id);
-    }
-  });
 }
 
 const countries = [
@@ -257,7 +228,6 @@ function verifyHsCode() {
   const unitProfile = getExpectedUnitsForHsCode(code);
   if (previousVerifiedCode && previousVerifiedCode !== code) clearCommoditySensitiveFields();
   setUnitOptions(unitProfile.units);
-  applyFieldPolicy(unitProfile.fields);
   commodityInput.value = tariffDescription;
   commodityField.hidden = false;
   hsCodeInput.dataset.verified = "true";
@@ -292,7 +262,6 @@ riskForm.addEventListener("submit", (event) => {
   formMessage.textContent = "";
   const result = calculateRisk(input);
   latestReport = renderReport(result, input);
-  setCopyButtonLabel("Copy summary");
   copyReportButton.disabled = false;
   document.querySelector("#reportPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -301,7 +270,6 @@ sampleButton.addEventListener("click", () => {
   hsCodeInput.dataset.verifiedCode = "";
   setSampleValues();
   verifyHsCode();
-  resetReport();
   clearValidationErrors();
   formMessage.textContent = "Sample case loaded. Press Run Risk Check.";
 });
@@ -314,7 +282,6 @@ function resetReport() {
   emptyReport.hidden = false;
   reportContent.hidden = true;
   copyReportButton.disabled = true;
-  setCopyButtonLabel("Copy summary");
   latestReport = "";
 }
 
@@ -326,7 +293,6 @@ resetButton?.addEventListener("click", () => {
   commodityInput.value = "";
   commodityField.hidden = true;
   setUnitOptions();
-  applyFieldPolicy();
   unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
   unitProfileNote.style.color = "";
   document.querySelectorAll("#riskForm input[type='checkbox']").forEach((checkbox) => {
@@ -346,12 +312,12 @@ copyReportButton.addEventListener("click", async () => {
 
   try {
     await navigator.clipboard.writeText(latestReport);
-    setCopyButtonLabel("Copied ✓");
+    copyReportButton.textContent = "Copied ✓";
     window.setTimeout(() => {
-      setCopyButtonLabel("Copy summary");
+      copyReportButton.textContent = "Copy summary";
     }, 1800);
   } catch {
-    setCopyButtonLabel("Select report manually");
+    copyReportButton.textContent = "Select report manually";
   }
 });
 
@@ -389,7 +355,6 @@ hsCodeInput?.addEventListener("input", () => {
   commodityInput.value = "";
   commodityField.hidden = true;
   setUnitOptions();
-  applyFieldPolicy();
   unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
   unitProfileNote.style.color = "";
   if (cleanCode(hsCodeInput.value).length === 8) verifyHsCode();

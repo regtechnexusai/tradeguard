@@ -8,33 +8,24 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Accepts fictional or anonymised sample transaction inputs.
 - Applies transparent rule-based red-flag scoring with raw and capped points.
 - Lets a visitor run an indicative risk check with only HS Code, route countries and core counterparty status; detailed fields remain optional.
-- Shows raw indicator points for triage when supported signals are available, while displaying “Withheld” for the decision-ready score when evidence or integrity gates are not met.
+- Shows an indicative score when supported signals are available, while withholding the decision-ready score when evidence or integrity gates are not met.
 - Separates data completeness from data integrity/comparability.
 - Withholds price scoring when HS Code, goods description, unit or price inputs cannot be compared reliably; missing optional benchmark metadata is shown as a limitation rather than a form blocker.
 - Does not display a misleading 0/100 when no scoreable signal is available.
 - Keeps evidence, confidence and rationale as readiness information for manually selected indicators instead of blocking the public demo.
-- Configures a product-family unit profile for every HS Code in the Bangladesh Customs 2026–2027 dataset (7,420 tariff records), with explicit overrides for live bees (01064100) and textile spinning machines (84452000).
-- Applies product-specific field policies, challenges selected goods/HS concerns that conflict with a verified tariff description, checks quantity × unit-price reconciliation, and labels reviewer observations separately from automatic price or data-integrity signals.
-- Shows an auditable selected-versus-recorded signal map, price arithmetic, case reference, reviewer identity, UTC timestamp and ruleset version in each generated report.
+- Maps HS 0206 edible offal to a weight-based unit profile and limits the unit selector to the verified HS profile.
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
+- Includes a standards-mapped pre-monitoring register for all 181 indicators from the four-sheet monitoring workbook.
+- Adds review-only context controls for jurisdiction risk, PEP/screening, restricted or dual-use goods, payment transparency and source of funds/wealth.
+- Keeps control-only findings outside the numeric score; they require evidence and authorised human review.
+- Separates FATF/AML-CFT controls from BCBS governance and IFRS 9 credit-risk / expected-credit-loss evidence paths.
 
 This version does **not** upload or store documents, call an AI API, connect to a bank, or make a regulatory determination.
 
 ## Run locally
 
 No database or build step is required.
-
-### Refresh and verify HS profiles
-
-If `hs-codes.json` is updated from a newer tariff reference, regenerate and verify the product profiles:
-
-```bash
-node scripts/build-hs-profiles.mjs
-node scripts/verify-hs-profiles.mjs
-```
-
-The generated profiles are conservative demo guidance. A benchmark is scoreable only when the declared unit matches the benchmark unit and the authorised reviewer confirms the applicable tariff, contract, source, date and product specification.
 
 ### Option 1: VS Code Live Server
 
@@ -68,5 +59,6 @@ After user validation, add:
 3. Secure document upload.
 4. Human-reviewed OCR extraction.
 5. Evidence-linked PDF case reports.
+6. Institution-specific rule calibration, version approval, testing and audit logging for the standards-mapped register.
 
 Do not upload real bank or customer documents to this demo version.
