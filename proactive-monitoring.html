@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TradeGuard Proactive Transaction Monitoring — an explainable early-warning review workspace." />
     <title>Proactive Transaction Monitoring | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=16" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css?v=19" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -108,8 +111,21 @@
                 </select>
               </label>
               <label class="field">
-                <span>Sector / business type</span>
-                <input id="sectorBusinessType" type="text" placeholder="e.g. general trading, textiles" />
+                <span>Profession</span>
+                <select id="profession">
+                  <option value="">Select profession</option>
+                  <option>Student</option>
+                  <option>Service holder</option>
+                  <option>Businessperson</option>
+                  <option>SME owner</option>
+                  <option>Housewife</option>
+                  <option>Foreign remitter</option>
+                  <option>Freelancer / self-employed</option>
+                  <option>Professional practitioner</option>
+                  <option>Farmer / agricultural worker</option>
+                  <option>Retired</option>
+                  <option>Other / not provided</option>
+                </select>
               </label>
               <label class="field">
                 <span>Baseline window</span>
@@ -149,6 +165,14 @@
                 <textarea id="transactionDetail" rows="3" placeholder="Add observed timing, amounts, payment references or evidence locations—without confidential documents."></textarea>
               </label>
               <label class="field field-wide">
+                <span>Inbound → outbound flow evidence <em>(optional)</em></span>
+                <textarea id="flowEvidence" rows="3" placeholder="e.g. Inbound BDT 500,000 on 12 Sep 10:20 → outbound BDT 490,000 on 12 Sep 14:05 to beneficiary reference."></textarea>
+              </label>
+              <label class="field field-wide">
+                <span>Changed channel / product and rationale <em>(optional)</em></span>
+                <textarea id="channelDetail" rows="2" placeholder="State the previous channel, new channel or product, date of change and customer rationale."></textarea>
+              </label>
+              <label class="field field-wide">
                 <span>Counterparty detail <em>(optional)</em></span>
                 <input id="counterpartyDetail" type="text" placeholder="Anonymised counterparty reference, jurisdiction and first-seen date" />
               </label>
@@ -173,11 +197,11 @@
             <button class="button button-primary button-full" type="submit">Run Proactive Review <span>→</span></button>
           </form>
 
-          <section id="proactiveReport" class="panel report-panel is-empty" aria-live="polite">
+          <section id="proactiveReport" class="panel report-panel case-file-report is-empty" aria-live="polite">
             <div class="panel-heading">
               <div>
-                <span class="panel-kicker">STEP 02</span>
-                <h3>Early-warning review</h3>
+                <span class="panel-kicker">Case file</span>
+                <h3>Proactive monitoring report</h3>
               </div>
               <button id="proactiveCopyButton" class="text-button" type="button" disabled>Copy summary</button>
             </div>
@@ -189,22 +213,32 @@
             </div>
 
             <div id="proactiveContent" class="report-content" hidden>
+              <div class="masked-account-banner">
+                <div>
+                  <span class="mini-label">Customer reference</span>
+                  <strong id="proactiveAccountValue">Masked account</strong>
+                  <small id="proactiveAccountNote">Masked by default</small>
+                </div>
+                <button id="proactiveRevealAccount" class="case-file-reveal" type="button" aria-pressed="false">Reveal</button>
+              </div>
               <div class="report-overview">
                 <div>
-                  <span class="mini-label">EARLY-WARNING SIGNAL</span>
+                  <span class="mini-label">Signal score</span>
                   <div class="report-score"><span id="proactiveScore">—</span><small>/100</small></div>
                   <span id="proactiveBand" class="status-pill status-not-ready">NOT READY</span>
+                  <div id="proactiveRatioCallout" class="ratio-callout" hidden></div>
+                  <div id="proactiveEvidenceGap" class="evidence-gap-summary" hidden></div>
                 </div>
                 <div class="report-gauge"><span id="proactiveGauge"></span></div>
               </div>
               <div id="proactiveStatus" class="decision-readiness is-neutral">
                 <div><strong id="proactiveStatusTitle">Human review required</strong><p id="proactiveStatusText">Review the signal with supporting transaction evidence.</p></div>
-                <div class="raw-score"><span>INDICATIVE POINTS</span><strong id="proactiveRawScore">—</strong></div>
+                <div class="raw-score"><span>Configured points</span><strong id="proactiveRawScore">—</strong></div>
               </div>
               <div id="proactiveCaseMeta" class="report-meta-grid">
-                <div class="report-meta-item"><span>CASE ID</span><strong id="proactiveCaseId">—</strong></div>
-                <div class="report-meta-item"><span>GENERATED UTC</span><strong id="proactiveGeneratedAt">—</strong></div>
-                <div class="report-meta-item"><span>REVIEWER ASSIGNED</span><strong>Authorised reviewer</strong></div>
+                <div class="report-meta-item"><span>Case ID</span><strong id="proactiveCaseId">—</strong></div>
+                <div class="report-meta-item"><span>Generated UTC</span><strong id="proactiveGeneratedAt">—</strong></div>
+                <div class="report-meta-item"><span>Reviewer assigned</span><strong>Authorised reviewer</strong></div>
               </div>
               <div id="proactiveSummary" class="report-summary"></div>
               <div class="report-detail-card">
@@ -212,7 +246,7 @@
                 <div id="proactiveReviewContext" class="report-detail-grid"></div>
               </div>
               <div class="hypothesis-box">
-                <span class="mini-label">TYPOLOGY HYPOTHESIS</span>
+                <span class="mini-label">Typology hypothesis</span>
                 <p id="proactiveTypologyHypothesis"></p>
               </div>
               <div class="score-basis-note"><strong>Score basis:</strong> <span id="proactiveScoreBasis"></span></div>
@@ -228,6 +262,8 @@
                   <option>Close — false positive with rationale</option>
                 </select>
                 <textarea id="proactiveDispositionRationale" rows="3" placeholder="Record the reviewer rationale and evidence reference."></textarea>
+                <p id="proactiveDispositionStatus" class="disposition-status">RATIONALE REQUIRED</p>
+                <button id="proactiveConfirmDisposition" class="button button-primary button-full" type="button" disabled>Confirm disposition</button>
               </div>
               <div class="report-footer-note">Assessment output only. It is not a finding of money laundering or other wrongdoing. Final monitoring and escalation decisions remain with the authorised reviewer.</div>
             </div>
@@ -254,6 +290,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./proactive-monitoring.js?v=16"></script>
+    <script type="module" src="./proactive-monitoring.js?v=19"></script>
   </body>
 </html>

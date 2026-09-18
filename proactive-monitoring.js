@@ -2,6 +2,15 @@ const form = document.querySelector("#proactiveForm");
 const sampleButton = document.querySelector("#proactiveSampleButton");
 const resetButton = document.querySelector("#proactiveResetButton");
 const copyButton = document.querySelector("#proactiveCopyButton");
+const revealAccountButton = document.querySelector("#proactiveRevealAccount");
+const accountValue = document.querySelector("#proactiveAccountValue");
+const accountNote = document.querySelector("#proactiveAccountNote");
+const evidenceGapSummary = document.querySelector("#proactiveEvidenceGap");
+const ratioCallout = document.querySelector("#proactiveRatioCallout");
+const dispositionSelect = document.querySelector("#proactiveDisposition");
+const dispositionRationale = document.querySelector("#proactiveDispositionRationale");
+const dispositionStatus = document.querySelector("#proactiveDispositionStatus");
+const confirmDispositionButton = document.querySelector("#proactiveConfirmDisposition");
 const message = document.querySelector("#proactiveMessage");
 const reportPanel = document.querySelector("#proactiveReport");
 const emptyReport = document.querySelector("#proactiveEmpty");
@@ -11,6 +20,8 @@ let latestResult = null;
 let latestInput = null;
 let currentCaseId = "";
 let currentGeneratedAt = "";
+let accountRevealed = false;
+let dispositionConfirmed = false;
 
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -24,6 +35,55 @@ const checked = (id) => Boolean(document.querySelector(`#${id}`)?.checked);
 
 const formatNumber = (number) => Number(number || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
 const formatAmount = (number, currency) => Number(number || 0) > 0 ? `${currency} ${formatNumber(number)}` : "not provided";
+const ratio = (observed, expected) => Number(expected) > 0 ? `${(Number(observed) / Number(expected)).toFixed(1)}×` : "not available";
+
+function maskAccountReference(reference) {
+  const text = String(reference || "").trim();
+  if (!text) return "Not provided";
+  const digits = text.replace(/\D/g, "");
+  if (digits.length >= 4) return `•••• •••• ${digits.slice(-2)}`;
+  if (/^\d+$/.test(text)) return `${"•".repeat(Math.max(1, text.length - 2))}${text.slice(-2)}`;
+  return text;
+}
+
+function unverifiedPoints(result) {
+  return result.flags.filter((flag) => flag.evidenceGap).reduce((total, flag) => total + flag.points, 0);
+}
+
+function updateAccountDisplay(reference = "") {
+  if (!accountValue) return;
+  accountValue.textContent = accountRevealed ? (reference || "Not provided") : maskAccountReference(reference);
+  if (accountNote) accountNote.textContent = accountRevealed ? "Account reference revealed for this view" : "Masked by default";
+  if (revealAccountButton) {
+    revealAccountButton.textContent = accountRevealed ? "Mask" : "Reveal";
+    revealAccountButton.setAttribute("aria-pressed", String(accountRevealed));
+  }
+}
+
+function updateDispositionGate() {
+  if (!dispositionStatus || !confirmDispositionButton) return;
+  const selected = dispositionSelect?.value.trim() || "";
+  const rationale = dispositionRationale?.value.trim() || "";
+  const ready = Boolean(selected && rationale.length >= 10);
+  dispositionStatus.textContent = ready ? "READY TO CONFIRM" : "RATIONALE REQUIRED";
+  dispositionStatus.className = `disposition-status ${ready ? "is-ready" : "is-required"}`;
+  confirmDispositionButton.disabled = !ready || dispositionConfirmed;
+  if (dispositionConfirmed) {
+    dispositionStatus.textContent = "DISPOSITION RECORDED";
+    dispositionStatus.className = "disposition-status is-confirmed";
+    confirmDispositionButton.textContent = "Disposition recorded";
+  } else {
+    confirmDispositionButton.textContent = "Confirm disposition";
+  }
+  if (latestResult && latestInput) latestSummary = buildSummary(latestResult, latestInput);
+}
+
+function resetDisposition() {
+  dispositionConfirmed = false;
+  if (dispositionSelect) dispositionSelect.value = "Pending human review";
+  if (dispositionRationale) dispositionRationale.value = "";
+  updateDispositionGate();
+}
 
 function createCaseId() {
   const stamp = new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
@@ -40,27 +100,31 @@ function generatedAtUtc() {
 function flagDetail(flag, input) {
   const details = {
     "Transaction velocity shift": `Observed ${formatNumber(input.observedTransactions)} transactions versus ${formatNumber(input.expectedTransactions)} expected for the selected baseline.`,
-    "Value-pattern shift": `Observed value is ${formatAmount(input.observedValue, input.monitoringCurrency)} versus ${formatAmount(input.expectedValue, input.monitoringCurrency)} expected.`,
+    "Value-pattern shift": `Observed value is ${formatAmount(input.observedValue, input.monitoringCurrency)} versus ${formatAmount(input.expectedValue, input.monitoringCurrency)} expected (${ratio(input.observedValue, input.expectedValue)} the selected baseline).`,
     "New counterparty pattern": input.counterpartyDetail || "Counterparty identity, jurisdiction and first-seen date require confirmation.",
-    "Rapid in-and-out flow": input.transactionDetail || "Timing, amounts and destination of the flow were not provided; verify the transaction sequence.",
+    "Rapid in-and-out flow": input.flowEvidence || "Timing, amounts and destination of the flow were not provided; verify the transaction sequence.",
     "Route or corridor change": input.corridorDetail || "Origin, destination and the change from the normal corridor require confirmation.",
-    "Channel or product change": input.transactionDetail || "The changed channel or product and its rationale require supporting evidence."
+    "Channel or product change": input.channelDetail || "The changed channel or product and its rationale require supporting evidence."
   };
   return `${flag.detail} ${details[flag.title] || "Supporting transaction evidence is required."}`;
 }
 
 function typologyHypothesis(result, input) {
   const titles = result.flags.map((flag) => flag.title);
+  const unsupported = unverifiedPoints(result);
   if (!result.flags.length) {
     return "No typology hypothesis is generated because no configured pattern was triggered. This is not a finding of low risk.";
   }
+  const evidenceCaveat = unsupported
+    ? ` ${formatNumber(unsupported)} of ${formatNumber(result.score)} points rest on unverified contributions; confirm the missing evidence before escalation.`
+    : "";
   if (titles.includes("Rapid in-and-out flow") && titles.includes("New counterparty pattern")) {
-    return "The combination could be consistent with possible short-cycle layering or pass-through activity. It does not confirm TBML, money laundering or other wrongdoing.";
+    return `The combination could be consistent with possible short-cycle layering or pass-through activity.${evidenceCaveat} It does not confirm TBML, money laundering or other wrongdoing.`;
   }
   if (titles.includes("Route or corridor change") && titles.includes("Value-pattern shift")) {
-    return "The combination could indicate a change in the economic or geographic rationale of activity and merits focused source-of-funds and commercial review. It is a hypothesis, not a conclusion.";
+    return `The combination could indicate a change in the economic or geographic rationale of activity and merits focused source-of-funds and commercial review.${evidenceCaveat} It is a hypothesis, not a conclusion.`;
   }
-  return `The combination of ${titles.join(", ")} may indicate activity outside the observed customer baseline. Review the underlying evidence before drawing any conclusion.`;
+  return `The combination of ${titles.join(", ")} may indicate activity outside the observed customer baseline.${evidenceCaveat} Review the underlying evidence before drawing any conclusion.`;
 }
 
 function nextSteps(result) {
@@ -88,12 +152,13 @@ function buildSummary(result, input) {
     `Case ID: ${currentCaseId}`,
     `Generated: ${currentGeneratedAt}`,
     `Reviewer assigned: Authorised reviewer`,
-    `Customer / account: ${input.customerReference}`,
-    `Profile: ${input.customerSegment}${input.sectorBusinessType ? ` | Sector / business type: ${input.sectorBusinessType}` : ""}`,
+    `Customer / account: ${maskAccountReference(input.customerReference)}`,
+    `Profile: ${input.customerSegment}${input.profession ? ` | Profession: ${input.profession}` : ""}`,
     `Monitoring window: ${input.monitoringWindow}`,
     `Baseline window: ${input.baselineWindow}`,
     `Signal: ${result.score}/100 (${result.flags.length ? `${result.band} priority` : "No signal"})`,
     "Score basis: Sum of configured weighted pattern contributions, capped at 100; thresholds require institutional calibration.",
+    `Evidence gaps: ${unverifiedPoints(result) ? `${unverifiedPoints(result)} of ${result.score} points are unverified` : "None identified in the selected patterns"}`,
     "Status: Human review required",
     "Detected patterns:",
     result.flags.length ? result.flags.map((flag) => `- ${flag.title} (+${flag.points}): ${flagDetail(flag, input)}`).join("\n") : "- No configured pattern was triggered",
@@ -121,10 +186,12 @@ function collectInput() {
     observedTransactions: Number(value("observedTransactions")),
     expectedValue: Number(value("expectedValue")),
     observedValue: Number(value("observedValue")),
-    sectorBusinessType: value("sectorBusinessType"),
+    profession: value("profession"),
     baselineWindow: value("baselineWindow"),
     monitoringCurrency: value("monitoringCurrency") || "USD",
     transactionDetail: value("transactionDetail"),
+    flowEvidence: value("flowEvidence"),
+    channelDetail: value("channelDetail"),
     counterpartyDetail: value("counterpartyDetail"),
     corridorDetail: value("corridorDetail"),
     newCounterparties: checked("newCounterparties"),
@@ -140,17 +207,17 @@ function calculateSignal(input) {
   const hasExpectedValue = input.expectedValue > 0;
 
   if (hasExpectedTransactions && input.observedTransactions >= input.expectedTransactions * 2) {
-    flags.push({ title: "Transaction velocity shift", detail: "Observed transaction frequency is at least twice the expected monthly baseline.", points: 20, action: "Compare the activity with the customer profile, stated purpose and supporting records." });
+    flags.push({ title: "Transaction velocity shift", detail: "Observed transaction frequency is at least twice the expected selected baseline.", points: 20, evidenceGap: false, action: "Compare the activity with the customer profile, stated purpose and supporting records." });
   }
 
   if (hasExpectedValue && input.observedValue >= input.expectedValue * 2) {
-    flags.push({ title: "Value-pattern shift", detail: "Observed transaction value is at least twice the expected monthly baseline.", points: 20, action: "Validate the economic rationale, source of funds and supporting transaction evidence." });
+    flags.push({ title: "Value-pattern shift", detail: "Observed transaction value is at least twice the expected selected baseline.", points: 20, evidenceGap: false, action: "Validate the economic rationale, source of funds and supporting transaction evidence." });
   }
 
-  if (input.newCounterparties) flags.push({ title: "New counterparty pattern", detail: "The current activity includes previously unseen counterparties.", points: 15, action: "Identify the parties, beneficial owners, purpose and expected relationship." });
-  if (input.rapidInOut) flags.push({ title: "Rapid in-and-out flow", detail: "Funds may be moving shortly after receipt or crediting.", points: 20, action: "Review the funds-flow sequence, purpose and supporting payment evidence." });
-  if (input.routeChange) flags.push({ title: "Route or corridor change", detail: "The observed corridor differs from the normal customer pattern.", points: 10, action: "Confirm the commercial rationale, counterparties and jurisdictional context." });
-  if (input.channelChange) flags.push({ title: "Channel or product change", detail: "A new channel or product is being used compared with the expected pattern.", points: 10, action: "Confirm customer intent, channel controls and the reason for the change." });
+  if (input.newCounterparties) flags.push({ title: "New counterparty pattern", detail: "The current activity includes previously unseen counterparties.", points: 15, evidenceGap: !input.counterpartyDetail, action: "Identify the parties, beneficial owners, purpose and expected relationship." });
+  if (input.rapidInOut) flags.push({ title: "Rapid in-and-out flow", detail: "Funds may be moving shortly after receipt or crediting.", points: 20, evidenceGap: !input.flowEvidence, action: "Review the funds-flow sequence, purpose and supporting payment evidence." });
+  if (input.routeChange) flags.push({ title: "Route or corridor change", detail: "The observed corridor differs from the normal customer pattern.", points: 10, evidenceGap: !input.corridorDetail, action: "Confirm the commercial rationale, counterparties and jurisdictional context." });
+  if (input.channelChange) flags.push({ title: "Channel or product change", detail: "A new channel or product is being used compared with the expected pattern.", points: 10, evidenceGap: !input.channelDetail, action: "Confirm customer intent, channel controls and the reason for the change." });
 
   const score = Math.min(flags.reduce((total, flag) => total + flag.points, 0), 100);
   const band = score >= 75 ? "Critical" : score >= 50 ? "High" : score >= 25 ? "Medium" : "Low";
@@ -160,6 +227,9 @@ function calculateSignal(input) {
 function render(result, input) {
   if (!currentCaseId) currentCaseId = createCaseId();
   if (!currentGeneratedAt) currentGeneratedAt = generatedAtUtc();
+  resetDisposition();
+  accountRevealed = false;
+  updateAccountDisplay(input.customerReference);
   reportPanel.classList.remove("is-empty");
   emptyReport.hidden = true;
   reportContent.hidden = false;
@@ -177,27 +247,42 @@ function render(result, input) {
   const summaryText = result.flags.length
     ? "The observed activity contains patterns requiring focused review."
     : "No selected pattern exceeded the configured conditions.";
-  document.querySelector("#proactiveSummary").innerHTML = `<strong>${escapeHtml(input.customerReference)}</strong> — ${escapeHtml(input.customerSegment)} profile, ${escapeHtml(input.monitoringWindow)}. ${summaryText}`;
+  document.querySelector("#proactiveSummary").innerHTML = `<strong>${escapeHtml(maskAccountReference(input.customerReference))}</strong> — ${escapeHtml(input.customerSegment)} profile, ${escapeHtml(input.monitoringWindow)}. ${summaryText}`;
+
+  const unsupported = unverifiedPoints(result);
+  if (evidenceGapSummary) {
+    evidenceGapSummary.hidden = !unsupported;
+    evidenceGapSummary.textContent = unsupported
+      ? `${formatNumber(unsupported)} of ${formatNumber(result.score)} points are unverified`
+      : "Evidence supported for selected patterns";
+  }
+  const valueFlag = result.flags.find((flag) => flag.title === "Value-pattern shift");
+  if (ratioCallout) {
+    ratioCallout.hidden = !valueFlag || !(input.expectedValue > 0);
+    ratioCallout.textContent = valueFlag ? `${ratio(input.observedValue, input.expectedValue)} value baseline ratio` : "";
+  }
 
   document.querySelector("#proactiveCaseId").textContent = currentCaseId;
   document.querySelector("#proactiveGeneratedAt").textContent = currentGeneratedAt;
   document.querySelector("#proactiveReviewContext").innerHTML = [
-    ["Customer / account", input.customerReference],
+    ["Customer / account", maskAccountReference(input.customerReference)],
     ["Profile", input.customerSegment],
-    ["Sector / business type", input.sectorBusinessType || "Not provided"],
+    ["Profession", input.profession || "Not provided"],
     ["Monitoring window", input.monitoringWindow],
     ["Baseline window", input.baselineWindow || "Not provided"],
     ["Expected / observed transactions", `${formatNumber(input.expectedTransactions)} / ${formatNumber(input.observedTransactions)}`],
     ["Expected / observed value", `${formatAmount(input.expectedValue, input.monitoringCurrency)} / ${formatAmount(input.observedValue, input.monitoringCurrency)}`],
     ["Counterparty detail", input.counterpartyDetail || "Not provided"],
     ["Route / corridor detail", input.corridorDetail || "Not provided"],
-    ["Transaction / evidence detail", input.transactionDetail || "Not provided"]
+    ["Transaction / evidence detail", input.transactionDetail || "Not provided"],
+    ["Inbound → outbound flow evidence", input.flowEvidence || "Not provided"],
+    ["Changed channel / product", input.channelDetail || "Not provided"]
   ].map(([label, text]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(text)}</strong></div>`).join("");
   document.querySelector("#proactiveTypologyHypothesis").textContent = typologyHypothesis(result, input);
-  document.querySelector("#proactiveScoreBasis").textContent = "Sum of configured weighted pattern contributions, capped at 100. Thresholds and weights require institutional calibration before operational use.";
+  document.querySelector("#proactiveScoreBasis").textContent = `Sum of configured weighted pattern contributions, capped at 100. ${unsupported ? `${formatNumber(unsupported)} of ${formatNumber(result.score)} points are currently unverified. ` : ""}Thresholds and weights require institutional calibration before operational use.`;
 
   document.querySelector("#proactiveFlags").innerHTML = result.flags.length
-    ? result.flags.map((flag) => `<article class="flag-item"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong><p>${escapeHtml(flagDetail(flag, input))}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
+    ? result.flags.map((flag) => `<article class="flag-item${flag.evidenceGap ? " evidence-gap" : ""}"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong>${flag.evidenceGap ? "<span class=\"evidence-warning\">SCORED WITHOUT SUPPORTING DATA</span>" : ""}<p>${escapeHtml(flagDetail(flag, input))}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
     : `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured pattern was triggered</strong><p>Add reliable transaction history and supporting context for a more specific review signal.</p></div><span class="flag-points" style="color:#14866b">—</span></div>`;
 
   document.querySelector("#proactiveNextSteps").innerHTML = nextSteps(result).map((step) => `<li>${escapeHtml(step)}</li>`).join("");
@@ -218,6 +303,10 @@ resetButton?.addEventListener("click", () => {
   latestInput = null;
   currentCaseId = "";
   currentGeneratedAt = "";
+  accountRevealed = false;
+  updateAccountDisplay("");
+  if (evidenceGapSummary) evidenceGapSummary.hidden = true;
+  resetDisposition();
   if (copyButton) {
     copyButton.disabled = true;
     copyButton.textContent = "Copy summary";
@@ -226,23 +315,25 @@ resetButton?.addEventListener("click", () => {
 
 sampleButton?.addEventListener("click", () => {
   setValues({
-    customerReference: "Anonymised customer 001",
-    monitoringWindow: "Last 30 days",
-    customerSegment: "SME",
-    sectorBusinessType: "General trading / textiles",
+    customerReference: "1234567891",
+    monitoringWindow: "Last 90 days",
+    customerSegment: "Individual",
+    profession: "Housewife",
     baselineWindow: "Trailing 90-day average",
-    monitoringCurrency: "USD",
+    monitoringCurrency: "BDT",
     expectedTransactions: "20",
-    observedTransactions: "48",
-    expectedValue: "100000",
-    observedValue: "280000",
-    transactionDetail: "Observed 48 transactions / USD 280,000; review timestamps and payment references for short-cycle flows.",
-    counterpartyDetail: "Three newly observed counterparties; verify names, jurisdictions and first-seen dates during review.",
-    corridorDetail: "Bangladesh → United Arab Emirates; differs from the usual customer corridor."
+    observedTransactions: "20",
+    expectedValue: "200000",
+    observedValue: "7500000",
+    transactionDetail: "Additional transaction detail was not provided.",
+    flowEvidence: "",
+    channelDetail: "",
+    counterpartyDetail: "",
+    corridorDetail: ""
   });
   ["newCounterparties", "rapidInOut", "routeChange", "channelChange"].forEach((id) => {
     const element = document.querySelector(`#${id}`);
-    if (element) element.checked = id !== "channelChange";
+    if (element) element.checked = ["rapidInOut", "channelChange"].includes(id);
   });
   message.textContent = "Sample case context loaded. Press Run Proactive Review.";
 });
@@ -271,11 +362,22 @@ copyButton?.addEventListener("click", async () => {
   }
 });
 
-document.querySelector("#proactiveDisposition")?.addEventListener("change", () => {
-  if (latestResult && latestInput) latestSummary = buildSummary(latestResult, latestInput);
+revealAccountButton?.addEventListener("click", () => {
+  if (!latestInput) return;
+  accountRevealed = !accountRevealed;
+  updateAccountDisplay(latestInput.customerReference);
 });
-document.querySelector("#proactiveDispositionRationale")?.addEventListener("input", () => {
-  if (latestResult && latestInput) latestSummary = buildSummary(latestResult, latestInput);
+
+const dispositionChanged = () => {
+  dispositionConfirmed = false;
+  updateDispositionGate();
+};
+dispositionSelect?.addEventListener("change", dispositionChanged);
+dispositionRationale?.addEventListener("input", dispositionChanged);
+confirmDispositionButton?.addEventListener("click", () => {
+  if (confirmDispositionButton.disabled) return;
+  dispositionConfirmed = true;
+  updateDispositionGate();
 });
 
 document.querySelector("#year").textContent = new Date().getFullYear();

@@ -56,6 +56,11 @@ Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
 https://regtechnexusai.github.io/tradeguard/?v=16
 
+The proactive workspace report uses a case-file layout. Profession is selected
+from a controlled list, customer references are masked by default, unsupported
+pattern contributions are visibly flagged, and disposition confirmation
+requires written rationale.
+
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and
 organisation type. The direct email link also opens a ready-to-edit draft.
