@@ -308,13 +308,14 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .monitoring-card:active { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(255,255,255,.98), 0 2px 0 #b5d2e0, 0 9px 18px rgba(30,73,111,.12); }
 .monitoring-icon { display: grid; flex: 0 0 51px; width: 51px; height: 51px; place-items: center; border-radius: 15px; }
 .monitoring-icon svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.4; }
-.monitoring-icon-tbml { color: #1967d2; background: #e8f3ff; }
-.monitoring-icon-proactive { color: #14866b; background: #e5f8f0; }
+.monitoring-icon-tbml { color: #39566a; border: 1px solid #c9d6dc; background: #e7edf0; }
+.monitoring-icon-proactive { color: #3d5a4c; border: 1px solid #cad9cf; background: #e8eee9; }
+.monitoring-icon-review { color: #8b6a2b; border: 1px solid #ded2ae; background: #f1ebdd; }
 .monitoring-card-copy { display: grid; gap: 4px; min-width: 0; }
 .monitoring-card-copy strong { color: var(--navy); font-size: 15px; letter-spacing: -.02em; }
 .monitoring-card-copy small { color: var(--muted); font-size: 10px; line-height: 1.45; }
 .monitoring-arrow { margin-left: auto; color: var(--blue); font-size: 20px; font-weight: 500; }
-.human-review-card { display: grid; align-content: center; min-height: 142px; }
+.human-review-card { display: flex; align-items: center; gap: 14px; min-height: 142px; }
 .human-review-card strong { font-size: 20px; }
 .human-review-card span { font-size: 10px; }
 .registry-layout { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(270px, .65fr); gap: 18px; align-items: start; }
@@ -472,9 +473,29 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .disposition-status.is-ready, .disposition-status.is-confirmed { color: var(--case-green); }
 .case-file-report .report-footer-note { padding-top: 13px; border-top: 1px solid rgba(154,149,138,.55); color: #6d685e; }
 
+.transaction-file-panel { margin: 20px 0; padding: 15px; border: 1px solid #dceaf3; border-radius: 13px; background: #fbfdff; }
+.transaction-file-heading { display: flex; justify-content: space-between; gap: 15px; }
+.transaction-file-heading h3 { margin: 6px 0 0; color: var(--navy); font-size: 16px; }
+.transaction-file-heading p { max-width: 480px; margin: 5px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.file-retention-note { flex: 0 0 auto; color: var(--green); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 8px; white-space: nowrap; }
+.file-dropzone { display: flex; align-items: center; gap: 11px; margin-top: 13px; padding: 13px; border: 1px dashed #9a958a; border-radius: 3px; cursor: pointer; background: #f6f4ef; }
+.file-dropzone:hover { border-color: var(--green); }
+.file-dropzone input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.file-dropzone strong, .file-dropzone small { display: block; }
+.file-dropzone strong { color: var(--navy); font-size: 11px; }
+.file-dropzone small { margin-top: 2px; color: var(--muted); font-size: 9px; }
+.upload-icon { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid #9a958a; border-radius: 50%; color: var(--green); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 17px; }
+.file-status { min-height: 18px; margin-top: 8px; color: var(--muted); font-size: 9px; line-height: 1.4; }
+.file-status.is-error { color: #8c1f28; }
+.file-status.is-success { color: var(--green); }
+.file-status.is-processing { color: var(--amber); }
+.file-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
 @media (max-width: 640px) {
   .case-file-report .report-detail-grid > div { grid-template-columns: 1fr; gap: 3px; }
   .case-file-report .report-meta-item { display: grid; gap: 3px; }
   .case-file-report .report-meta-item span { flex-basis: auto; }
   .masked-account-banner { align-items: start; }
+  .transaction-file-heading { display: block; }
+  .file-retention-note { display: block; margin-top: 7px; }
 }

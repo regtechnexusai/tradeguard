@@ -1,6 +1,10 @@
 const form = document.querySelector("#proactiveForm");
 const sampleButton = document.querySelector("#proactiveSampleButton");
 const resetButton = document.querySelector("#proactiveResetButton");
+const transactionPdfInput = document.querySelector("#transactionPdfInput");
+const analyzePdfButton = document.querySelector("#analyzePdfButton");
+const clearPdfButton = document.querySelector("#clearPdfButton");
+const transactionPdfStatus = document.querySelector("#transactionPdfStatus");
 const copyButton = document.querySelector("#proactiveCopyButton");
 const revealAccountButton = document.querySelector("#proactiveRevealAccount");
 const accountValue = document.querySelector("#proactiveAccountValue");
@@ -22,6 +26,9 @@ let currentCaseId = "";
 let currentGeneratedAt = "";
 let accountRevealed = false;
 let dispositionConfirmed = false;
+let selectedPdfFile = null;
+
+const MAX_PDF_BYTES = 10 * 1024 * 1024;
 
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -32,6 +39,138 @@ const escapeHtml = (value) => String(value ?? "")
 
 const value = (id) => document.querySelector(`#${id}`)?.value.trim() || "";
 const checked = (id) => Boolean(document.querySelector(`#${id}`)?.checked);
+
+function setPdfStatus(text, state = "") {
+  if (!transactionPdfStatus) return;
+  transactionPdfStatus.textContent = text;
+  transactionPdfStatus.className = `file-status${state ? ` ${state}` : ""}`;
+}
+
+function clearPdfAttachment(statusText = "No PDF selected.") {
+  selectedPdfFile = null;
+  if (transactionPdfInput) transactionPdfInput.value = "";
+  if (analyzePdfButton) analyzePdfButton.disabled = true;
+  if (clearPdfButton) clearPdfButton.disabled = true;
+  setPdfStatus(statusText);
+}
+
+function formatFileSize(bytes) {
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+async function extractPdfText(file) {
+  if (!window.pdfjsLib) {
+    throw new Error("The PDF reader is unavailable. Check the connection and try again.");
+  }
+
+  window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const buffer = await file.arrayBuffer();
+  const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
+  const pdf = await loadingTask.promise;
+  const pages = [];
+
+  try {
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const grouped = new Map();
+      content.items.forEach((item) => {
+        const text = String(item.str || "").trim();
+        if (!text) return;
+        const y = Math.round(item.transform?.[5] || 0);
+        const row = grouped.get(y) || [];
+        row.push({ x: item.transform?.[4] || 0, text });
+        grouped.set(y, row);
+      });
+      pages.push([...grouped.entries()]
+        .sort((a, b) => b[0] - a[0])
+        .map(([, row]) => row.sort((a, b) => a.x - b.x).map((item) => item.text).join(" "))
+        .join("\n"));
+      page.cleanup();
+    }
+  } finally {
+    await pdf.destroy();
+  }
+  return pages.join("\n");
+}
+
+function extractPdfSignals(rawText) {
+  const lines = String(rawText || "")
+    .replaceAll("\u00a0", " ")
+    .split(/\r?\n/)
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+  const transactionPattern = /credit|debit|deposit|withdraw|transfer|payment|remit|rtgs|beftn|swift|atm|cash|card|online|mobile|beneficiary|sender|\bcr\b|\bdr\b/i;
+  const transactionLines = lines.filter((line) => transactionPattern.test(line) && /\d/.test(line));
+  const amountPattern = /(?:BDT|৳|USD|EUR|GBP|INR)?\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.\d+)?|\d+(?:\.\d{2})?)/gi;
+  const amountMatches = [];
+
+  transactionLines.forEach((line) => {
+    const matches = [...line.matchAll(amountPattern)]
+      .map((match) => Number(String(match[1]).replaceAll(",", "")))
+      .filter((number) => Number.isFinite(number) && number >= 100);
+    if (matches.length) amountMatches.push(Math.max(...matches));
+  });
+
+  const fullText = lines.join(" ");
+  const channels = ["atm", "cash", "card", "online", "mobile", "rtgs", "beftn", "swift"]
+    .filter((channel) => new RegExp(`\\b${channel}\\b`, "i").test(fullText));
+  const hasInbound = /credit|deposit|inward|remit|\bcr\b/i.test(fullText);
+  const hasOutbound = /debit|withdraw|outward|payment|transfer|\bdr\b/i.test(fullText);
+  const observedTransactions = transactionLines.length;
+  const observedValue = amountMatches.reduce((total, number) => total + number, 0);
+
+  return {
+    observedTransactions,
+    observedValue,
+    transactionDetail: `PDF extraction found ${observedTransactions} transaction-like line${observedTransactions === 1 ? "" : "s"} and ${amountMatches.length} amount reference${amountMatches.length === 1 ? "" : "s"}. Extracted values require reviewer confirmation.`,
+    rapidInOut: hasInbound && hasOutbound,
+    channelChange: channels.length >= 2,
+    extractedLineCount: lines.length,
+    extractedAmountCount: amountMatches.length,
+    channels
+  };
+}
+
+async function analyzePdf() {
+  if (!selectedPdfFile) return;
+  const file = selectedPdfFile;
+  if (analyzePdfButton) analyzePdfButton.disabled = true;
+  setPdfStatus("Reading PDF locally…", "is-processing");
+
+  try {
+    let rawText = await extractPdfText(file);
+    const extracted = extractPdfSignals(rawText);
+    rawText = "";
+
+    if (!value("customerReference")) setValues({ customerReference: "Anonymised PDF case" });
+    setValues({
+      ...(extracted.observedTransactions ? { observedTransactions: String(extracted.observedTransactions) } : {}),
+      ...(extracted.observedValue ? { observedValue: String(Math.round(extracted.observedValue * 100) / 100) } : {}),
+      transactionDetail: extracted.transactionDetail
+    });
+
+    if (extracted.rapidInOut) {
+      const element = document.querySelector("#rapidInOut");
+      if (element) element.checked = true;
+    }
+    if (extracted.channelChange) {
+      const element = document.querySelector("#channelChange");
+      if (element) element.checked = true;
+    }
+
+    message.textContent = "PDF analysed locally. Review the extracted fields, add the expected baseline and run Proactive Review.";
+    setPdfStatus(`PDF analysed locally (${extracted.extractedLineCount} text lines). Temporary file data cleared; no PDF retained.`, "is-success");
+  } catch (error) {
+    setPdfStatus(error instanceof Error ? error.message : "The PDF could not be analysed.", "is-error");
+    if (message) message.textContent = "The PDF could not be analysed. Review the file type and try again.";
+  } finally {
+    selectedPdfFile = null;
+    if (transactionPdfInput) transactionPdfInput.value = "";
+    if (analyzePdfButton) analyzePdfButton.disabled = true;
+    if (clearPdfButton) clearPdfButton.disabled = true;
+  }
+}
 
 const formatNumber = (number) => Number(number || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
 const formatAmount = (number, currency) => Number(number || 0) > 0 ? `${currency} ${formatNumber(number)}` : "not provided";
@@ -292,8 +431,35 @@ function render(result, input) {
   if (copyButton) copyButton.disabled = false;
 }
 
+transactionPdfInput?.addEventListener("change", () => {
+  const file = transactionPdfInput.files?.[0];
+  if (!file) {
+    clearPdfAttachment();
+    return;
+  }
+
+  const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+  if (!isPdf) {
+    clearPdfAttachment("Only PDF files are allowed.");
+    return;
+  }
+  if (file.size > MAX_PDF_BYTES) {
+    clearPdfAttachment(`This PDF is ${formatFileSize(file.size)}. The maximum allowed size is 10 MB.`);
+    return;
+  }
+
+  selectedPdfFile = file;
+  if (analyzePdfButton) analyzePdfButton.disabled = false;
+  if (clearPdfButton) clearPdfButton.disabled = false;
+  setPdfStatus(`${file.name} selected · ${formatFileSize(file.size)} · temporary browser-local processing only.`);
+});
+
+analyzePdfButton?.addEventListener("click", analyzePdf);
+clearPdfButton?.addEventListener("click", () => clearPdfAttachment("PDF cleared and deleted from this browser session."));
+
 resetButton?.addEventListener("click", () => {
   form?.reset();
+  clearPdfAttachment();
   reportPanel?.classList.add("is-empty");
   if (emptyReport) emptyReport.hidden = false;
   if (reportContent) reportContent.hidden = true;

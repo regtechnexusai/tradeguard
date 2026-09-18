@@ -8,7 +8,7 @@
       content="TradeGuard by RegTech Nexus AI — an explainable trade-finance and TBML risk review workspace."
     />
     <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css?v=16" />
+    <link rel="stylesheet" href="./style.css?v=20" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-10WQVBN61X"></script>
     <script>
@@ -96,7 +96,7 @@
           </div>
           <p>Open the focused TBML review or the broader proactive transaction-monitoring workspace.</p>
         </div>
-        <div class="monitoring-icon-grid" aria-label="TradeGuard monitoring workspaces">
+          <div class="monitoring-icon-grid" aria-label="TradeGuard monitoring workspaces">
           <a class="monitoring-card monitoring-card-primary" href="./index.html#risk-check">
             <span class="monitoring-icon monitoring-icon-tbml" aria-hidden="true">
               <svg viewBox="0 0 48 48" role="img"><path d="M24 4 40 10v11c0 10.5-6.7 19.3-16 23C14.7 40.3 8 31.5 8 21V10l16-6Z"/><path d="m15 24 5.5 5.5L33 17"/></svg>
@@ -111,7 +111,12 @@
             <span class="monitoring-card-copy"><span class="panel-kicker">EARLY SIGNALS</span><strong>Proactive Transaction Monitoring</strong><small>Surface emerging patterns before they become difficult cases.</small></span>
             <span class="monitoring-arrow" aria-hidden="true">→</span>
           </a>
-          <div class="coverage-card human-review-card"><strong>Human</strong><span>review required</span></div>
+          <div class="coverage-card human-review-card">
+            <span class="monitoring-icon monitoring-icon-review" aria-hidden="true">
+              <svg viewBox="0 0 48 48" role="img"><circle cx="24" cy="15" r="7"/><path d="M11 39c1.8-8.2 6.1-12 13-12s11.2 3.8 13 12"/><path d="M39 8v9M39 21h.01"/></svg>
+            </span>
+            <span class="monitoring-card-copy"><strong>Human review</strong><small>Required before escalation</small></span>
+          </div>
         </div>
       </section>
 

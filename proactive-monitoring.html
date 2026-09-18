@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=19" />
+    <link rel="stylesheet" href="./style.css?v=20" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -85,6 +85,27 @@
               <div class="panel-actions">
                 <button id="proactiveResetButton" class="text-button" type="button">Start new case</button>
                 <button id="proactiveSampleButton" class="text-button" type="button">Load sample case</button>
+              </div>
+            </div>
+
+            <div class="transaction-file-panel">
+              <div class="transaction-file-heading">
+                <div>
+                  <span class="panel-kicker">Optional evidence input</span>
+                  <h3>Upload transaction statement PDF</h3>
+                  <p>Extracts transaction text locally and prepares observed signals for rule-based review. One PDF at a time; maximum 10 MB.</p>
+                </div>
+                <span class="file-retention-note">Deleted after analysis</span>
+              </div>
+              <label class="file-dropzone" for="transactionPdfInput">
+                <span class="upload-icon" aria-hidden="true">↑</span>
+                <span><strong>Choose a transaction PDF</strong><small>PDF only · up to 10 MB · not retained</small></span>
+                <input id="transactionPdfInput" type="file" accept="application/pdf,.pdf" />
+              </label>
+              <div id="transactionPdfStatus" class="file-status" role="status" aria-live="polite">No PDF selected.</div>
+              <div class="file-actions">
+                <button id="analyzePdfButton" class="text-button" type="button" disabled>Analyze transaction PDF</button>
+                <button id="clearPdfButton" class="text-button" type="button" disabled>Clear and delete</button>
               </div>
             </div>
 
@@ -290,6 +311,7 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./proactive-monitoring.js?v=19"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script type="module" src="./proactive-monitoring.js?v=20"></script>
   </body>
 </html>
