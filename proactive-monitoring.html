@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TradeGuard Proactive Transaction Monitoring — an explainable early-warning review workspace." />
+    <title>Proactive Transaction Monitoring | TradeGuard</title>
+    <link rel="stylesheet" href="./style.css?v=14" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand brand-image" href="./index.html#top" aria-label="TradeGuard home">
+        <img class="brand-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="./index.html#monitoring-modes">Monitoring modes</a>
+        <a href="#proactive-check">Proactive demo</a>
+        <a class="nav-cta" href="./index.html#pilot">Request pilot</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section-shell proactive-hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="pulse-dot"></span> Early-warning transaction intelligence</div>
+          <h1>Proactive monitoring before the pattern becomes a case.</h1>
+          <p class="hero-lead">Review transaction behaviour against the customer profile, expected activity and emerging risk signals—while keeping the final decision with an authorised human reviewer.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#proactive-check">Run proactive demo <span>→</span></a>
+            <a class="button button-quiet" href="./index.html#risk-check">Open TBML Monitoring <span>↗</span></a>
+          </div>
+          <div class="hero-proof">
+            <span>Pattern-led</span>
+            <span>Explainable</span>
+            <span>Human review</span>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="Proactive transaction monitoring preview">
+          <div class="visual-orbit orbit-large"></div>
+          <div class="visual-orbit orbit-small"></div>
+          <div class="visual-card visual-card-main">
+            <div class="visual-card-top">
+              <span class="mini-label">EARLY-WARNING PREVIEW</span>
+              <span class="status-pill status-medium">REVIEW</span>
+            </div>
+            <div class="visual-score">04<span>signals</span></div>
+            <p>Focused review recommended</p>
+            <div class="signal-line"><span style="width: 68%"></span></div>
+            <div class="visual-meta"><span>Velocity shift</span><strong>+20</strong></div>
+            <div class="visual-meta"><span>New counterparties</span><strong>+15</strong></div>
+            <div class="visual-meta"><span>Route change</span><strong>+10</strong></div>
+          </div>
+          <div class="visual-card visual-card-float">
+            <span class="mini-label">CASE STATUS</span>
+            <strong>Human review queue</strong>
+            <span class="float-check">✓ Evidence traceable</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="proactive-check" class="section-shell section-block">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">Proactive transaction monitoring</div>
+            <h2>Run an early-warning review</h2>
+          </div>
+          <p>Use fictional or anonymised information only. This prototype does not store transaction documents.</p>
+        </div>
+
+        <div class="workspace-grid">
+          <form id="proactiveForm" class="panel form-panel" novalidate>
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">STEP 01</span>
+                <h3>Monitoring context</h3>
+                <p class="form-intro">Provide a small set of signals to see how an explainable early-warning review can be structured.</p>
+              </div>
+              <button id="proactiveSampleButton" class="text-button" type="button">Load sample</button>
+            </div>
+
+            <div class="form-grid">
+              <label class="field field-wide">
+                <span>Customer / account reference</span>
+                <input id="customerReference" type="text" placeholder="e.g. Anonymised customer 001" required />
+              </label>
+              <label class="field">
+                <span>Monitoring window</span>
+                <select id="monitoringWindow">
+                  <option>Last 7 days</option>
+                  <option>Last 30 days</option>
+                  <option>Last 90 days</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Customer segment</span>
+                <select id="customerSegment">
+                  <option>Corporate</option>
+                  <option>SME</option>
+                  <option>Individual</option>
+                  <option>Student / low-activity profile</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Expected monthly transactions</span>
+                <input id="expectedTransactions" type="number" min="0" step="1" placeholder="20" />
+              </label>
+              <label class="field">
+                <span>Observed transactions</span>
+                <input id="observedTransactions" type="number" min="0" step="1" placeholder="48" />
+              </label>
+              <label class="field">
+                <span>Expected monthly value</span>
+                <input id="expectedValue" type="number" min="0" step="any" placeholder="100000" />
+              </label>
+              <label class="field">
+                <span>Observed value</span>
+                <input id="observedValue" type="number" min="0" step="any" placeholder="280000" />
+              </label>
+            </div>
+
+            <div class="check-section">
+              <div class="check-section-title">Observed pattern signals</div>
+              <p class="optional-note check-section-note">Select only signals supported by available information. These are prioritisation signals, not proof of wrongdoing.</p>
+              <div class="check-grid">
+                <label class="check-card"><input id="newCounterparties" type="checkbox" /><span><strong>New counterparties</strong><small>Activity involves previously unseen parties</small></span></label>
+                <label class="check-card"><input id="rapidInOut" type="checkbox" /><span><strong>Rapid in-and-out flow</strong><small>Funds move shortly after receipt</small></span></label>
+                <label class="check-card"><input id="routeChange" type="checkbox" /><span><strong>Route or corridor change</strong><small>Activity differs from the normal pattern</small></span></label>
+                <label class="check-card"><input id="channelChange" type="checkbox" /><span><strong>Channel change</strong><small>Use of a new channel or product requires context</small></span></label>
+              </div>
+            </div>
+
+            <div id="proactiveMessage" class="form-message" role="status" aria-live="polite"></div>
+            <button class="button button-primary button-full" type="submit">Run Proactive Review <span>→</span></button>
+          </form>
+
+          <section id="proactiveReport" class="panel report-panel is-empty" aria-live="polite">
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">STEP 02</span>
+                <h3>Early-warning review</h3>
+              </div>
+              <a class="text-button" href="./index.html#risk-check">TBML check ↗</a>
+            </div>
+
+            <div id="proactiveEmpty" class="empty-report">
+              <div class="empty-icon">◎</div>
+              <h3>Your proactive signal will appear here</h3>
+              <p>Enter an anonymised customer reference, add baseline information and select supported pattern signals.</p>
+            </div>
+
+            <div id="proactiveContent" class="report-content" hidden>
+              <div class="report-overview">
+                <div>
+                  <span class="mini-label">EARLY-WARNING SIGNAL</span>
+                  <div class="report-score"><span id="proactiveScore">—</span><small>/100</small></div>
+                  <span id="proactiveBand" class="status-pill status-not-ready">NOT READY</span>
+                </div>
+                <div class="report-gauge"><span id="proactiveGauge"></span></div>
+              </div>
+              <div id="proactiveStatus" class="decision-readiness is-neutral">
+                <div><strong id="proactiveStatusTitle">Human review required</strong><p id="proactiveStatusText">Review the signal with supporting transaction evidence.</p></div>
+                <div class="raw-score"><span>INDICATIVE POINTS</span><strong id="proactiveRawScore">—</strong></div>
+              </div>
+              <div id="proactiveSummary" class="report-summary"></div>
+              <div class="report-subheading"><span>Detected patterns</span><span id="proactiveFlagCount">0 flags</span></div>
+              <div id="proactiveFlags" class="flag-list"></div>
+              <div class="recommendation-box"><span class="recommendation-icon">✓</span><div><strong>Suggested next step</strong><p id="proactiveRecommendation"></p></div></div>
+              <div class="report-footer-note">Prototype output only. Final monitoring and escalation decisions remain with the authorised reviewer.</div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="section-shell section-block pilot-section">
+        <div class="pilot-card">
+          <div>
+            <div class="eyebrow">Switch workspace</div>
+            <h2>Need a trade-specific review?</h2>
+            <p>Open the dedicated TBML Monitoring workspace for goods, valuation, documents, parties and routes.</p>
+          </div>
+          <a class="button button-light button-full" href="./index.html#risk-check">Open TBML Monitoring <span>↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
+      <a class="footer-link" href="./index.html#monitoring-modes">TradeGuard monitoring modes</a>
+      <p>AI-assisted review support. Not a regulatory determination or legal interpretation.</p>
+      <span>© <span id="year"></span> RegTech Nexus AI</span>
+    </footer>
+
+    <script type="module" src="./proactive-monitoring.js?v=14"></script>
+  </body>
+</html>

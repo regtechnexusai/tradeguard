@@ -1,8 +1,8 @@
 TradeGuard Phase 1 update — data-integrity and review controls
 
-The website's Pre-monitoring section shows separate TBML Monitoring and
-Proactive Monitoring entry points, with Human review required as the review
-principle.
+The website shows separate TBML Monitoring and Proactive Transaction
+Monitoring entry points. The Proactive Monitoring workspace is in
+proactive-monitoring.html, with Human review required as the review principle.
 
 If the GitHub repository still contains the older pre-monitoring.js or
 rule-registry.json files, delete those two unused files after uploading this
@@ -54,7 +54,7 @@ invoice, passport, NID, bank or SWIFT documents to this public demo.
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=13
+https://regtechnexusai.github.io/tradeguard/?v=14
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and

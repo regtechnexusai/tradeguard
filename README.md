@@ -17,6 +17,8 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
 - Shows separate TBML Monitoring and Proactive Monitoring entry points.
+- Adds a separate `proactive-monitoring.html` workspace with a functional early-warning demo.
+- Uses glossy, raised 3D styling for primary, navigation, utility and workspace buttons.
 - Keeps “Human review required” visible as the review principle.
 - Adds review-only context controls for jurisdiction risk, PEP/screening, restricted or dual-use goods, payment transparency and source of funds/wealth.
 - Keeps control-only findings outside the numeric score; they require evidence and authorised human review.
