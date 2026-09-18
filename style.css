@@ -258,12 +258,6 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .recommendation-box strong { color: #126c57; font-size: 11px; }
 .recommendation-box p { margin: 4px 0 0; color: #4d766c; font-size: 10px; line-height: 1.45; }
 .report-action-list { display: grid; gap: 6px; margin: 7px 0 0; padding-left: 17px; color: #4d766c; font-size: 10px; line-height: 1.45; }
-.reviewer-disposition { margin-top: 18px; padding: 13px; border: 1px solid #dceaf3; border-radius: 13px; background: #fbfdff; }
-.reviewer-disposition .report-subheading { margin-top: 0; }
-.reviewer-disposition select, .reviewer-disposition textarea { width: 100%; border: 1px solid #d6e4ef; border-radius: 10px; outline: 0; color: var(--navy); background: #fff; font-size: 10px; }
-.reviewer-disposition select { height: 36px; padding: 0 10px; }
-.reviewer-disposition textarea { min-height: 58px; margin-top: 9px; padding: 9px 10px; resize: vertical; line-height: 1.45; }
-.reviewer-disposition select:focus, .reviewer-disposition textarea:focus { border-color: #6ebce2; box-shadow: 0 0 0 4px rgba(73,198,229,.12); }
 .report-footer-note { margin-top: 16px; color: var(--muted); font-size: 9px; font-style: italic; line-height: 1.5; }
 
 .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
@@ -309,7 +303,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .monitoring-icon { display: grid; flex: 0 0 51px; width: 51px; height: 51px; place-items: center; border-radius: 15px; }
 .monitoring-icon svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.4; }
 .monitoring-icon-tbml { color: #39566a; border: 1px solid #c9d6dc; background: #e7edf0; }
-.monitoring-icon-proactive { color: #3d5a4c; border: 1px solid #cad9cf; background: #e8eee9; }
+.monitoring-icon-transaction { color: #3d5a4c; border: 1px solid #cad9cf; background: #e8eee9; }
 .monitoring-icon-review { color: #8b6a2b; border: 1px solid #ded2ae; background: #f1ebdd; }
 .monitoring-card-copy { display: grid; gap: 4px; min-width: 0; }
 .monitoring-card-copy strong { color: var(--navy); font-size: 15px; letter-spacing: -.02em; }
@@ -394,7 +388,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   .footer-logo { width: 120px; max-width: 42vw; }
 }
 
-/* Proactive report: case-file / audit-register treatment */
+/* Transaction report: case-file / audit-register treatment */
 .case-file-report {
   --case-ink: #1b2430;
   --case-paper: #f6f4ef;

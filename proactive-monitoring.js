@@ -11,11 +11,9 @@ const accountValue = document.querySelector("#proactiveAccountValue");
 const accountNote = document.querySelector("#proactiveAccountNote");
 const evidenceGapSummary = document.querySelector("#proactiveEvidenceGap");
 const ratioCallout = document.querySelector("#proactiveRatioCallout");
-const dispositionSelect = document.querySelector("#proactiveDisposition");
-const dispositionRationale = document.querySelector("#proactiveDispositionRationale");
-const dispositionStatus = document.querySelector("#proactiveDispositionStatus");
-const confirmDispositionButton = document.querySelector("#proactiveConfirmDisposition");
 const message = document.querySelector("#proactiveMessage");
+const pilotForm = document.querySelector("#pilotForm");
+const pilotMessage = document.querySelector("#pilotMessage");
 const reportPanel = document.querySelector("#proactiveReport");
 const emptyReport = document.querySelector("#proactiveEmpty");
 const reportContent = document.querySelector("#proactiveContent");
@@ -25,7 +23,6 @@ let latestInput = null;
 let currentCaseId = "";
 let currentGeneratedAt = "";
 let accountRevealed = false;
-let dispositionConfirmed = false;
 let selectedPdfFile = null;
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
@@ -101,7 +98,11 @@ function extractPdfSignals(rawText) {
     .map((line) => line.replace(/\s+/g, " ").trim())
     .filter(Boolean);
   const transactionPattern = /credit|debit|deposit|withdraw|transfer|payment|remit|rtgs|beftn|swift|atm|cash|card|online|mobile|beneficiary|sender|\bcr\b|\bdr\b/i;
-  const transactionLines = lines.filter((line) => transactionPattern.test(line) && /\d/.test(line));
+  const transactionIdPattern = /\b[A-Z]{2,8}-[A-Z0-9]+-\d{3,}\b/gi;
+  const transactionIdLines = lines.filter((line) => /\b[A-Z]{2,8}-[A-Z0-9]+-\d{3,}\b/i.test(line));
+  const transactionIds = [...new Set(lines.flatMap((line) => [...line.matchAll(transactionIdPattern)].map((match) => match[0].toUpperCase())))];
+  const fallbackTransactionLines = lines.filter((line) => transactionPattern.test(line) && /\d/.test(line));
+  const transactionLines = transactionIdLines.length >= 5 ? transactionIdLines : fallbackTransactionLines;
   const amountPattern = /(?:BDT|৳|USD|EUR|GBP|INR)?\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.\d+)?|\d+(?:\.\d{2})?)/gi;
   const amountMatches = [];
 
@@ -117,19 +118,43 @@ function extractPdfSignals(rawText) {
     .filter((channel) => new RegExp(`\\b${channel}\\b`, "i").test(fullText));
   const hasInbound = /credit|deposit|inward|remit|\bcr\b/i.test(fullText);
   const hasOutbound = /debit|withdraw|outward|payment|transfer|\bdr\b/i.test(fullText);
-  const observedTransactions = transactionLines.length;
+  const observedTransactions = transactionIds.length >= 5 ? transactionIds.length : transactionLines.length;
   const observedValue = amountMatches.reduce((total, number) => total + number, 0);
 
   return {
     observedTransactions,
     observedValue,
-    transactionDetail: `PDF extraction found ${observedTransactions} transaction-like line${observedTransactions === 1 ? "" : "s"} and ${amountMatches.length} amount reference${amountMatches.length === 1 ? "" : "s"}. Extracted values require reviewer confirmation.`,
+    transactionDetail: `PDF extraction identified ${observedTransactions} transaction entr${observedTransactions === 1 ? "y" : "ies"} and ${amountMatches.length} amount reference${amountMatches.length === 1 ? "" : "s"}. Extracted values require reviewer confirmation.`,
     rapidInOut: hasInbound && hasOutbound,
     channelChange: channels.length >= 2,
     extractedLineCount: lines.length,
     extractedAmountCount: amountMatches.length,
     channels
   };
+}
+
+function applyPdfContext(extracted, rawText) {
+  const professionOptions = [
+    "Student", "Service holder", "Businessperson", "SME owner", "Housewife", "Foreign remitter",
+    "Freelancer / self-employed", "Professional practitioner", "Farmer / agricultural worker", "Retired", "Other / not provided"
+  ];
+  const lowerText = String(rawText || "").toLowerCase();
+  const detectedProfession = professionOptions.find((profession) => lowerText.includes(profession.toLowerCase()));
+  const detectedCurrency = /\bBDT\b|৳/i.test(rawText) ? "BDT" : value("monitoringCurrency") || "Other / not provided";
+  const detectedWindow = /90\s*[- ]?day/i.test(rawText) ? "Last 90 days" : value("monitoringWindow") || "Last 90 days";
+  const detectedSegment = /\bindividual\b|savings account|housewife/i.test(rawText) ? "Individual" : value("customerSegment") || "Individual";
+
+  setValues({
+    customerReference: value("customerReference") || "Anonymised PDF case",
+    monitoringWindow: detectedWindow,
+    customerSegment: detectedSegment,
+    profession: value("profession") || detectedProfession || "Other / not provided",
+    baselineWindow: value("baselineWindow") || "Trailing 90-day average",
+    monitoringCurrency: detectedCurrency,
+    ...(extracted.observedTransactions ? { observedTransactions: String(extracted.observedTransactions) } : {}),
+    ...(extracted.observedValue ? { observedValue: String(Math.round(extracted.observedValue * 100) / 100) } : {}),
+    transactionDetail: extracted.transactionDetail
+  });
 }
 
 async function analyzePdf() {
@@ -141,14 +166,8 @@ async function analyzePdf() {
   try {
     let rawText = await extractPdfText(file);
     const extracted = extractPdfSignals(rawText);
+    applyPdfContext(extracted, rawText);
     rawText = "";
-
-    if (!value("customerReference")) setValues({ customerReference: "Anonymised PDF case" });
-    setValues({
-      ...(extracted.observedTransactions ? { observedTransactions: String(extracted.observedTransactions) } : {}),
-      ...(extracted.observedValue ? { observedValue: String(Math.round(extracted.observedValue * 100) / 100) } : {}),
-      transactionDetail: extracted.transactionDetail
-    });
 
     if (extracted.rapidInOut) {
       const element = document.querySelector("#rapidInOut");
@@ -159,8 +178,11 @@ async function analyzePdf() {
       if (element) element.checked = true;
     }
 
-    message.textContent = "PDF analysed locally. Review the extracted fields, add the expected baseline and run Proactive Review.";
-    setPdfStatus(`PDF analysed locally (${extracted.extractedLineCount} text lines). Temporary file data cleared; no PDF retained.`, "is-success");
+    const input = collectInput();
+    render(calculateSignal(input), input);
+    message.textContent = "PDF analysed locally. No other fields are required for this preliminary review. Add optional baseline or context only if available.";
+    setPdfStatus(`PDF analysed locally (${extracted.observedTransactions || 0} transaction entries identified). Temporary file data cleared; no PDF retained.`, "is-success");
+    reportPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
     setPdfStatus(error instanceof Error ? error.message : "The PDF could not be analysed.", "is-error");
     if (message) message.textContent = "The PDF could not be analysed. Review the file type and try again.";
@@ -197,31 +219,6 @@ function updateAccountDisplay(reference = "") {
     revealAccountButton.textContent = accountRevealed ? "Mask" : "Reveal";
     revealAccountButton.setAttribute("aria-pressed", String(accountRevealed));
   }
-}
-
-function updateDispositionGate() {
-  if (!dispositionStatus || !confirmDispositionButton) return;
-  const selected = dispositionSelect?.value.trim() || "";
-  const rationale = dispositionRationale?.value.trim() || "";
-  const ready = Boolean(selected && rationale.length >= 10);
-  dispositionStatus.textContent = ready ? "READY TO CONFIRM" : "RATIONALE REQUIRED";
-  dispositionStatus.className = `disposition-status ${ready ? "is-ready" : "is-required"}`;
-  confirmDispositionButton.disabled = !ready || dispositionConfirmed;
-  if (dispositionConfirmed) {
-    dispositionStatus.textContent = "DISPOSITION RECORDED";
-    dispositionStatus.className = "disposition-status is-confirmed";
-    confirmDispositionButton.textContent = "Disposition recorded";
-  } else {
-    confirmDispositionButton.textContent = "Confirm disposition";
-  }
-  if (latestResult && latestInput) latestSummary = buildSummary(latestResult, latestInput);
-}
-
-function resetDisposition() {
-  dispositionConfirmed = false;
-  if (dispositionSelect) dispositionSelect.value = "Pending human review";
-  if (dispositionRationale) dispositionRationale.value = "";
-  updateDispositionGate();
 }
 
 function createCaseId() {
@@ -282,21 +279,27 @@ function nextSteps(result) {
   ];
 }
 
+function baselineNotes(input) {
+  const notes = [];
+  if (!(input.expectedTransactions > 0)) notes.push("Transaction velocity rule not evaluated: expected transaction baseline not provided.");
+  if (!(input.expectedValue > 0)) notes.push("Value-pattern rule not evaluated: expected value baseline not provided.");
+  return notes;
+}
+
 function buildSummary(result, input) {
-  const disposition = document.querySelector("#proactiveDisposition")?.value || "Pending human review";
-  const rationale = document.querySelector("#proactiveDispositionRationale")?.value.trim();
   const steps = nextSteps(result);
+  const notes = baselineNotes(input);
   return [
-    "TradeGuard Proactive Monitoring Report",
+    "TradeGuard Transaction Monitoring Report",
     `Case ID: ${currentCaseId}`,
     `Generated: ${currentGeneratedAt}`,
-    `Reviewer assigned: Authorised reviewer`,
     `Customer / account: ${maskAccountReference(input.customerReference)}`,
     `Profile: ${input.customerSegment}${input.profession ? ` | Profession: ${input.profession}` : ""}`,
     `Monitoring window: ${input.monitoringWindow}`,
     `Baseline window: ${input.baselineWindow}`,
     `Signal: ${result.score}/100 (${result.flags.length ? `${result.band} priority` : "No signal"})`,
     "Score basis: Sum of configured weighted pattern contributions, capped at 100; thresholds require institutional calibration.",
+    notes.length ? `Baseline notes: ${notes.join(" ")}` : "Baseline notes: Expected transaction and value baselines provided.",
     `Evidence gaps: ${unverifiedPoints(result) ? `${unverifiedPoints(result)} of ${result.score} points are unverified` : "None identified in the selected patterns"}`,
     "Status: Human review required",
     "Detected patterns:",
@@ -304,8 +307,7 @@ function buildSummary(result, input) {
     `Typology hypothesis: ${typologyHypothesis(result, input)}`,
     "Suggested next steps:",
     steps.map((step, index) => `${index + 1}. ${step}`).join("\n"),
-    `Reviewer disposition: ${disposition}`,
-    rationale ? `Reviewer rationale: ${rationale}` : "Reviewer rationale: Not recorded"
+    "Next step: Human review is required before any further action."
   ].join("\n");
 }
 
@@ -366,7 +368,6 @@ function calculateSignal(input) {
 function render(result, input) {
   if (!currentCaseId) currentCaseId = createCaseId();
   if (!currentGeneratedAt) currentGeneratedAt = generatedAtUtc();
-  resetDisposition();
   accountRevealed = false;
   updateAccountDisplay(input.customerReference);
   reportPanel.classList.remove("is-empty");
@@ -380,8 +381,9 @@ function render(result, input) {
   document.querySelector("#proactiveRawScore").textContent = result.score;
   document.querySelector("#proactiveFlagCount").textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
   document.querySelector("#proactiveStatusTitle").textContent = "Human review required";
+  const notes = baselineNotes(input);
   document.querySelector("#proactiveStatusText").textContent = result.flags.length
-    ? "This is an early-warning prioritisation signal, not a final finding. Review evidence before escalation."
+    ? `This is an early-warning prioritisation signal, not a final finding. ${notes.length ? "Some baseline-dependent rules were not evaluated. " : ""}Review evidence before any further action.`
     : "No configured pattern signal was triggered. This is not a finding of low risk.";
   const summaryText = result.flags.length
     ? "The observed activity contains patterns requiring focused review."
@@ -409,7 +411,7 @@ function render(result, input) {
     ["Profession", input.profession || "Not provided"],
     ["Monitoring window", input.monitoringWindow],
     ["Baseline window", input.baselineWindow || "Not provided"],
-    ["Expected / observed transactions", `${formatNumber(input.expectedTransactions)} / ${formatNumber(input.observedTransactions)}`],
+    ["Expected / observed transactions", `${input.expectedTransactions > 0 ? formatNumber(input.expectedTransactions) : "Not provided"} / ${input.observedTransactions > 0 ? formatNumber(input.observedTransactions) : "Not provided"}`],
     ["Expected / observed value", `${formatAmount(input.expectedValue, input.monitoringCurrency)} / ${formatAmount(input.observedValue, input.monitoringCurrency)}`],
     ["Counterparty detail", input.counterpartyDetail || "Not provided"],
     ["Route / corridor detail", input.corridorDetail || "Not provided"],
@@ -418,7 +420,7 @@ function render(result, input) {
     ["Changed channel / product", input.channelDetail || "Not provided"]
   ].map(([label, text]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(text)}</strong></div>`).join("");
   document.querySelector("#proactiveTypologyHypothesis").textContent = typologyHypothesis(result, input);
-  document.querySelector("#proactiveScoreBasis").textContent = `Sum of configured weighted pattern contributions, capped at 100. ${unsupported ? `${formatNumber(unsupported)} of ${formatNumber(result.score)} points are currently unverified. ` : ""}Thresholds and weights require institutional calibration before operational use.`;
+  document.querySelector("#proactiveScoreBasis").textContent = `Sum of configured weighted pattern contributions, capped at 100. ${unsupported ? `${formatNumber(unsupported)} of ${formatNumber(result.score)} points are currently unverified. ` : ""}${notes.length ? `${notes.join(" ")} ` : ""}Thresholds and weights require institutional calibration before operational use.`;
 
   document.querySelector("#proactiveFlags").innerHTML = result.flags.length
     ? result.flags.map((flag) => `<article class="flag-item${flag.evidenceGap ? " evidence-gap" : ""}"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong>${flag.evidenceGap ? "<span class=\"evidence-warning\">SCORED WITHOUT SUPPORTING DATA</span>" : ""}<p>${escapeHtml(flagDetail(flag, input))}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
@@ -472,7 +474,6 @@ resetButton?.addEventListener("click", () => {
   accountRevealed = false;
   updateAccountDisplay("");
   if (evidenceGapSummary) evidenceGapSummary.hidden = true;
-  resetDisposition();
   if (copyButton) {
     copyButton.disabled = true;
     copyButton.textContent = "Copy summary";
@@ -501,7 +502,7 @@ sampleButton?.addEventListener("click", () => {
     const element = document.querySelector(`#${id}`);
     if (element) element.checked = ["rapidInOut", "channelChange"].includes(id);
   });
-  message.textContent = "Sample case context loaded. Press Run Proactive Review.";
+  message.textContent = "Sample case context loaded. Press Run Transaction Review.";
 });
 
 form?.addEventListener("submit", (event) => {
@@ -534,16 +535,20 @@ revealAccountButton?.addEventListener("click", () => {
   updateAccountDisplay(latestInput.customerReference);
 });
 
-const dispositionChanged = () => {
-  dispositionConfirmed = false;
-  updateDispositionGate();
-};
-dispositionSelect?.addEventListener("change", dispositionChanged);
-dispositionRationale?.addEventListener("input", dispositionChanged);
-confirmDispositionButton?.addEventListener("click", () => {
-  if (confirmDispositionButton.disabled) return;
-  dispositionConfirmed = true;
-  updateDispositionGate();
+pilotForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const name = document.querySelector("#pilotName")?.value.trim() || "";
+  const organisation = document.querySelector("#pilotOrganisation")?.value.trim() || "";
+  const type = document.querySelector("#pilotType")?.value || "";
+  const mailto = `mailto:regtechnexusai@gmail.com?subject=${encodeURIComponent(`TradeGuard pilot request — ${organisation}`)}&body=${encodeURIComponent([
+    "TradeGuard pilot request",
+    `Name: ${name}`,
+    `Organisation: ${organisation}`,
+    `Organisation type: ${type}`,
+    "I would like to discuss a TradeGuard transaction-monitoring/TBML review pilot."
+  ].join("\n"))}`;
+  if (pilotMessage) pilotMessage.textContent = "A draft email is opening. Review it and press Send.";
+  window.location.href = mailto;
 });
 
 document.querySelector("#year").textContent = new Date().getFullYear();
