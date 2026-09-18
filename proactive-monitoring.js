@@ -143,13 +143,14 @@ function applyPdfContext(extracted, rawText) {
   const detectedCurrency = /\bBDT\b|৳/i.test(rawText) ? "BDT" : value("monitoringCurrency") || "Other / not provided";
   const detectedWindow = /90\s*[- ]?day/i.test(rawText) ? "Last 90 days" : value("monitoringWindow") || "Last 90 days";
   const detectedSegment = /\bindividual\b|savings account|housewife/i.test(rawText) ? "Individual" : value("customerSegment") || "Individual";
+  const hasExpectedBaseline = Number(value("expectedTransactions")) > 0 || Number(value("expectedValue")) > 0;
 
   setValues({
     customerReference: value("customerReference") || "Anonymised PDF case",
     monitoringWindow: detectedWindow,
     customerSegment: detectedSegment,
     profession: value("profession") || detectedProfession || "Other / not provided",
-    baselineWindow: value("baselineWindow") || "Trailing 90-day average",
+    baselineWindow: hasExpectedBaseline ? (value("baselineWindow") || "Trailing 90-day average") : "Not provided - no customer baseline supplied",
     monitoringCurrency: detectedCurrency,
     ...(extracted.observedTransactions ? { observedTransactions: String(extracted.observedTransactions) } : {}),
     ...(extracted.observedValue ? { observedValue: String(Math.round(extracted.observedValue * 100) / 100) } : {}),
@@ -201,6 +202,7 @@ const ratio = (observed, expected) => Number(expected) > 0 ? `${(Number(observed
 function maskAccountReference(reference) {
   const text = String(reference || "").trim();
   if (!text) return "Not provided";
+  if (/^PDF case\b/i.test(text)) return text;
   const digits = text.replace(/\D/g, "");
   if (digits.length >= 4) return `•••• •••• ${digits.slice(-2)}`;
   if (/^\d+$/.test(text)) return `${"•".repeat(Math.max(1, text.length - 2))}${text.slice(-2)}`;
@@ -209,6 +211,24 @@ function maskAccountReference(reference) {
 
 function unverifiedPoints(result) {
   return result.flags.filter((flag) => flag.evidenceGap).reduce((total, flag) => total + flag.points, 0);
+}
+
+function evidenceSupportedPoints(result) {
+  return Math.max(0, result.score - unverifiedPoints(result));
+}
+
+function signalPresentation(result) {
+  const unsupported = unverifiedPoints(result);
+  if (!result.flags.length) {
+    return { label: "NO SIGNAL", className: "status-no-signal", summary: "No signal" };
+  }
+  if (unsupported > result.score * 0.5) {
+    return { label: "PENDING EVIDENCE", className: "status-pending-evidence", summary: "Pending evidence" };
+  }
+  if (unsupported > 0) {
+    return { label: `PROVISIONAL ${result.band.toUpperCase()}`, className: `status-${result.band.toLowerCase()} status-provisional`, summary: `Provisional ${result.band}` };
+  }
+  return { label: `${result.band.toUpperCase()} PRIORITY`, className: `status-${result.band.toLowerCase()}`, summary: `${result.band} priority` };
 }
 
 function updateAccountDisplay(reference = "") {
@@ -271,10 +291,10 @@ function nextSteps(result) {
     ];
   }
   return [
-    "Compare the KYC/customer profile with the observed counterparty, value and corridor activity.",
-    "Cross-check the flagged counterparties against sanctions, PEP and adverse-media screening, refreshing screening where necessary.",
-    "Request supporting transaction and, where relevant, trade documents for the flagged activity.",
-    "Compare observed volume and value against a reliable customer baseline and relevant market references.",
+    "Verify the customer profile and compare observed volume and value with the approved baseline.",
+    "Identify and screen any extracted counterparties; if none are available, obtain the counterparty details from the transaction record.",
+    "Verify timing, amounts, destinations, channels and transaction purpose; obtain source-of-funds evidence where relevant.",
+    "Where the activity relates to trade, request supporting trade documents; otherwise retain the relevant purpose and source-of-funds evidence.",
     "Retain the transaction extract, screening outcomes and this report in the case file."
   ];
 }
@@ -289,6 +309,9 @@ function baselineNotes(input) {
 function buildSummary(result, input) {
   const steps = nextSteps(result);
   const notes = baselineNotes(input);
+  const unsupported = unverifiedPoints(result);
+  const supported = evidenceSupportedPoints(result);
+  const presentation = signalPresentation(result);
   return [
     "TradeGuard Transaction Monitoring Report",
     `Case ID: ${currentCaseId}`,
@@ -297,10 +320,14 @@ function buildSummary(result, input) {
     `Profile: ${input.customerSegment}${input.profession ? ` | Profession: ${input.profession}` : ""}`,
     `Monitoring window: ${input.monitoringWindow}`,
     `Baseline window: ${input.baselineWindow}`,
-    `Signal: ${result.score}/100 (${result.flags.length ? `${result.band} priority` : "No signal"})`,
-    "Score basis: Sum of configured weighted pattern contributions, capped at 100; thresholds require institutional calibration.",
+    `Signal: ${result.score}/100 (${presentation.summary})`,
+    `Configured signal score: ${result.score}/100`,
+    `Evidence-supported score: ${supported}/100`,
+    `Unverified contribution: ${unsupported} points`,
+    "Score basis: Sum of configured weighted pattern contributions, capped at 100. Evidence-supported and unverified contributions are shown separately.",
+    "Applied threshold bands: Low 0-24; Medium 25-49; High 50-74; Critical 75-100 (institution-configured). Evidence gate: more than 50% unverified keeps the signal pending evidence.",
     notes.length ? `Baseline notes: ${notes.join(" ")}` : "Baseline notes: Expected transaction and value baselines provided.",
-    `Evidence gaps: ${unverifiedPoints(result) ? `${unverifiedPoints(result)} of ${result.score} points are unverified` : "None identified in the selected patterns"}`,
+    `Evidence gaps: ${unsupported ? `${unsupported} of ${result.score} points are unverified` : "None identified in the selected patterns"}`,
     "Status: Human review required",
     "Detected patterns:",
     result.flags.length ? result.flags.map((flag) => `- ${flag.title} (+${flag.points}): ${flagDetail(flag, input)}`).join("\n") : "- No configured pattern was triggered",
@@ -368,6 +395,7 @@ function calculateSignal(input) {
 function render(result, input) {
   if (!currentCaseId) currentCaseId = createCaseId();
   if (!currentGeneratedAt) currentGeneratedAt = generatedAtUtc();
+  if (input.customerReference === "Anonymised PDF case") input.customerReference = `PDF case ${currentCaseId.slice(-6)}`;
   accountRevealed = false;
   updateAccountDisplay(input.customerReference);
   reportPanel.classList.remove("is-empty");
@@ -375,22 +403,26 @@ function render(result, input) {
   reportContent.hidden = false;
 
   document.querySelector("#proactiveScore").textContent = result.score;
-  document.querySelector("#proactiveBand").textContent = result.flags.length ? `${result.band.toUpperCase()} PRIORITY` : "NO SIGNAL";
-  document.querySelector("#proactiveBand").className = `status-pill ${result.flags.length ? `status-${result.band.toLowerCase()}` : "status-no-signal"}`;
+  const presentation = signalPresentation(result);
+  const unsupported = unverifiedPoints(result);
+  const supported = evidenceSupportedPoints(result);
+  document.querySelector("#proactiveBand").textContent = presentation.label;
+  document.querySelector("#proactiveBand").className = `status-pill ${presentation.className}`;
   document.querySelector("#proactiveGauge").parentElement.style.background = `conic-gradient(#1967d2 ${result.score * 3.6}deg, #dcecf6 0deg)`;
   document.querySelector("#proactiveRawScore").textContent = result.score;
+  document.querySelector("#proactiveSupportedScore").textContent = supported;
+  document.querySelector("#proactiveUnverifiedScore").textContent = unsupported;
   document.querySelector("#proactiveFlagCount").textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
   document.querySelector("#proactiveStatusTitle").textContent = "Human review required";
   const notes = baselineNotes(input);
   document.querySelector("#proactiveStatusText").textContent = result.flags.length
-    ? `This is an early-warning prioritisation signal, not a final finding. ${notes.length ? "Some baseline-dependent rules were not evaluated. " : ""}Review evidence before any further action.`
+    ? `This is an early-warning prioritisation signal, not a final finding. Evidence-supported score: ${supported}/100. ${unsupported ? `${unsupported} points remain unverified. ` : ""}${notes.length ? "Some baseline-dependent rules were not evaluated. " : ""}Review evidence before any further action.`
     : "No configured pattern signal was triggered. This is not a finding of low risk.";
   const summaryText = result.flags.length
     ? "The observed activity contains patterns requiring focused review."
     : "No selected pattern exceeded the configured conditions.";
   document.querySelector("#proactiveSummary").innerHTML = `<strong>${escapeHtml(maskAccountReference(input.customerReference))}</strong> — ${escapeHtml(input.customerSegment)} profile, ${escapeHtml(input.monitoringWindow)}. ${summaryText}`;
 
-  const unsupported = unverifiedPoints(result);
   if (evidenceGapSummary) {
     evidenceGapSummary.hidden = !unsupported;
     evidenceGapSummary.textContent = unsupported
@@ -420,10 +452,10 @@ function render(result, input) {
     ["Changed channel / product", input.channelDetail || "Not provided"]
   ].map(([label, text]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(text)}</strong></div>`).join("");
   document.querySelector("#proactiveTypologyHypothesis").textContent = typologyHypothesis(result, input);
-  document.querySelector("#proactiveScoreBasis").textContent = `Sum of configured weighted pattern contributions, capped at 100. ${unsupported ? `${formatNumber(unsupported)} of ${formatNumber(result.score)} points are currently unverified. ` : ""}${notes.length ? `${notes.join(" ")} ` : ""}Thresholds and weights require institutional calibration before operational use.`;
+  document.querySelector("#proactiveScoreBasis").textContent = `Configured score ${result.score}/100; evidence-supported score ${supported}/100; unverified contribution ${unsupported} points. Applied bands: Low 0-24, Medium 25-49, High 50-74, Critical 75-100. More than 50% unverified keeps the signal pending evidence. ${notes.length ? `${notes.join(" ")} ` : ""}Weights require institutional calibration before operational use.`;
 
   document.querySelector("#proactiveFlags").innerHTML = result.flags.length
-    ? result.flags.map((flag) => `<article class="flag-item${flag.evidenceGap ? " evidence-gap" : ""}"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong>${flag.evidenceGap ? "<span class=\"evidence-warning\">SCORED WITHOUT SUPPORTING DATA</span>" : ""}<p>${escapeHtml(flagDetail(flag, input))}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
+    ? result.flags.map((flag) => `<article class="flag-item${flag.evidenceGap ? " evidence-gap" : ""}"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong>${flag.evidenceGap ? "<span class=\"evidence-warning\">UNVERIFIED — EVIDENCE REQUIRED</span>" : ""}<p>${escapeHtml(flagDetail(flag, input))}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
     : `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured pattern was triggered</strong><p>Add reliable transaction history and supporting context for a more specific review signal.</p></div><span class="flag-points" style="color:#14866b">—</span></div>`;
 
   document.querySelector("#proactiveNextSteps").innerHTML = nextSteps(result).map((step) => `<li>${escapeHtml(step)}</li>`).join("");

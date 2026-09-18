@@ -8,7 +8,7 @@
       content="TradeGuard by RegTech Nexus AI — an explainable trade-finance and TBML risk review workspace."
     />
     <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css?v=21" />
+    <link rel="stylesheet" href="./style.css?v=22" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-10WQVBN61X"></script>
     <script>
@@ -40,13 +40,17 @@
     </header>
 
     <main id="top">
+      <section class="international-banner section-shell" aria-label="International configuration">
+        <span class="international-banner-label">INTERNATIONAL-READY</span>
+        <p>Provide the relevant country’s HS-code or tariff reference and TradeGuard can be configured for that market. Market-specific deployment and a custom domain are available for institutional pilots.</p>
+      </section>
       <section class="hero section-shell">
         <div class="hero-copy">
           <div class="eyebrow"><span class="pulse-dot"></span> Product preview by RegTech Nexus AI</div>
           <h1>Trade finance review with a clearer risk signal.</h1>
           <p class="hero-lead">
-            TradeGuard helps reviewers identify potential TBML red flags across price, parties,
-            routes and documents—before a transaction becomes a difficult case.
+            TradeGuard is an AI-assisted international review workspace that helps authorised
+            reviewers identify potential TBML red flags across price, parties, routes and documents—before a transaction becomes a difficult case.
           </p>
           <div class="hero-actions workspace-entry-actions">
             <a class="button button-primary" href="#risk-check">TBML Check <span>→</span></a>
@@ -55,7 +59,7 @@
           <div class="hero-proof">
             <span>Explainable flags</span>
             <span>Human review</span>
-            <span>Bangladesh-focused</span>
+            <span>International-ready</span>
           </div>
         </div>
 
@@ -101,7 +105,7 @@
             <span class="monitoring-icon monitoring-icon-tbml" aria-hidden="true">
               <svg viewBox="0 0 48 48" role="img"><path d="M24 4 40 10v11c0 10.5-6.7 19.3-16 23C14.7 40.3 8 31.5 8 21V10l16-6Z"/><path d="m15 24 5.5 5.5L33 17"/></svg>
             </span>
-            <span class="monitoring-card-copy"><span class="panel-kicker">TRADE-BASED RISK</span><strong>TBML Monitoring</strong><small>Review unusual value, goods, parties, routes and documents.</small></span>
+            <span class="monitoring-card-copy"><span class="panel-kicker">TRADE-BASED RISK</span><strong>TBML Check</strong><small>Review unusual value, goods, parties, routes and documents.</small></span>
             <span class="monitoring-arrow" aria-hidden="true">→</span>
           </a>
           <a class="monitoring-card monitoring-card-secondary" href="./proactive-monitoring.html">
@@ -148,7 +152,7 @@
                 <label for="hsCode"><span>HS Code <em>(required to start assessment)</em></span></label>
                 <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="e.g. 52010000" required aria-describedby="hsCodeDescription" />
                 <button id="lookupHsCode" class="text-button" type="button">Verify HS Code</button>
-                <small id="hsCodeDescription" aria-live="polite">Required: enter an 8-digit HS Code from the Bangladesh Customs tariff reference.</small>
+                <small id="hsCodeDescription" aria-live="polite">Required: enter an 8-digit HS Code from the configured country tariff reference.</small>
               </div>
 
               <div id="commodityField" class="field derived-field" hidden>
@@ -179,14 +183,14 @@
 
               <label class="field">
                 <span>Origin country <em>(required to start assessment)</em></span>
-                <select id="originCountry" name="originCountry" data-default-country="Bangladesh" required>
+                <select id="originCountry" name="originCountry" required>
                   <option value="">Select origin country</option>
                 </select>
               </label>
 
               <label class="field">
                 <span>Destination country <em>(required to start assessment)</em></span>
-                <select id="destinationCountry" name="destinationCountry" data-default-country="United Arab Emirates" required>
+                <select id="destinationCountry" name="destinationCountry" required>
                   <option value="">Select destination country</option>
                 </select>
               </label>

@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=21" />
+    <link rel="stylesheet" href="./style.css?v=22" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -31,9 +31,10 @@
           <div class="eyebrow"><span class="pulse-dot"></span> Early-warning transaction intelligence</div>
           <h1>Transaction monitoring before the pattern becomes a case.</h1>
           <p class="hero-lead">Review transaction behaviour against the customer profile, expected activity and emerging risk signals—while keeping the final decision with an authorised human reviewer.</p>
+          <p class="international-note"><strong>International-ready:</strong> Configure the related country’s tariff/HS-code reference for a market-specific review workspace. Custom domain deployment is available for institutional pilots.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#proactive-check">Run transaction review <span>→</span></a>
-            <a class="button button-quiet" href="./index.html#risk-check">Open TBML Monitoring <span>↗</span></a>
+            <a class="button button-quiet" href="./index.html#risk-check">Open TBML Check <span>↗</span></a>
           </div>
           <div class="hero-proof">
             <span>Pattern-led</span>
@@ -71,7 +72,7 @@
             <div class="eyebrow">Transaction monitoring</div>
             <h2>Run an early-warning review</h2>
           </div>
-          <p>Upload a transaction PDF for a preliminary review. Other fields are optional; missing baseline or context data will be marked as unverified or not evaluated.</p>
+          <p>Upload a transaction PDF for an AI-assisted preliminary review. Other fields are optional; missing baseline or context data will be marked as unverified or not evaluated, never silently assumed.</p>
         </div>
 
         <div class="workspace-grid">
@@ -154,6 +155,7 @@
                   <option>Trailing 90-day average</option>
                   <option>Trailing 180-day average</option>
                   <option>Customer profile baseline</option>
+                  <option>Not provided - no customer baseline supplied</option>
                 </select>
               </label>
               <label class="field">
@@ -254,7 +256,11 @@
               </div>
               <div id="proactiveStatus" class="decision-readiness is-neutral">
                 <div><strong id="proactiveStatusTitle">Human review required</strong><p id="proactiveStatusText">Review the signal with supporting transaction evidence.</p></div>
-                <div class="raw-score"><span>Configured points</span><strong id="proactiveRawScore">—</strong></div>
+                <div class="score-breakdown" aria-label="Score breakdown">
+                  <div><span>Configured</span><strong id="proactiveRawScore">—</strong></div>
+                  <div><span>Supported</span><strong id="proactiveSupportedScore">—</strong></div>
+                  <div><span>Unverified</span><strong id="proactiveUnverifiedScore">—</strong></div>
+                </div>
               </div>
               <div id="proactiveCaseMeta" class="report-meta-grid">
                 <div class="report-meta-item"><span>Case ID</span><strong id="proactiveCaseId">—</strong></div>
@@ -284,9 +290,9 @@
           <div>
             <div class="eyebrow">Switch workspace</div>
             <h2>Need a trade-specific review?</h2>
-            <p>Open the dedicated TBML Monitoring workspace for goods, valuation, documents, parties and routes.</p>
+            <p>Open the dedicated TBML Check workspace for goods, valuation, documents, parties and routes.</p>
           </div>
-          <a class="button button-light button-full" href="./index.html#risk-check">Open TBML Monitoring <span>↗</span></a>
+          <a class="button button-light button-full" href="./index.html#risk-check">Open TBML Check <span>↗</span></a>
         </div>
       </section>
 
@@ -326,6 +332,6 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script type="module" src="./proactive-monitoring.js?v=21"></script>
+    <script type="module" src="./proactive-monitoring.js?v=22"></script>
   </body>
 </html>

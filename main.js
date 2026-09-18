@@ -219,7 +219,7 @@ function verifyHsCode() {
 
   if (!item) {
     hsCodeDescription.textContent =
-      "HS Code was not found in the available Bangladesh Customs tariff reference.";
+      "HS Code was not found in the configured country tariff reference.";
     hsCodeDescription.style.color = "#b42318";
     return false;
   }
