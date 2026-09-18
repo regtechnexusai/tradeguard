@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="TradeGuard by RegTech Nexus AI — an explainable trade-finance and TBML risk review demo."
+      content="TradeGuard by RegTech Nexus AI — an explainable trade-finance and TBML risk review workspace."
     />
     <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css?v=15" />
+    <link rel="stylesheet" href="./style.css?v=16" />
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-10WQVBN61X"></script>
     <script>
@@ -32,7 +32,7 @@
         />
       </a>
       <nav class="nav-links" aria-label="Main navigation">
-        <a href="#risk-check">Risk demo</a>
+        <a href="#risk-check">TBML Check</a>
         <a href="#monitoring-modes">Monitoring modes</a>
         <a href="#how-it-works">How it works</a>
         <a class="nav-cta" href="#pilot">Request pilot</a>
@@ -121,7 +121,7 @@
             <div class="eyebrow">Sample transaction review</div>
             <h2>Run a TradeGuard risk check</h2>
           </div>
-          <p>Use fictional or anonymised information only. This demo does not store transaction documents.</p>
+          <p>Use fictional or anonymised information only. This assessment workspace does not store transaction documents.</p>
         </div>
 
         <div class="workspace-grid">
@@ -140,7 +140,7 @@
 
             <div class="form-grid">
               <div class="field">
-                <label for="hsCode"><span>HS Code <em>(required to start demo)</em></span></label>
+                <label for="hsCode"><span>HS Code <em>(required to start assessment)</em></span></label>
                 <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="e.g. 52010000" required aria-describedby="hsCodeDescription" />
                 <button id="lookupHsCode" class="text-button" type="button">Verify HS Code</button>
                 <small id="hsCodeDescription" aria-live="polite">Required: enter an 8-digit HS Code from the Bangladesh Customs tariff reference.</small>
@@ -173,14 +173,14 @@
               </label>
 
               <label class="field">
-                <span>Origin country <em>(required to start demo)</em></span>
+                <span>Origin country <em>(required to start assessment)</em></span>
                 <select id="originCountry" name="originCountry" data-default-country="Bangladesh" required>
                   <option value="">Select origin country</option>
                 </select>
               </label>
 
               <label class="field">
-                <span>Destination country <em>(required to start demo)</em></span>
+                <span>Destination country <em>(required to start assessment)</em></span>
                 <select id="destinationCountry" name="destinationCountry" data-default-country="United Arab Emirates" required>
                   <option value="">Select destination country</option>
                 </select>
@@ -230,7 +230,7 @@
 
               <details class="optional-section field-wide" open>
                 <summary>Optional: Price and valuation details</summary>
-                <p class="optional-note">Complete the declared price, market range, unit and currency to enable an indicative price comparison. Source, date and valuation basis improve comparability but do not block this demo.</p>
+                <p class="optional-note">Complete the declared price, market range, unit and currency to enable an indicative price comparison. Source, date and valuation basis improve comparability but do not block this assessment.</p>
                 <div class="optional-grid">
                   <label class="field">
                     <span>Total declared value</span>
@@ -273,7 +273,7 @@
               </details>
 
               <details class="optional-section field-wide" open>
-                <summary>Core counterparty context — required to start demo</summary>
+                <summary>Core counterparty context — required to start assessment</summary>
                 <p class="optional-note">Select the known status. If the information is not available, choose “Unknown / not provided” and continue with an indicative result.</p>
                 <div class="optional-grid">
                   <label class="field">
@@ -351,7 +351,7 @@
 
               <details class="optional-section field-wide">
                 <summary>Optional: Shipment and document details</summary>
-                <p class="optional-note">Do not upload or enter confidential documents in this public demo.</p>
+              <p class="optional-note">Do not upload or enter confidential documents in this public workspace.</p>
                 <div class="optional-grid">
                   <label class="field">
                     <span>Port of loading</span>
@@ -548,7 +548,7 @@
             <div id="emptyReport" class="empty-report">
               <div class="empty-icon">✦</div>
               <h3>Your review result will appear here</h3>
-              <p>Enter the HS Code and core case context, then run the indicative demo. Additional information can be added to improve the assessment.</p>
+              <p>Enter the HS Code and core case context, then run the assessment. Additional information can be added to improve the result.</p>
             </div>
 
             <div id="reportContent" class="report-content" hidden>
@@ -594,7 +594,7 @@
                 <span class="recommendation-icon">✓</span>
                 <div><strong>Suggested next step</strong><p id="recommendationText"></p></div>
               </div>
-              <div class="report-footer-note">Demo output only. Final transaction decisions remain with the authorised reviewer.</div>
+              <div class="report-footer-note">Assessment output only. It is not a final TBML determination. Final transaction decisions remain with the authorised reviewer.</div>
             </div>
           </section>
         </div>
@@ -652,6 +652,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=15"></script>
+    <script type="module" src="./main.js?v=16"></script>
   </body>
 </html>

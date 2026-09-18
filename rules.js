@@ -5,17 +5,17 @@ const UNIT_PROFILES = [
   {
     test: /^0206/,
     units: ["Kilogram", "Tonne"],
-    basis: "HS 0206 edible offal is assessed on a weight basis for this demo; confirm the applicable tariff, product condition and contract unit."
+    basis: "HS 0206 edible offal is assessed on a weight basis for this assessment; confirm the applicable tariff, product condition and contract unit."
   },
   {
     test: /^0205/,
     units: ["Kilogram", "Tonne"],
-    basis: "HS 0205 meat is assessed on a weight basis for this demo; confirm the applicable tariff and contract unit."
+    basis: "HS 0205 meat is assessed on a weight basis for this assessment; confirm the applicable tariff and contract unit."
   },
   {
     test: /^5201/,
     units: ["Kilogram", "Tonne"],
-    basis: "HS 5201 raw cotton is assessed on a weight basis for this demo; confirm the applicable tariff and contract unit."
+    basis: "HS 5201 raw cotton is assessed on a weight basis for this assessment; confirm the applicable tariff and contract unit."
   },
   {
     test: /^(5208|5209|5210|5211|5212)/,
@@ -132,7 +132,7 @@ export function assessDataIntegrity(input) {
     benchmarkMetadataComplete,
     priceStatus,
     message: priceScoringEligible
-      ? "The price component can be calculated for the supplied unit and range. Source, date and valuation basis improve comparability but do not block this demo."
+      ? "The price component can be calculated for the supplied unit and range. Source, date and valuation basis improve comparability but do not block this assessment."
       : priceDataProvided
         ? "The price component was not calculated because the optional price inputs are incomplete or cannot be compared to the verified HS Code and unit."
         : "No price component was calculated because the optional price data was not provided."
@@ -499,7 +499,7 @@ export function calculateRisk(input) {
     band,
     decisionReady,
     decisionStatus: decisionReady
-      ? (flags.length ? "Ready for authorised review" : "Indicative demo complete — no scoreable signal")
+      ? (flags.length ? "Ready for authorised review" : "Assessment complete — no scoreable signal")
       : "Not decision-ready",
     evidenceReady,
     readinessIssues,

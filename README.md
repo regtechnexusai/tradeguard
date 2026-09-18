@@ -1,6 +1,6 @@
 # TradeGuard by RegTech Nexus AI
 
-A static, low-cost MVP for an explainable trade-finance and TBML risk-review demo.
+A static, low-cost MVP for an explainable trade-finance and TBML risk-review workspace.
 
 ## What this version does
 
@@ -12,12 +12,12 @@ A static, low-cost MVP for an explainable trade-finance and TBML risk-review dem
 - Separates data completeness from data integrity/comparability.
 - Withholds price scoring when HS Code, goods description, unit or price inputs cannot be compared reliably; missing optional benchmark metadata is shown as a limitation rather than a form blocker.
 - Does not display a misleading 0/100 when no scoreable signal is available.
-- Keeps evidence, confidence and rationale as readiness information for manually selected indicators instead of blocking the public demo.
+- Keeps evidence, confidence and rationale as readiness information for manually selected indicators instead of blocking the public assessment.
 - Maps HS 0206 edible offal to a weight-based unit profile and limits the unit selector to the verified HS profile.
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Prepares a pilot request that can be copied into email, Facebook or LinkedIn.
 - Shows separate TBML Monitoring and Proactive Monitoring entry points.
-- Adds a separate `proactive-monitoring.html` workspace with a functional early-warning demo.
+- Adds a separate `proactive-monitoring.html` workspace with a functional early-warning review.
 - Uses glossy, raised 3D styling for primary, navigation, utility and workspace buttons.
 - Keeps “Human review required” visible as the review principle.
 - Adds review-only context controls for jurisdiction risk, PEP/screening, restricted or dual-use goods, payment transparency and source of funds/wealth.
@@ -64,4 +64,4 @@ After user validation, add:
 5. Evidence-linked PDF case reports.
 6. Institution-specific rule calibration, version approval, testing and audit logging.
 
-Do not upload real bank or customer documents to this demo version.
+Do not upload real bank or customer documents to this public version.

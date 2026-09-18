@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TradeGuard Proactive Transaction Monitoring — an explainable early-warning review workspace." />
     <title>Proactive Transaction Monitoring | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=15" />
+    <link rel="stylesheet" href="./style.css?v=16" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -17,7 +17,7 @@
       </a>
       <nav class="nav-links" aria-label="Main navigation">
         <a href="./index.html#monitoring-modes">Monitoring modes</a>
-        <a href="#proactive-check">Proactive demo</a>
+        <a href="#proactive-check">Proactive review</a>
         <a class="nav-cta" href="./index.html#pilot">Request pilot</a>
       </nav>
     </header>
@@ -29,7 +29,7 @@
           <h1>Proactive monitoring before the pattern becomes a case.</h1>
           <p class="hero-lead">Review transaction behaviour against the customer profile, expected activity and emerging risk signals—while keeping the final decision with an authorised human reviewer.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#proactive-check">Run proactive demo <span>→</span></a>
+            <a class="button button-primary" href="#proactive-check">Run proactive review <span>→</span></a>
             <a class="button button-quiet" href="./index.html#risk-check">Open TBML Monitoring <span>↗</span></a>
           </div>
           <div class="hero-proof">
@@ -108,7 +108,28 @@
                 </select>
               </label>
               <label class="field">
-                <span>Expected monthly transactions</span>
+                <span>Sector / business type</span>
+                <input id="sectorBusinessType" type="text" placeholder="e.g. general trading, textiles" />
+              </label>
+              <label class="field">
+                <span>Baseline window</span>
+                <select id="baselineWindow">
+                  <option>Trailing 90-day average</option>
+                  <option>Trailing 180-day average</option>
+                  <option>Customer profile baseline</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Monitoring currency</span>
+                <select id="monitoringCurrency">
+                  <option>USD</option>
+                  <option>BDT</option>
+                  <option>EUR</option>
+                  <option>Other / not provided</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Expected transactions for baseline</span>
                 <input id="expectedTransactions" type="number" min="0" step="1" placeholder="20" />
               </label>
               <label class="field">
@@ -116,12 +137,24 @@
                 <input id="observedTransactions" type="number" min="0" step="1" placeholder="48" />
               </label>
               <label class="field">
-                <span>Expected monthly value</span>
+                <span>Expected value for baseline</span>
                 <input id="expectedValue" type="number" min="0" step="any" placeholder="100000" />
               </label>
               <label class="field">
                 <span>Observed value</span>
                 <input id="observedValue" type="number" min="0" step="any" placeholder="280000" />
+              </label>
+              <label class="field field-wide">
+                <span>Transaction detail / evidence note <em>(optional)</em></span>
+                <textarea id="transactionDetail" rows="3" placeholder="Add observed timing, amounts, payment references or evidence locations—without confidential documents."></textarea>
+              </label>
+              <label class="field field-wide">
+                <span>Counterparty detail <em>(optional)</em></span>
+                <input id="counterpartyDetail" type="text" placeholder="Anonymised counterparty reference, jurisdiction and first-seen date" />
+              </label>
+              <label class="field field-wide">
+                <span>Route / corridor detail <em>(optional)</em></span>
+                <input id="corridorDetail" type="text" placeholder="Origin → destination corridor and what changed from the normal pattern" />
               </label>
             </div>
 
@@ -168,11 +201,35 @@
                 <div><strong id="proactiveStatusTitle">Human review required</strong><p id="proactiveStatusText">Review the signal with supporting transaction evidence.</p></div>
                 <div class="raw-score"><span>INDICATIVE POINTS</span><strong id="proactiveRawScore">—</strong></div>
               </div>
+              <div id="proactiveCaseMeta" class="report-meta-grid">
+                <div class="report-meta-item"><span>CASE ID</span><strong id="proactiveCaseId">—</strong></div>
+                <div class="report-meta-item"><span>GENERATED UTC</span><strong id="proactiveGeneratedAt">—</strong></div>
+                <div class="report-meta-item"><span>REVIEWER ASSIGNED</span><strong>Authorised reviewer</strong></div>
+              </div>
               <div id="proactiveSummary" class="report-summary"></div>
+              <div class="report-detail-card">
+                <div class="report-detail-heading">Review context</div>
+                <div id="proactiveReviewContext" class="report-detail-grid"></div>
+              </div>
+              <div class="hypothesis-box">
+                <span class="mini-label">TYPOLOGY HYPOTHESIS</span>
+                <p id="proactiveTypologyHypothesis"></p>
+              </div>
+              <div class="score-basis-note"><strong>Score basis:</strong> <span id="proactiveScoreBasis"></span></div>
               <div class="report-subheading"><span>Detected patterns</span><span id="proactiveFlagCount">0 flags</span></div>
               <div id="proactiveFlags" class="flag-list"></div>
-              <div class="recommendation-box"><span class="recommendation-icon">✓</span><div><strong>Suggested next step</strong><p id="proactiveRecommendation"></p></div></div>
-              <div class="report-footer-note">Prototype output only. Final monitoring and escalation decisions remain with the authorised reviewer.</div>
+              <div class="recommendation-box"><span class="recommendation-icon">✓</span><div><strong>Suggested next steps</strong><ol id="proactiveNextSteps" class="report-action-list"></ol></div></div>
+              <div class="reviewer-disposition">
+                <div class="report-subheading"><span>Reviewer disposition</span><span>Human action</span></div>
+                <select id="proactiveDisposition">
+                  <option>Pending human review</option>
+                  <option>Request more information</option>
+                  <option>Escalate for enhanced review</option>
+                  <option>Close — false positive with rationale</option>
+                </select>
+                <textarea id="proactiveDispositionRationale" rows="3" placeholder="Record the reviewer rationale and evidence reference."></textarea>
+              </div>
+              <div class="report-footer-note">Assessment output only. It is not a finding of money laundering or other wrongdoing. Final monitoring and escalation decisions remain with the authorised reviewer.</div>
             </div>
           </section>
         </div>
@@ -197,6 +254,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./proactive-monitoring.js?v=15"></script>
+    <script type="module" src="./proactive-monitoring.js?v=16"></script>
   </body>
 </html>

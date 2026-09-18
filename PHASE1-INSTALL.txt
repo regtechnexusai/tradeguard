@@ -20,7 +20,7 @@ regtech-nexus-ai-logo.png
 hs-codes.json (or the existing data/hs-codes.json)
 
 HS Code, origin country and destination country are required to start the
-indicative demo. Beneficial ownership, buyer–seller relationship and payer
+indicative assessment. Beneficial ownership, buyer–seller relationship and payer
 relationship are also required selections, with “Unknown / not provided” as a
 valid option so a visitor is not blocked when the information is unavailable.
 After a valid HS Code is verified, the Product / commodity field is populated
@@ -35,12 +35,12 @@ Missing source/date/valuation metadata is shown as a limitation rather than a
 form blocker.
 If a core field is empty or invalid, Submit shows a red border and an inline
 error; after correction, the form can be submitted again. Optional fields never
-block the demo. The report does not display a misleading 0/100 when there is no
+block the assessment. The report does not display a misleading 0/100 when there is no
 scoreable signal; it shows “No signal” or an indicative score instead.
 Use “Start new case” to clear all previous transaction inputs and selections.
 Route/port concerns and manual TBML selections remain visible as readiness
 issues when supporting context, confidence, evidence or a reviewer rationale is
-missing. The public demo still produces a result, but the decision-ready score
+missing. The public workspace still produces a result, but the decision-ready score
 is withheld until those conditions are resolved; raw points are labelled as
 indicative points for QA purposes.
 The form also includes a structured, multi-select TBML red-flag indicator
@@ -49,12 +49,12 @@ price/valuation, goods/HS Code, quantity/unit, documents, route/ports,
 related-party/UBO, third-party payment, multiple/phantom shipment,
 business-profile mismatch and unusual payment terms.
 Use fictional or anonymised information only. Do not upload confidential LC,
-invoice, passport, NID, bank or SWIFT documents to this public demo.
+invoice, passport, NID, bank or SWIFT documents to this public workspace.
 
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=14
+https://regtechnexusai.github.io/tradeguard/?v=16
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and

@@ -284,7 +284,7 @@ export function renderReport(result, input) {
     ...result.flags.map((flag) => `- ${flag.title}: ${flag.detail}`),
     `Suggested next step: ${result.recommendation}`,
     "Assessment is indicative and depends on the quality, completeness and genuineness of the information provided.",
-    "Demo output only. Final decisions remain with the authorised reviewer."
+    "Assessment output only. It is not a final TBML determination. Final decisions remain with the authorised reviewer."
   ].join("\n");
 }
 
@@ -294,7 +294,7 @@ export function setSampleValues() {
     productDescription: "Cotton, not carded or combed; illustrative raw cotton shipment",
     qualityGrade: "Commercial grade",
     material: "100% cotton",
-    modelBrand: "Demo product",
+    modelBrand: "Illustrative product",
     specification: "Illustrative sample goods description",
     quantity: "100000",
     unitOfMeasure: "Kilogram",
@@ -303,7 +303,7 @@ export function setSampleValues() {
     currency: "USD",
     marketLow: "10",
     marketHigh: "12",
-    marketSource: "Illustrative demo benchmark — replace with a verified market source",
+    marketSource: "Illustrative benchmark — replace with a verified market source",
     marketSourceDate: "2026-09-14",
     valuationBasis: "Commercial invoice",
     originCountry: "Bangladesh",
@@ -315,8 +315,8 @@ export function setSampleValues() {
     sourceOfFundsStatus: "Partially supported",
     incoterms: "FOB",
     paymentTerms: "Sight LC",
-    buyerReference: "UAE importer demo",
-    sellerReference: "Bangladesh exporter demo",
+    buyerReference: "Anonymised UAE importer",
+    sellerReference: "Anonymised Bangladesh exporter",
     beneficialOwnership: "Unknown",
     relatedPartyRelationship: "Unknown",
     payerRelationship: "Third party",
@@ -329,7 +329,7 @@ export function setSampleValues() {
     billOfLadingConsistency: "Not provided"
     , indicatorConfidence: "Medium"
     , evidenceStatus: "Partially available",
-    reviewerEvidenceNote: "Illustrative demo note only; validate selected indicators against genuine commercial and transport evidence."
+    reviewerEvidenceNote: "Sample note only; validate selected indicators against genuine commercial and transport evidence."
   };
 
   Object.entries(values).forEach(([id, value]) => {
