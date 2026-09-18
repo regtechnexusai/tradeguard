@@ -1,9 +1,12 @@
 const form = document.querySelector("#proactiveForm");
 const sampleButton = document.querySelector("#proactiveSampleButton");
+const resetButton = document.querySelector("#proactiveResetButton");
+const copyButton = document.querySelector("#proactiveCopyButton");
 const message = document.querySelector("#proactiveMessage");
 const reportPanel = document.querySelector("#proactiveReport");
 const emptyReport = document.querySelector("#proactiveEmpty");
 const reportContent = document.querySelector("#proactiveContent");
+let latestSummary = "";
 
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -72,19 +75,48 @@ function render(result, input) {
   document.querySelector("#proactiveGauge").parentElement.style.background = `conic-gradient(#1967d2 ${result.score * 3.6}deg, #dcecf6 0deg)`;
   document.querySelector("#proactiveRawScore").textContent = result.score;
   document.querySelector("#proactiveFlagCount").textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
-  document.querySelector("#proactiveStatusTitle").textContent = result.flags.length ? "Human review required" : "No configured signal";
+  document.querySelector("#proactiveStatusTitle").textContent = "Human review required";
   document.querySelector("#proactiveStatusText").textContent = result.flags.length
     ? "This is an early-warning prioritisation signal, not a final finding. Review evidence before escalation."
     : "No configured pattern signal was triggered. This is not a finding of low risk.";
-  document.querySelector("#proactiveSummary").innerHTML = `<strong>${escapeHtml(input.customerReference)}</strong> — ${escapeHtml(input.customerSegment)} profile, ${escapeHtml(input.monitoringWindow)}. ${result.flags.length ? "The observed activity contains patterns requiring focused review." : "No selected pattern exceeded the configured demo conditions."}`;
-  document.querySelector("#proactiveRecommendation").textContent = result.flags.length
+  const summaryText = result.flags.length
+    ? "The observed activity contains patterns requiring focused review."
+    : "No selected pattern exceeded the configured demo conditions.";
+  const recommendation = result.flags.length
     ? "Reconcile the observed activity with the customer profile and retain the supporting evidence for authorised review."
     : "Continue normal monitoring and refresh the customer baseline when reliable new information becomes available.";
+  document.querySelector("#proactiveSummary").innerHTML = `<strong>${escapeHtml(input.customerReference)}</strong> — ${escapeHtml(input.customerSegment)} profile, ${escapeHtml(input.monitoringWindow)}. ${summaryText}`;
+  document.querySelector("#proactiveRecommendation").textContent = recommendation;
 
   document.querySelector("#proactiveFlags").innerHTML = result.flags.length
     ? result.flags.map((flag) => `<article class="flag-item"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong><p>${escapeHtml(flag.detail)}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
     : `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured pattern was triggered</strong><p>Add reliable transaction history and supporting context for a more specific review signal.</p></div><span class="flag-points" style="color:#14866b">—</span></div>`;
+
+  latestSummary = [
+    "TradeGuard Proactive Monitoring Summary",
+    `Customer / account: ${input.customerReference}`,
+    `Profile: ${input.customerSegment} | Window: ${input.monitoringWindow}`,
+    `Signal: ${result.score}/100 (${result.flags.length ? result.band : "No signal"})`,
+    "Status: Human review required",
+    "Detected patterns:",
+    result.flags.length ? result.flags.map((flag) => `- ${flag.title} (+${flag.points})`).join("\n") : "- No configured pattern was triggered",
+    `Suggested next step: ${recommendation}`
+  ].join("\n");
+  if (copyButton) copyButton.disabled = false;
 }
+
+resetButton?.addEventListener("click", () => {
+  form?.reset();
+  reportPanel?.classList.add("is-empty");
+  if (emptyReport) emptyReport.hidden = false;
+  if (reportContent) reportContent.hidden = true;
+  if (message) message.textContent = "New case started. Previous monitoring inputs were cleared.";
+  latestSummary = "";
+  if (copyButton) {
+    copyButton.disabled = true;
+    copyButton.textContent = "Copy summary";
+  }
+});
 
 sampleButton?.addEventListener("click", () => {
   setValues({
@@ -114,6 +146,17 @@ form?.addEventListener("submit", (event) => {
   message.textContent = "";
   render(calculateSignal(input), input);
   reportPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+copyButton?.addEventListener("click", async () => {
+  if (!latestSummary) return;
+  try {
+    await navigator.clipboard.writeText(latestSummary);
+    copyButton.textContent = "Copied ✓";
+    window.setTimeout(() => { copyButton.textContent = "Copy summary"; }, 1800);
+  } catch {
+    copyButton.textContent = "Select report manually";
+  }
 });
 
 document.querySelector("#year").textContent = new Date().getFullYear();
