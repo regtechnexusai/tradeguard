@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TradeGuard public demo privacy and PDF handling notice." />
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/privacy.html" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>Privacy and PDF Handling | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=26" />
+    <link rel="stylesheet" href="./style.css?v=28" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -26,18 +27,18 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Public demo notice</div>
       <h1>Privacy and PDF handling</h1>
       <p class="info-lead">TradeGuard is a static public demonstration workspace. It is intended for fictional, synthetic or anonymised information—not confidential customer, bank or trade documents.</p>
-      <p class="info-meta">Last updated: 19 September 2026 · public build v26</p>
+      <p class="info-meta">Last updated: 20 September 2026 · public build v28</p>
 
-      <div class="info-callout"><strong>Important:</strong> If you use the transaction-history-only option, remove names, account numbers, bank and branch details, opening dates and other identifiers before selecting a file.</div>
+      <div class="info-callout"><strong>Important:</strong> Before selecting a PDF, acknowledge that the public demo accepts only fictional, synthetic or anonymised data. Remove names, account numbers, bank and branch details, opening dates, email addresses and other identifiers.</div>
 
       <h2>How the public PDF review works</h2>
       <ol>
-        <li>The selected PDF is read in the browser using the pinned PDF.js 3.11.174 library loaded from cdnjs with a Subresource Integrity check.</li>
-        <li>The browser extracts available text and applies the visible transaction-monitoring rules locally.</li>
+        <li>The selected PDF is read in the browser using a pinned self-hosted PDF.js 6.3.289 build included at repository root in this public package.</li>
+        <li>The browser extracts available text and applies the visible transaction-monitoring rules locally, with PDF.js evaluation disabled for this parser path.</li>
         <li>The app does not provide a TradeGuard server upload endpoint, user account, case database or cloud case store. The PDF bytes are passed to the in-page parser rather than to a TradeGuard API.</li>
         <li>After analysis, the file input, temporary text reference and PDF.js document object are cleared by the page.</li>
       </ol>
-      <p>“Cleared after analysis” describes this browser session. It is not a promise that the device, browser, hosting provider, CDN, network provider or an uploaded source document has no separate history. Confirm the deployed build in the browser Network tab before any controlled pilot, and do not use confidential information in this public demo.</p>
+      <p>The file reference and temporary extracted text are cleared by the page after analysis. Identifier-like text can produce a visible warning, but the public build cannot prove whether a value is real or fictional; the user remains responsible for uploading only fictional, synthetic or anonymised data. This is not a promise that the device, browser, hosting provider, network provider or an uploaded source document has no separate history. Confirm the deployed build in the browser Network tab before any controlled pilot, and do not use confidential information in this public demo.</p>
 
       <h2>Two PDF input paths</h2>
       <h3>Full statement mode</h3>
@@ -55,13 +56,14 @@
       </ul>
 
       <h2>Analytics and external services</h2>
-      <p>The public app does not intentionally send transaction content to an analytics service. The site loads from GitHub Pages and the transaction-monitoring page loads the PDF.js library from cdnjs. Their own infrastructure, browser and network logs may be governed by their respective policies.</p>
+      <p>The public app does not intentionally send transaction content to an analytics service. The site loads from GitHub Pages and the transaction-monitoring page uses the self-hosted PDF.js build included in this package. GitHub Pages, the browser and network providers may have their own infrastructure logs governed by their respective policies.</p>
 
       <h2>Institutional deployment</h2>
       <p>Before a pilot uses real data, the deployment should have a formal privacy notice, lawful processing basis, retention and deletion policy, data-residency decision, access controls, encryption, vendor agreements, security testing and an approved incident-response process.</p>
 
       <h2>Contact</h2>
-      <p>For a pilot discussion, contact <a href="mailto:regtechnexusai@gmail.com">regtechnexusai@gmail.com</a>. A domain-authenticated business email and formal company details should be added before institutional procurement.</p>
+      <p>TradeGuard is an IT product of RegTech Nexus AI, a sister concern of Travel To Know. Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh. Phone: <a href="tel:+8801772282925">+880 1772 282925</a>. For a pilot discussion, contact <a href="mailto:regtechnexusai@gmail.com">regtechnexusai@gmail.com</a>.</p>
+      <p>The public build does not establish a formal retention period for pilot-request emails or a complete institutional data-controller notice. Do not send confidential or personal customer information by email; confirm the controller, lawful basis, retention and cross-border handling in a written pilot arrangement.</p>
     </main>
 
     <footer class="site-footer section-shell">
@@ -73,8 +75,12 @@
         <a href="./terms.html">Terms</a>
       </nav>
       <p>Public demo only. Human review remains required.</p>
-      <span>© <span id="year"></span> RegTech Nexus AI</span>
+      <div class="footer-company-details">
+        <p><strong>RegTech Nexus AI</strong> is an IT product publisher and a sister concern of Travel To Know.</p>
+        <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
+        <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
+      </div>
+      <span>© 2026 RegTech Nexus AI</span>
     </footer>
-    <script>document.querySelector("#year").textContent = new Date().getFullYear();</script>
   </body>
 </html>

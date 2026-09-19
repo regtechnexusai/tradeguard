@@ -1,3 +1,5 @@
+import { GlobalWorkerOptions, getDocument } from "./pdf.mjs";
+
 const form = document.querySelector("#proactiveForm");
 const sampleButton = document.querySelector("#proactiveSampleButton");
 const resetButton = document.querySelector("#proactiveResetButton");
@@ -8,6 +10,7 @@ const fullStatementModeButton = document.querySelector("#fullStatementModeButton
 const transactionOnlyModeButton = document.querySelector("#transactionOnlyModeButton");
 const pdfModeNote = document.querySelector("#pdfModeNote");
 const transactionPdfStatus = document.querySelector("#transactionPdfStatus");
+const pdfPrivacyAcknowledge = document.querySelector("#pdfPrivacyAcknowledge");
 const copyButton = document.querySelector("#proactiveCopyButton");
 const revealAccountButton = document.querySelector("#proactiveRevealAccount");
 const accountValue = document.querySelector("#proactiveAccountValue");
@@ -74,18 +77,21 @@ function clearPdfAttachment(statusText = "No PDF selected.") {
   setPdfStatus(statusText);
 }
 
+function refreshPdfControls() {
+  const acknowledged = Boolean(pdfPrivacyAcknowledge?.checked);
+  if (transactionPdfInput) transactionPdfInput.disabled = !acknowledged;
+  if (analyzePdfButton) analyzePdfButton.disabled = !selectedPdfFile || !acknowledged;
+  if (clearPdfButton) clearPdfButton.disabled = !selectedPdfFile;
+}
+
 function formatFileSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 async function extractPdfText(file) {
-  if (!window.pdfjsLib) {
-    throw new Error("The PDF reader is unavailable. Check the connection and try again.");
-  }
-
-  window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  GlobalWorkerOptions.workerSrc = "./pdf.worker.mjs";
   const buffer = await file.arrayBuffer();
-  const loadingTask = window.pdfjsLib.getDocument({ data: new Uint8Array(buffer) });
+  const loadingTask = getDocument({ data: new Uint8Array(buffer), isEvalSupported: false });
   const pdf = await loadingTask.promise;
   const pages = [];
 
@@ -156,6 +162,19 @@ function extractPdfSignals(rawText) {
   };
 }
 
+function detectPotentialIdentifiers(rawText) {
+  const text = String(rawText || "");
+  const findings = [];
+  if (/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i.test(text)) findings.push("email address");
+  if (/\b(account|a\/c|acct|iban|routing|sort code|account number|customer number|branch|phone|mobile|passport|national id|nid|date of birth)\b/i.test(text)) {
+    findings.push("account or identity labels");
+  }
+  if (/(?:account|a\/c|acct|iban|routing|sort code|customer number)\D{0,32}\d[\d\s-]{5,}\b/i.test(text)) {
+    findings.push("account-like number");
+  }
+  return [...new Set(findings)];
+}
+
 function applyPdfContext(extracted, rawText) {
   const professionOptions = [
     "Student", "Service holder", "Businessperson", "SME owner", "Housewife", "Foreign remitter",
@@ -184,13 +203,19 @@ function applyPdfContext(extracted, rawText) {
 
 async function analyzePdf() {
   if (!selectedPdfFile) return;
+  if (!pdfPrivacyAcknowledge?.checked) {
+    setPdfStatus("Acknowledge the public-demo data warning before selecting a PDF.", "is-error");
+    return;
+  }
   const file = selectedPdfFile;
   if (analyzePdfButton) analyzePdfButton.disabled = true;
   setPdfStatus("Reading PDF locally…", "is-processing");
   let analysisSucceeded = false;
 
+  let rawText = "";
   try {
-    let rawText = await extractPdfText(file);
+    rawText = await extractPdfText(file);
+    const potentialIdentifiers = detectPotentialIdentifiers(rawText);
     const extracted = extractPdfSignals(rawText);
     applyPdfContext(extracted, rawText);
     rawText = "";
@@ -209,22 +234,28 @@ async function analyzePdf() {
     const input = collectInput();
     if (pdfInputMode === "transaction-only") {
       message.textContent = "Transaction history extracted locally. Add or confirm the anonymised context below, then press Run Transaction Review.";
-      setPdfStatus(`Transaction history extracted locally (${extracted.observedTransactions || 0} transaction entries identified). The browser copy will be cleared after analysis.`, "is-success");
+      const identifierNote = potentialIdentifiers.length
+        ? ` Potential identifier-like text detected (${potentialIdentifiers.join(", ")}); use only fictional or anonymised data.`
+        : "";
+      setPdfStatus(`Transaction history extracted locally (${extracted.observedTransactions || 0} transaction entries identified). The browser file reference was cleared after analysis.${identifierNote}`, potentialIdentifiers.length ? "is-warning" : "is-success");
       document.querySelector("#customerReference")?.focus();
     } else {
       render(calculateSignal(input), input);
       message.textContent = "Full statement PDF analysed locally. No other fields are required for this preliminary review; correct any pre-filled context if needed.";
-      setPdfStatus(`PDF analysed locally (${extracted.observedTransactions || 0} transaction entries identified). The browser copy was cleared after analysis.`, "is-success");
+      const identifierNote = potentialIdentifiers.length
+        ? ` Potential identifier-like text detected (${potentialIdentifiers.join(", ")}); use only fictional or anonymised data.`
+        : "";
+      setPdfStatus(`PDF analysed locally (${extracted.observedTransactions || 0} transaction entries identified). The browser file reference was cleared after analysis.${identifierNote}`, potentialIdentifiers.length ? "is-warning" : "is-success");
       reportPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   } catch (error) {
     setPdfStatus(error instanceof Error ? error.message : "The PDF could not be analysed.", "is-error");
     if (message) message.textContent = "The PDF could not be analysed. Review the file type and try again.";
   } finally {
+    rawText = "";
     selectedPdfFile = null;
     if (transactionPdfInput) transactionPdfInput.value = "";
-    if (analyzePdfButton) analyzePdfButton.disabled = true;
-    if (clearPdfButton) clearPdfButton.disabled = true;
+    refreshPdfControls();
     pdfContextImported = analysisSucceeded;
   }
 }
@@ -525,11 +556,20 @@ transactionPdfInput?.addEventListener("change", () => {
   pdfContextImported = false;
   if (analyzePdfButton) analyzePdfButton.disabled = false;
   if (clearPdfButton) clearPdfButton.disabled = false;
-  setPdfStatus(`${file.name} selected · ${formatFileSize(file.size)} · temporary browser-local processing only.`);
+  refreshPdfControls();
+  setPdfStatus(`${file.name} selected · ${formatFileSize(file.size)} · browser-local processing only; not sent to a TradeGuard server.`);
 });
 
 fullStatementModeButton?.addEventListener("click", () => setPdfMode("full-statement"));
 transactionOnlyModeButton?.addEventListener("click", () => setPdfMode("transaction-only"));
+pdfPrivacyAcknowledge?.addEventListener("change", () => {
+  if (!pdfPrivacyAcknowledge.checked && selectedPdfFile) {
+    clearPdfAttachment("Acknowledgement removed. No PDF is selected.");
+  } else if (pdfPrivacyAcknowledge.checked && !selectedPdfFile) {
+    setPdfStatus("Acknowledgement recorded. Choose an anonymised PDF to continue.");
+  }
+  refreshPdfControls();
+});
 analyzePdfButton?.addEventListener("click", analyzePdf);
 clearPdfButton?.addEventListener("click", () => {
   pdfContextImported = false;
@@ -557,6 +597,7 @@ resetButton?.addEventListener("click", () => {
     copyButton.disabled = true;
     copyButton.textContent = "Copy summary";
   }
+  refreshPdfControls();
 });
 
 sampleButton?.addEventListener("click", () => {
@@ -635,4 +676,4 @@ pilotForm?.addEventListener("submit", (event) => {
   window.location.href = mailto;
 });
 
-document.querySelector("#year").textContent = new Date().getFullYear();
+refreshPdfControls();

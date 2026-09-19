@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=26";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=26";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=28";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=28";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");

@@ -9,11 +9,12 @@
     <meta property="og:description" content="Rule-based early-warning transaction review with human review required." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/proactive-monitoring.html" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>Transaction Monitoring | TradeGuard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=26" />
+    <link rel="stylesheet" href="./style.css?v=28" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -64,8 +65,8 @@
             <div class="visual-meta"><span>Route change</span><strong>+10</strong></div>
           </div>
           <div class="visual-card visual-card-float">
-            <span class="mini-label">CASE STATUS</span>
-            <strong>Human review queue</strong>
+            <span class="mini-label">REVIEW PRINCIPLE</span>
+            <strong>Human review required</strong>
             <span class="float-check">✓ Rule reasons shown</span>
           </div>
         </div>
@@ -101,16 +102,20 @@
                   <h3>Upload transaction statement PDF</h3>
                   <p>Choose a full statement for automatic extraction, or use transaction-history-only mode when the PDF has no account, customer or bank header. The file is read locally in this browser; missing baseline or context data remains clearly marked.</p>
                 </div>
-                <span class="file-retention-note">Browser-local · cleared after analysis</span>
+                <span class="file-retention-note">Browser-local processing</span>
               </div>
               <div class="pdf-mode-controls" role="group" aria-label="PDF input mode">
                 <button id="fullStatementModeButton" class="mode-button is-active" type="button" aria-pressed="true">Full statement · auto-fill</button>
                 <button id="transactionOnlyModeButton" class="mode-button" type="button" aria-pressed="false">Transaction history only · manual context</button>
               </div>
               <p id="pdfModeNote" class="pdf-mode-note">Full-statement mode will use available transaction and context signals to pre-fill this local review. You can correct or replace them before running the review.</p>
+              <label class="consent-check" for="pdfPrivacyAcknowledge">
+                <input id="pdfPrivacyAcknowledge" type="checkbox" />
+                <span><strong>I confirm this is fictional, synthetic or anonymised data.</strong><small>I will not upload a confidential bank statement, customer record or identity document to this public demo.</small></span>
+              </label>
               <label class="file-dropzone" for="transactionPdfInput">
                 <span class="upload-icon" aria-hidden="true">↑</span>
-                <span><strong>Choose a transaction PDF</strong><small>PDF only · up to 10 MB · processed in-browser and cleared after analysis</small></span>
+                <span><strong>Choose a transaction PDF</strong><small>PDF only · up to 10 MB · processed in this browser; not sent to a TradeGuard server</small></span>
                 <input id="transactionPdfInput" type="file" accept="application/pdf,.pdf" />
               </label>
               <div id="transactionPdfStatus" class="file-status" role="status" aria-live="polite">No PDF selected.</div>
@@ -118,7 +123,7 @@
                 <button id="analyzePdfButton" class="text-button" type="button" disabled>Analyze transaction PDF</button>
                 <button id="clearPdfButton" class="text-button" type="button" disabled>Clear PDF from browser</button>
               </div>
-              <p class="pdf-privacy-note"><strong>Privacy notice:</strong> Do not upload a confidential bank statement to this public demo. For a safer test, remove the customer name, account number, bank name, branch, opening date and other identifiers, then use transaction-history-only mode and enter only an anonymised reference below. <a href="./privacy.html">See PDF handling details.</a></p>
+              <p class="pdf-privacy-note"><strong>Privacy notice:</strong> The PDF is parsed in this browser and is not sent to a TradeGuard server. Remove names, account numbers, bank and branch details, opening dates, email addresses and other identifiers before selecting a file. If identifier-like text is detected, the page will show a warning; continue only when the data is fictional or anonymised. <a href="./privacy.html">See PDF handling details.</a></p>
             </div>
 
             <div class="form-grid">
@@ -267,9 +272,9 @@
               </div>
               <div id="proactiveStatus" class="decision-readiness is-neutral">
                 <div><strong id="proactiveStatusTitle">Human review required</strong><p id="proactiveStatusText">Review the signal with supporting transaction evidence.</p></div>
-                <div class="score-breakdown" aria-label="Score breakdown">
-                  <div><span>Configured</span><strong id="proactiveRawScore">—</strong></div>
-                  <div><span>Supported</span><strong id="proactiveSupportedScore">—</strong></div>
+                <div class="score-breakdown" aria-label="Risk signal and evidence breakdown">
+                  <div><span>Risk signal</span><strong id="proactiveRawScore">—</strong></div>
+                  <div><span>Evidence supported</span><strong id="proactiveSupportedScore">—</strong></div>
                   <div><span>Unverified</span><strong id="proactiveUnverifiedScore">—</strong></div>
                 </div>
               </div>
@@ -344,11 +349,15 @@
         <a href="./privacy.html">Privacy and PDF handling</a>
         <a href="./terms.html">Terms</a>
       </nav>
+      <div class="footer-company-details">
+        <p><strong>RegTech Nexus AI</strong> is an IT product publisher and a sister concern of Travel To Know.</p>
+        <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
+        <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
+      </div>
       <p>Rule-based review support. Not a regulatory determination or legal interpretation.</p>
-      <span>© <span id="year"></span> RegTech Nexus AI</span>
+      <span>© 2026 RegTech Nexus AI</span>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="module" src="./proactive-monitoring.js?v=26"></script>
+    <script type="module" src="./proactive-monitoring.js?v=28"></script>
   </body>
 </html>

@@ -299,6 +299,9 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .footer-links a { color: var(--navy); text-decoration: underline; text-underline-offset: 3px; }
 .site-footer strong { margin-right: 8px; color: var(--navy); font-size: 12px; }
 .site-footer p { margin: 0; text-align: center; }
+.footer-company-details { max-width: 360px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.footer-company-details p { margin: 2px 0; text-align: left; }
+.footer-company-details a { color: var(--navy); text-decoration: underline; text-underline-offset: 2px; }
 
 .pre-monitoring-section { padding-top: 96px; }
 .standards-notice { margin-bottom: 18px; padding: 15px 17px; border: 1px solid #cfe4f4; border-radius: 14px; color: #45657f; background: linear-gradient(135deg, #f4fbff, #ffffff); font-size: 11px; line-height: 1.6; }
@@ -402,6 +405,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   .pilot-card { padding: 25px 19px; }
   .site-footer { display: grid; padding-bottom: 25px; }
   .site-footer p { text-align: left; }
+  .footer-company-details { max-width: none; }
   .footer-links { justify-content: flex-start; }
   .brand-logo { width: 174px; max-width: 48vw; }
   .footer-logo { width: 120px; max-width: 42vw; }
@@ -498,11 +502,17 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .file-dropzone strong, .file-dropzone small { display: block; }
 .file-dropzone strong { color: var(--navy); font-size: 11px; }
 .file-dropzone small { margin-top: 2px; color: var(--muted); font-size: 9px; }
+.consent-check { display: flex; align-items: flex-start; gap: 9px; margin-top: 13px; padding: 10px 11px; border: 1px solid #e3d7bd; border-radius: 5px; color: var(--navy); background: #fffaf0; cursor: pointer; }
+.consent-check input { flex: 0 0 auto; width: 15px; height: 15px; margin: 2px 0 0; accent-color: var(--blue); }
+.consent-check strong, .consent-check small { display: block; }
+.consent-check strong { font-size: 10px; line-height: 1.35; }
+.consent-check small { margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.45; }
 .upload-icon { display: grid; width: 29px; height: 29px; place-items: center; border: 1px solid #9a958a; border-radius: 50%; color: var(--green); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 17px; }
 .file-status { min-height: 18px; margin-top: 8px; color: var(--muted); font-size: 9px; line-height: 1.4; }
 .file-status.is-error { color: #8c1f28; }
 .file-status.is-success { color: var(--green); }
 .file-status.is-processing { color: var(--amber); }
+.file-status.is-warning { color: #9a6816; }
 .file-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .pdf-mode-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .mode-button { min-height: 38px; padding: 8px 11px; border: 1px solid #cbdce6; border-radius: 9px; color: var(--navy); background: #fff; font-size: 10px; font-weight: 750; cursor: pointer; }

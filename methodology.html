@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TradeGuard public demo methodology, scoring and limitations." />
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/methodology.html" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>Methodology and Limitations | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=26" />
+    <link rel="stylesheet" href="./style.css?v=28" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -26,10 +27,10 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Explainable review logic</div>
       <h1>Methodology and limitations</h1>
       <p class="info-lead">TradeGuard is a public, client-side demonstration of transparent review rules. It prioritises evidence and human judgement; it does not make autonomous compliance decisions.</p>
-      <p class="info-meta">Public methodology note · v26 · 19 September 2026</p>
+      <p class="info-meta">Public methodology note · v28 · 20 September 2026</p>
 
       <h2>Implementation boundary</h2>
-      <p>The public v26 build uses deterministic browser-side rules and does not call an AI API or make an autonomous compliance decision. “RegTech Nexus AI” is the publisher name; the public workflow should be understood as explainable rule-based review support. Any future AI component would require separate documentation, testing and governance.</p>
+      <p>The public v28 build uses deterministic browser-side rules and does not call an AI API or make an autonomous compliance decision. “RegTech Nexus AI” is the publisher name; the public workflow should be understood as explainable rule-based review support. Any future AI component would require separate documentation, testing and governance.</p>
 
       <h2>TBML Check</h2>
       <p>The TBML workspace structures a trade case around goods, price and valuation, HS-code alignment, quantity and unit, documents, route and ports, related parties or UBO concerns, third-party payment, repeated or unsupported shipments, business-profile mismatch and unusual payment terms.</p>
@@ -75,6 +76,10 @@
       <p>The public build currently uses one configured national tariff reference containing 7,420 records for tariff year 2026–2027; the packaged dataset carries its source metadata. It is not a universal tariff database. The form accepts a 6–10 digit HS-code format: six digits represent the harmonised level, while exact national 8- or 10-digit verification requires the relevant country reference to be configured. An unrecognised code may continue to an indicative review, but the result remains not decision-ready until the tariff mapping is verified.</p>
       <p>It does not connect to a live sanctions, PEP, adverse-media, market-price, SWIFT or core-banking data feed. Country-specific tariff datasets, thresholds, weights, data lineage and approval controls must be configured and validated for an institutional pilot.</p>
 
+      <h2>Reference families and coverage boundary</h2>
+      <p>The indicator vocabulary is informed by public AML/CFT and trade-finance risk guidance, including <a href="https://www.fatf-gafi.org/" target="_blank" rel="noopener noreferrer">FATF</a> risk-based standards and TBML typologies, <a href="https://www.wolfsberg-group.org/" target="_blank" rel="noopener noreferrer">Wolfsberg Group</a> trade-finance principles, and <a href="https://www.baft.org/" target="_blank" rel="noopener noreferrer">BAFT</a>/<a href="https://iccwbo.org/" target="_blank" rel="noopener noreferrer">ICC</a> trade-practice materials. These references inform the public rule vocabulary; they do not constitute regulatory approval, a complete typology library or a jurisdiction-specific legal mapping.</p>
+      <p>Additional typologies such as transshipment, sanctions-evasion routing, vessel or AIS anomalies, freight-cost anomalies and LC-amendment patterns remain roadmap items unless explicitly configured and evidenced in a deployment.</p>
+
       <h2>What the score means</h2>
       <p>The score is an indicative prioritisation signal. It is not a probability of money laundering, a finding of TBML, a sanctions determination, a regulatory rating or a substitute for investigation. A high score can reflect missing or unverified evidence, while a low score does not prove low risk.</p>
 
@@ -83,6 +88,8 @@
 
       <h2>Version and change log</h2>
       <ul>
+        <li><strong>v28 · 20 September 2026:</strong> added a mobile-upload fallback by placing the pinned self-hosted PDF.js files at repository root, so GitHub mobile upload does not require nested-folder preservation; updated all cache-busting references.</li>
+        <li><strong>v27 · 19 September 2026:</strong> removed unsupported AI-style wording, added a PDF consent gate and identifier warning, moved PDF.js to a pinned self-hosted build with evaluation disabled, aligned local-processing language, added publisher/contact details, added reference families and expanded the public security boundary.</li>
         <li><strong>v26 · 19 September 2026:</strong> reconciled the public preview arithmetic, aligned the Transaction Monitoring preview and upload warning, added 6–10 digit HS-code format handling with an exact-mapping gate, published TBML weights and formulae, pinned PDF.js with integrity verification, and added the About and security-boundary page.</li>
         <li>Future changes to weights, thresholds, tariff references or PDF extraction behaviour should be recorded here before institutional use.</li>
       </ul>
@@ -99,8 +106,12 @@
         <a href="./terms.html">Terms</a>
       </nav>
       <p>Rule-based review support. Not a regulatory determination.</p>
-      <span>© <span id="year"></span> RegTech Nexus AI</span>
+      <div class="footer-company-details">
+        <p><strong>RegTech Nexus AI</strong> is an IT product publisher and a sister concern of Travel To Know.</p>
+        <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
+        <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
+      </div>
+      <span>© 2026 RegTech Nexus AI</span>
     </footer>
-    <script>document.querySelector("#year").textContent = new Date().getFullYear();</script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 # TradeGuard by RegTech Nexus AI
 
-A static, low-cost public MVP (v26) for an explainable, rule-based trade-finance and TBML risk-review workspace.
+A static, low-cost public MVP (v28) for an explainable, rule-based trade-finance and TBML risk-review workspace.
 
 ## What this version does
 
@@ -16,12 +16,13 @@ A static, low-cost public MVP (v26) for an explainable, rule-based trade-finance
 - Maps HS 0206 edible offal to a weight-based unit profile and limits the unit selector to the verified HS profile.
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Provides a separate `proactive-monitoring.html` Transaction Monitoring workspace with a functional early-warning review.
-- Accepts a transaction-statement PDF up to 10 MB for browser-local text extraction using PDF.js.
+- Accepts a transaction-statement PDF up to 10 MB for browser-local text extraction using the pinned self-hosted PDF.js 6.3.289 build at repository root for simple GitHub mobile upload.
 - Supports two PDF paths: full-statement mode for available context pre-fill, and transaction-history-only mode for anonymised transaction rows plus manually supplied context.
-- Clears the browser file input and temporary extracted text after analysis; the public build has no upload endpoint or case database.
+- Requires an acknowledgement that the file is fictional, synthetic or anonymised; warns on account/email/identity-like text, clears the browser file input and temporary extracted text after analysis, and has no upload endpoint or case database.
 - Shows a clear privacy and PDF-handling notice, plus a methodology and limitations page.
 - Includes an About and security-boundary page that separates public-demo capability from institutional deployment requirements.
-- Prepares a pilot request in a pre-filled email draft. A configured mail client is required; a direct email fallback is shown.
+- Publishes the supplied RegTech Nexus AI / Travel To Know publisher relationship, office and phone details without inventing an unprovided registered entity number.
+- Prepares a pilot request in a pre-filled email draft. A configured mail client is required for the mailto action; a direct email fallback and publisher phone are shown.
 - Uses glossy, raised 3D styling for primary, navigation, utility and workspace buttons.
 - Keeps “Human review required” visible as the review principle.
 - Adds review-only context controls for jurisdiction risk, PEP/screening, restricted or dual-use goods, payment transparency and source of funds/wealth.
@@ -31,7 +32,7 @@ A static, low-cost public MVP (v26) for an explainable, rule-based trade-finance
 
 This public version does **not** upload or store documents on a TradeGuard server, call an AI API, connect to a bank, provide live sanctions/PEP screening, save cases, or make a regulatory determination. It uses deterministic browser-side rules and is not audit-grade or institutionally certified.
 
-Read [`privacy.html`](./privacy.html) for PDF handling and public-demo privacy limitations. Read [`methodology.html`](./methodology.html) for indicator weights, score bands, price-deviation logic, evidence gating, data boundaries and production-readiness limits.
+Read [`privacy.html`](./privacy.html) for PDF handling and public-demo privacy limitations. Read [`methodology.html`](./methodology.html) for indicator weights, score bands, price-deviation logic, evidence gating, reference families, data boundaries and production-readiness limits.
 
 ## Run locally
 

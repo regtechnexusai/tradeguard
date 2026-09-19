@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TradeGuard publisher, product scope and public security boundary." />
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/about.html" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>About and Security Boundary | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=26" />
+    <link rel="stylesheet" href="./style.css?v=28" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -26,7 +27,10 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Publisher and deployment boundary</div>
       <h1>About TradeGuard</h1>
       <p class="info-lead">TradeGuard is published by RegTech Nexus AI as an explainable, rule-based review-support workspace for trade-finance and transaction-monitoring workflows.</p>
-      <p class="info-meta">Public build v26 · 19 September 2026</p>
+      <p class="info-meta">Public build v28 · 20 September 2026</p>
+
+      <h2>Publisher</h2>
+      <p>TradeGuard is an IT product of RegTech Nexus AI, a sister concern of Travel To Know. Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh. Phone: <a href="tel:+8801772282925">+880 1772 282925</a>. The registered legal entity name and registration or trade-licence number are not stated in this public build and must be confirmed before institutional contracting.</p>
 
       <h2>Product scope</h2>
       <p>The public build demonstrates two workspaces: TBML Check for trade evidence and transaction monitoring for early-warning patterns. It organises reviewer-entered or anonymised information, shows the reason for each configured flag and keeps human review required.</p>
@@ -34,7 +38,7 @@
       <h2>Public security boundary</h2>
       <ul>
         <li>Static public deployment on GitHub Pages with no login, backend, case database or server-side audit log.</li>
-        <li>Transaction-monitoring PDF text extraction is performed in the browser with a pinned PDF.js dependency; no TradeGuard upload endpoint is provided.</li>
+        <li>Transaction-monitoring PDF text extraction is performed in the browser with the pinned self-hosted PDF.js 6.3.289 build at repository root; no TradeGuard upload endpoint is provided.</li>
         <li>No live sanctions, PEP, adverse-media, market-price, bank, SWIFT or core-banking integration is included.</li>
         <li>The public build is not audit-grade, institutionally certified or suitable for confidential customer data.</li>
       </ul>
@@ -43,7 +47,7 @@
       <p>A controlled pilot would require a custom domain and authenticated business email, identity and role access, encrypted server-side processing or an approved private deployment, case retention and audit controls, versioned rule governance, data-residency decisions, independent security testing and applicable regulatory review.</p>
 
       <h2>Contact</h2>
-      <p>For a pilot discussion, contact <a href="mailto:regtechnexusai@gmail.com">regtechnexusai@gmail.com</a>. A domain-authenticated business email and formal company details should be added before institutional procurement.</p>
+      <p>For a pilot discussion, contact <a href="mailto:regtechnexusai@gmail.com">regtechnexusai@gmail.com</a>. A domain-authenticated business email, registered legal entity and formal security documentation should be added before institutional procurement.</p>
     </main>
 
     <footer class="site-footer section-shell">
@@ -55,8 +59,12 @@
         <a href="./terms.html">Terms</a>
       </nav>
       <p>Rule-based review support. Not a regulatory determination.</p>
-      <span>© <span id="year"></span> RegTech Nexus AI</span>
+      <div class="footer-company-details">
+        <p><strong>RegTech Nexus AI</strong> is an IT product publisher and a sister concern of Travel To Know.</p>
+        <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
+        <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
+      </div>
+      <span>© 2026 RegTech Nexus AI</span>
     </footer>
-    <script>document.querySelector("#year").textContent = new Date().getFullYear();</script>
   </body>
 </html>
