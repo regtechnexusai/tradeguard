@@ -341,7 +341,7 @@ pilotForm.addEventListener("submit", (event) => {
     `mailto:regtechnexusai@gmail.com?subject=${encodeURIComponent(subject)}` +
     `&body=${encodeURIComponent(message)}`;
 
-  pilotMessage.textContent = "A draft email is opening. Review it and press Send.";
+  pilotMessage.textContent = "A draft email is opening. Review it and press Send. If nothing opens, email regtechnexusai@gmail.com directly.";
   window.location.href = mailto;
 });
 

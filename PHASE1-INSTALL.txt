@@ -1,12 +1,13 @@
-TradeGuard Phase 1 update — data-integrity and review controls
+TradeGuard public build — installation and review boundaries
 
-The website shows separate TBML Monitoring and Proactive Transaction
-Monitoring entry points. The Proactive Monitoring workspace is in
-proactive-monitoring.html, with Human review required as the review principle.
+The website shows separate TBML Check and Transaction Monitoring entry points.
+The Transaction Monitoring workspace is in proactive-monitoring.html, with
+Human review required as the review principle.
 
-If the GitHub repository still contains the older pre-monitoring.js or
-rule-registry.json files, delete those two unused files after uploading this
-minimal version. They are not loaded by the updated website.
+Keep the files supplied in the current package together. Older helper files
+such as pre-monitoring.js or rule-registry.json may remain in the repository
+if they are not loaded by the current pages; removing them is optional and
+should be done only after confirming that no branch or workflow references them.
 
 Replace these files in the GitHub repository:
 index.html
@@ -54,7 +55,7 @@ invoice, passport, NID, bank or SWIFT documents to this public workspace.
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=16
+https://regtechnexusai.github.io/tradeguard/?v=25
 
 The proactive workspace report uses a case-file layout. Profession is selected
 from a controlled list, customer references are masked by default, unsupported
@@ -65,3 +66,12 @@ The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and
 organisation type. The direct email link also opens a ready-to-edit draft.
 Neither option sends automatically; the user must review and press Send.
+
+Transaction Monitoring PDF handling:
+The PDF is read in the browser, not sent to a TradeGuard server. Full-statement
+mode can pre-fill available context. Transaction-history-only mode is provided
+for anonymised rows when names, account numbers, bank details and other
+identifiers have been removed; the reviewer can then enter an anonymised
+reference, profession, profile, baseline and evidence context manually. The
+public build does not provide login, saved cases, live screening or a server-
+side audit record. Use fictional or anonymised data only.

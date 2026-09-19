@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TradeGuard public demo terms of use." />
+    <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/terms.html" />
+    <title>Terms of Use | TradeGuard</title>
+    <link rel="stylesheet" href="./style.css?v=25" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand brand-image" href="./index.html#top" aria-label="TradeGuard home">
+        <img class="brand-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
+      </a>
+      <nav class="nav-links" aria-label="Page navigation">
+        <a href="./privacy.html">Privacy</a>
+        <a class="nav-cta" href="./index.html#pilot">Request pilot</a>
+      </nav>
+    </header>
+
+    <main class="section-shell info-page">
+      <div class="eyebrow"><span class="pulse-dot"></span> Public demonstration</div>
+      <h1>Terms of use</h1>
+      <p class="info-lead">These terms define the limited purpose of the public TradeGuard demonstration workspace.</p>
+      <p class="info-meta">Effective date: 19 September 2026</p>
+
+      <h2>Demonstration only</h2>
+      <p>TradeGuard is provided as an illustrative, rule-based review tool. Its outputs are indicative prioritisation signals and are not legal advice, regulatory instructions, sanctions determinations, STR decisions, investment advice or findings of money laundering or TBML.</p>
+
+      <h2>Human responsibility</h2>
+      <p>Users remain responsible for validating information, obtaining supporting evidence, applying their institution’s approved policies and making any decision. An authorised human reviewer must remain in control of escalation and disposition.</p>
+
+      <h2>Information restrictions</h2>
+      <p>Do not upload confidential bank statements, customer records, identity documents, trade documents, payment messages, passwords or restricted information to this public build. Use fictional, synthetic or anonymised information only. PDF handling details are described in the <a href="./privacy.html">privacy notice</a>.</p>
+
+      <h2>No service commitments</h2>
+      <p>The public build is supplied without a promise of continuous availability, accuracy, completeness, data retention, case preservation, screening coverage, security certification or regulatory approval. Browser-side rules can be inspected and altered, and the site does not create an audit-grade institutional record.</p>
+
+      <h2>Institutional pilots</h2>
+      <p>Any institutional pilot requires a separate written scope covering data processing, access, security, retention, support, rule governance, testing, pricing and responsibility. The public demo does not itself establish such an agreement.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about a pilot may be sent to <a href="mailto:regtechnexusai@gmail.com">regtechnexusai@gmail.com</a>.</p>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
+      <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./index.html">Home</a>
+        <a href="./privacy.html">Privacy and PDF handling</a>
+        <a href="./methodology.html">Methodology</a>
+      </nav>
+      <p>Public demo only. Human review remains required.</p>
+      <span>© <span id="year"></span> RegTech Nexus AI</span>
+    </footer>
+    <script>document.querySelector("#year").textContent = new Date().getFullYear();</script>
+  </body>
+</html>

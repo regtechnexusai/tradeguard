@@ -4,6 +4,9 @@ const resetButton = document.querySelector("#proactiveResetButton");
 const transactionPdfInput = document.querySelector("#transactionPdfInput");
 const analyzePdfButton = document.querySelector("#analyzePdfButton");
 const clearPdfButton = document.querySelector("#clearPdfButton");
+const fullStatementModeButton = document.querySelector("#fullStatementModeButton");
+const transactionOnlyModeButton = document.querySelector("#transactionOnlyModeButton");
+const pdfModeNote = document.querySelector("#pdfModeNote");
 const transactionPdfStatus = document.querySelector("#transactionPdfStatus");
 const copyButton = document.querySelector("#proactiveCopyButton");
 const revealAccountButton = document.querySelector("#proactiveRevealAccount");
@@ -24,6 +27,8 @@ let currentCaseId = "";
 let currentGeneratedAt = "";
 let accountRevealed = false;
 let selectedPdfFile = null;
+let pdfInputMode = "full-statement";
+let pdfContextImported = false;
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
 
@@ -41,6 +46,24 @@ function setPdfStatus(text, state = "") {
   if (!transactionPdfStatus) return;
   transactionPdfStatus.textContent = text;
   transactionPdfStatus.className = `file-status${state ? ` ${state}` : ""}`;
+}
+
+function setPdfMode(mode) {
+  pdfInputMode = mode;
+  pdfContextImported = false;
+  const isTransactionOnly = mode === "transaction-only";
+  fullStatementModeButton?.classList.toggle("is-active", !isTransactionOnly);
+  transactionOnlyModeButton?.classList.toggle("is-active", isTransactionOnly);
+  fullStatementModeButton?.setAttribute("aria-pressed", String(!isTransactionOnly));
+  transactionOnlyModeButton?.setAttribute("aria-pressed", String(isTransactionOnly));
+  if (pdfModeNote) {
+    pdfModeNote.textContent = isTransactionOnly
+      ? "Transaction-history-only mode: the PDF is used for transaction patterns and amounts. Enter an anonymised customer/account reference and any available profession, profile, baseline or evidence context below before running the review."
+      : "Full-statement mode: available transaction context is used to pre-fill this local review. You can correct or replace any field before running the review.";
+  }
+  if (isTransactionOnly) {
+    setValues({ customerReference: "", profession: "" });
+  }
 }
 
 function clearPdfAttachment(statusText = "No PDF selected.") {
@@ -144,13 +167,14 @@ function applyPdfContext(extracted, rawText) {
   const detectedWindow = /90\s*[- ]?day/i.test(rawText) ? "Last 90 days" : value("monitoringWindow") || "Last 90 days";
   const detectedSegment = /\bindividual\b|savings account|housewife/i.test(rawText) ? "Individual" : value("customerSegment") || "Individual";
   const hasExpectedBaseline = Number(value("expectedTransactions")) > 0 || Number(value("expectedValue")) > 0;
+  const transactionOnly = pdfInputMode === "transaction-only";
 
   setValues({
-    customerReference: value("customerReference") || "Anonymised PDF case",
-    monitoringWindow: detectedWindow,
-    customerSegment: detectedSegment,
-    profession: value("profession") || detectedProfession || "Other / not provided",
-    baselineWindow: hasExpectedBaseline ? (value("baselineWindow") || "Trailing 90-day average") : "Not provided - no customer baseline supplied",
+    customerReference: transactionOnly ? value("customerReference") : (value("customerReference") || "Anonymised PDF case"),
+    monitoringWindow: transactionOnly ? value("monitoringWindow") : detectedWindow,
+    customerSegment: transactionOnly ? value("customerSegment") : detectedSegment,
+    profession: transactionOnly ? value("profession") : (value("profession") || detectedProfession || "Other / not provided"),
+    baselineWindow: transactionOnly ? value("baselineWindow") : (hasExpectedBaseline ? (value("baselineWindow") || "Trailing 90-day average") : "Not provided - no customer baseline supplied"),
     monitoringCurrency: detectedCurrency,
     ...(extracted.observedTransactions ? { observedTransactions: String(extracted.observedTransactions) } : {}),
     ...(extracted.observedValue ? { observedValue: String(Math.round(extracted.observedValue * 100) / 100) } : {}),
@@ -163,6 +187,7 @@ async function analyzePdf() {
   const file = selectedPdfFile;
   if (analyzePdfButton) analyzePdfButton.disabled = true;
   setPdfStatus("Reading PDF locally…", "is-processing");
+  let analysisSucceeded = false;
 
   try {
     let rawText = await extractPdfText(file);
@@ -179,11 +204,19 @@ async function analyzePdf() {
       if (element) element.checked = true;
     }
 
+    analysisSucceeded = true;
+    pdfContextImported = true;
     const input = collectInput();
-    render(calculateSignal(input), input);
-    message.textContent = "PDF analysed locally. No other fields are required for this preliminary review. Add optional baseline or context only if available.";
-    setPdfStatus(`PDF analysed locally (${extracted.observedTransactions || 0} transaction entries identified). Temporary file data cleared; no PDF retained.`, "is-success");
-    reportPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (pdfInputMode === "transaction-only") {
+      message.textContent = "Transaction history extracted locally. Add or confirm the anonymised context below, then press Run Transaction Review.";
+      setPdfStatus(`Transaction history extracted locally (${extracted.observedTransactions || 0} transaction entries identified). The browser copy will be cleared after analysis.`, "is-success");
+      document.querySelector("#customerReference")?.focus();
+    } else {
+      render(calculateSignal(input), input);
+      message.textContent = "Full statement PDF analysed locally. No other fields are required for this preliminary review; correct any pre-filled context if needed.";
+      setPdfStatus(`PDF analysed locally (${extracted.observedTransactions || 0} transaction entries identified). The browser copy was cleared after analysis.`, "is-success");
+      reportPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   } catch (error) {
     setPdfStatus(error instanceof Error ? error.message : "The PDF could not be analysed.", "is-error");
     if (message) message.textContent = "The PDF could not be analysed. Review the file type and try again.";
@@ -192,6 +225,7 @@ async function analyzePdf() {
     if (transactionPdfInput) transactionPdfInput.value = "";
     if (analyzePdfButton) analyzePdfButton.disabled = true;
     if (clearPdfButton) clearPdfButton.disabled = true;
+    pdfContextImported = analysisSucceeded;
   }
 }
 
@@ -202,7 +236,7 @@ const ratio = (observed, expected) => Number(expected) > 0 ? `${(Number(observed
 function maskAccountReference(reference) {
   const text = String(reference || "").trim();
   if (!text) return "Not provided";
-  if (/^PDF case\b/i.test(text)) return text;
+  if (/^Anonymised (PDF|transaction-only)/i.test(text)) return "Anonymised case reference";
   const digits = text.replace(/\D/g, "");
   if (digits.length >= 4) return `•••• •••• ${digits.slice(-2)}`;
   if (/^\d+$/.test(text)) return `${"•".repeat(Math.max(1, text.length - 2))}${text.slice(-2)}`;
@@ -318,6 +352,7 @@ function buildSummary(result, input) {
     `Generated: ${currentGeneratedAt}`,
     `Customer / account: ${maskAccountReference(input.customerReference)}`,
     `Profile: ${input.customerSegment}${input.profession ? ` | Profession: ${input.profession}` : ""}`,
+    `Evidence input: ${input.pdfMode}`,
     `Monitoring window: ${input.monitoringWindow}`,
     `Baseline window: ${input.baselineWindow}`,
     `Signal: ${result.score}/100 (${presentation.summary})`,
@@ -357,6 +392,7 @@ function collectInput() {
     profession: value("profession"),
     baselineWindow: value("baselineWindow"),
     monitoringCurrency: value("monitoringCurrency") || "USD",
+    pdfMode: pdfContextImported ? (pdfInputMode === "transaction-only" ? "Transaction history-only PDF with manually supplied context" : "Full statement PDF with locally extracted context") : "Manual context only",
     transactionDetail: value("transactionDetail"),
     flowEvidence: value("flowEvidence"),
     channelDetail: value("channelDetail"),
@@ -395,7 +431,6 @@ function calculateSignal(input) {
 function render(result, input) {
   if (!currentCaseId) currentCaseId = createCaseId();
   if (!currentGeneratedAt) currentGeneratedAt = generatedAtUtc();
-  if (input.customerReference === "Anonymised PDF case") input.customerReference = `PDF case ${currentCaseId.slice(-6)}`;
   accountRevealed = false;
   updateAccountDisplay(input.customerReference);
   reportPanel.classList.remove("is-empty");
@@ -439,6 +474,7 @@ function render(result, input) {
   document.querySelector("#proactiveGeneratedAt").textContent = currentGeneratedAt;
   document.querySelector("#proactiveReviewContext").innerHTML = [
     ["Customer / account", maskAccountReference(input.customerReference)],
+    ["Evidence input", input.pdfMode],
     ["Profile", input.customerSegment],
     ["Profession", input.profession || "Not provided"],
     ["Monitoring window", input.monitoringWindow],
@@ -468,31 +504,42 @@ function render(result, input) {
 transactionPdfInput?.addEventListener("change", () => {
   const file = transactionPdfInput.files?.[0];
   if (!file) {
+    pdfContextImported = false;
     clearPdfAttachment();
     return;
   }
 
   const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
   if (!isPdf) {
+    pdfContextImported = false;
     clearPdfAttachment("Only PDF files are allowed.");
     return;
   }
   if (file.size > MAX_PDF_BYTES) {
+    pdfContextImported = false;
     clearPdfAttachment(`This PDF is ${formatFileSize(file.size)}. The maximum allowed size is 10 MB.`);
     return;
   }
 
   selectedPdfFile = file;
+  pdfContextImported = false;
   if (analyzePdfButton) analyzePdfButton.disabled = false;
   if (clearPdfButton) clearPdfButton.disabled = false;
   setPdfStatus(`${file.name} selected · ${formatFileSize(file.size)} · temporary browser-local processing only.`);
 });
 
+fullStatementModeButton?.addEventListener("click", () => setPdfMode("full-statement"));
+transactionOnlyModeButton?.addEventListener("click", () => setPdfMode("transaction-only"));
 analyzePdfButton?.addEventListener("click", analyzePdf);
-clearPdfButton?.addEventListener("click", () => clearPdfAttachment("PDF cleared and deleted from this browser session."));
+clearPdfButton?.addEventListener("click", () => {
+  pdfContextImported = false;
+  clearPdfAttachment("PDF cleared from this browser session.");
+});
 
 resetButton?.addEventListener("click", () => {
   form?.reset();
+  setPdfMode("full-statement");
+  pdfContextImported = false;
   clearPdfAttachment();
   reportPanel?.classList.add("is-empty");
   if (emptyReport) emptyReport.hidden = false;
@@ -513,6 +560,8 @@ resetButton?.addEventListener("click", () => {
 });
 
 sampleButton?.addEventListener("click", () => {
+  setPdfMode("full-statement");
+  pdfContextImported = false;
   setValues({
     customerReference: "1234567891",
     monitoringWindow: "Last 90 days",
@@ -540,7 +589,10 @@ sampleButton?.addEventListener("click", () => {
 form?.addEventListener("submit", (event) => {
   event.preventDefault();
   const input = collectInput();
-  if (!input.customerReference) {
+  if (!input.customerReference && pdfContextImported && pdfInputMode === "transaction-only") {
+    input.customerReference = "Anonymised transaction-only case";
+    setValues({ customerReference: input.customerReference });
+  } else if (!input.customerReference) {
     message.textContent = "Enter an anonymised customer or account reference before running the review.";
     document.querySelector("#customerReference")?.focus();
     return;
@@ -579,7 +631,7 @@ pilotForm?.addEventListener("submit", (event) => {
     `Organisation type: ${type}`,
     "I would like to discuss a TradeGuard transaction-monitoring/TBML review pilot."
   ].join("\n"))}`;
-  if (pilotMessage) pilotMessage.textContent = "A draft email is opening. Review it and press Send.";
+  if (pilotMessage) pilotMessage.textContent = "A draft email is opening. Review it and press Send. If nothing opens, email regtechnexusai@gmail.com directly.";
   window.location.href = mailto;
 });
 

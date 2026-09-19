@@ -3,12 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="TradeGuard Transaction Monitoring — an explainable early-warning review workspace." />
+    <meta name="description" content="TradeGuard Transaction Monitoring — an explainable, rule-based early-warning review workspace." />
+    <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/proactive-monitoring.html" />
+    <meta property="og:title" content="Transaction Monitoring | TradeGuard" />
+    <meta property="og:description" content="Rule-based early-warning transaction review with human review required." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/proactive-monitoring.html" />
     <title>Transaction Monitoring | TradeGuard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=24" />
+    <link rel="stylesheet" href="./style.css?v=25" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -31,7 +36,7 @@
           <div class="eyebrow"><span class="pulse-dot"></span> Early-warning transaction intelligence</div>
           <h1>Transaction monitoring before the pattern becomes a case.</h1>
           <p class="hero-lead">Review transaction behaviour against the customer profile, expected activity and emerging risk signals—while keeping the final decision with an authorised human reviewer.</p>
-          <p class="international-note"><strong>International-ready:</strong> Configure the related country’s tariff/HS-code reference for a market-specific review workspace. Custom domain deployment is available for institutional pilots.</p>
+          <p class="international-note"><strong>International configuration:</strong> The public build supports rule and context configuration; country-specific tariff/HS-code references can be added for institutional pilots. Custom-domain deployment is available for institutional use.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#proactive-check">Run transaction review <span class="button-icon" aria-hidden="true">→</span></a>
             <a class="button button-quiet" href="./index.html#risk-check">Open TBML Check <span class="button-icon" aria-hidden="true">→</span></a>
@@ -61,7 +66,7 @@
           <div class="visual-card visual-card-float">
             <span class="mini-label">CASE STATUS</span>
             <strong>Human review queue</strong>
-            <span class="float-check">✓ Evidence traceable</span>
+            <span class="float-check">✓ Rule reasons shown</span>
           </div>
         </div>
       </section>
@@ -72,7 +77,7 @@
             <div class="eyebrow">Transaction monitoring</div>
             <h2>Run an early-warning review</h2>
           </div>
-          <p>Upload a transaction PDF for an AI-assisted preliminary review. Other fields are optional; missing baseline or context data will be marked as unverified or not evaluated, never silently assumed.</p>
+          <p>Upload a transaction PDF for a rule-based preliminary review. A complete statement can populate available context automatically; a transaction-history-only PDF can be paired with manually entered anonymised context.</p>
         </div>
 
         <div class="workspace-grid">
@@ -94,26 +99,32 @@
                 <div>
                   <span class="panel-kicker">Optional evidence input</span>
                   <h3>Upload transaction statement PDF</h3>
-                  <p>Upload only the PDF for a preliminary review; no other fields are required. The system analyses available transaction information locally and clearly marks missing baseline or context data.</p>
+                  <p>Choose a full statement for automatic extraction, or use transaction-history-only mode when the PDF has no account, customer or bank header. The file is read locally in this browser; missing baseline or context data remains clearly marked.</p>
                 </div>
-                <span class="file-retention-note">Deleted after analysis</span>
+                <span class="file-retention-note">Cleared after local review</span>
               </div>
+              <div class="pdf-mode-controls" role="group" aria-label="PDF input mode">
+                <button id="fullStatementModeButton" class="mode-button is-active" type="button" aria-pressed="true">Full statement · auto-fill</button>
+                <button id="transactionOnlyModeButton" class="mode-button" type="button" aria-pressed="false">Transaction history only · manual context</button>
+              </div>
+              <p id="pdfModeNote" class="pdf-mode-note">Full-statement mode will use available transaction and context signals to pre-fill this local review. You can correct or replace them before running the review.</p>
               <label class="file-dropzone" for="transactionPdfInput">
                 <span class="upload-icon" aria-hidden="true">↑</span>
-                <span><strong>Choose a transaction PDF</strong><small>PDF only · up to 10 MB · not retained</small></span>
+                <span><strong>Choose a transaction PDF</strong><small>PDF only · up to 10 MB · processed in-browser and cleared after analysis</small></span>
                 <input id="transactionPdfInput" type="file" accept="application/pdf,.pdf" />
               </label>
               <div id="transactionPdfStatus" class="file-status" role="status" aria-live="polite">No PDF selected.</div>
               <div class="file-actions">
                 <button id="analyzePdfButton" class="text-button" type="button" disabled>Analyze transaction PDF</button>
-                <button id="clearPdfButton" class="text-button" type="button" disabled>Clear and delete</button>
+                <button id="clearPdfButton" class="text-button" type="button" disabled>Clear PDF from browser</button>
               </div>
+              <p class="pdf-privacy-note"><strong>Privacy notice:</strong> Do not upload a confidential bank statement to this public demo. For a safer test, remove the customer name, account number, bank name, branch, opening date and other identifiers, then use transaction-history-only mode and enter only an anonymised reference below. <a href="./privacy.html">See PDF handling details.</a></p>
             </div>
 
             <div class="form-grid">
               <label class="field field-wide">
-                <span>Customer / account reference</span>
-                <input id="customerReference" type="text" placeholder="e.g. Anonymised customer 001" required />
+                <span>Customer / account reference <em>(anonymised reference recommended)</em></span>
+                <input id="customerReference" type="text" placeholder="e.g. Anonymised customer 001 or Transaction case 001" />
               </label>
               <label class="field">
                 <span>Monitoring window</span>
@@ -327,11 +338,16 @@
     <footer class="site-footer section-shell">
       <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
       <a class="footer-link" href="./index.html#monitoring-modes">TradeGuard monitoring modes</a>
-      <p>AI-assisted review support. Not a regulatory determination or legal interpretation.</p>
+      <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./methodology.html">Methodology</a>
+        <a href="./privacy.html">Privacy and PDF handling</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+      <p>Rule-based review support. Not a regulatory determination or legal interpretation.</p>
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script type="module" src="./proactive-monitoring.js?v=22"></script>
+    <script type="module" src="./proactive-monitoring.js?v=25"></script>
   </body>
 </html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TradeGuard public demo privacy and PDF handling notice." />
+    <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/privacy.html" />
+    <title>Privacy and PDF Handling | TradeGuard</title>
+    <link rel="stylesheet" href="./style.css?v=25" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand brand-image" href="./index.html#top" aria-label="TradeGuard home">
+        <img class="brand-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
+      </a>
+      <nav class="nav-links" aria-label="Page navigation">
+        <a href="./methodology.html">Methodology</a>
+        <a class="nav-cta" href="./index.html#pilot">Request pilot</a>
+      </nav>
+    </header>
+
+    <main class="section-shell info-page">
+      <div class="eyebrow"><span class="pulse-dot"></span> Public demo notice</div>
+      <h1>Privacy and PDF handling</h1>
+      <p class="info-lead">TradeGuard is a static public demonstration workspace. It is intended for fictional, synthetic or anonymised information—not confidential customer, bank or trade documents.</p>
+      <p class="info-meta">Last updated: 19 September 2026</p>
+
+      <div class="info-callout"><strong>Important:</strong> If you use the transaction-history-only option, remove names, account numbers, bank and branch details, opening dates and other identifiers before selecting a file.</div>
+
+      <h2>How the public PDF review works</h2>
+      <ol>
+        <li>The selected PDF is read in the browser using the PDF.js library loaded from cdnjs.</li>
+        <li>The browser extracts available text and applies the visible transaction-monitoring rules locally.</li>
+        <li>The app does not provide a server upload endpoint, user account, case database or cloud case store.</li>
+        <li>After analysis, the file input, temporary text reference and PDF.js document object are cleared by the page.</li>
+      </ol>
+      <p>“Cleared after analysis” describes this browser session. It is not a promise that the device, browser, hosting provider, network provider or an uploaded source document has no separate history. Do not use confidential information in this public demo.</p>
+
+      <h2>Two PDF input paths</h2>
+      <h3>Full statement mode</h3>
+      <p>Use this only with fictional or anonymised statements. Available transaction values and limited context signals may be pre-filled. Review and correct the fields before relying on the indicative output.</p>
+      <h3>Transaction history only mode</h3>
+      <p>Use a PDF containing only anonymised transaction rows. The system extracts transaction patterns and amounts, then lets the reviewer enter an anonymised reference, profession, profile, baseline and supporting context manually. If no account reference is supplied, the report uses an anonymised case reference and the internally generated Case ID remains the primary identifier.</p>
+
+      <h2>What this public build does not provide</h2>
+      <ul>
+        <li>Login, role-based access or user management.</li>
+        <li>Live sanctions, PEP, adverse-media or restricted-goods screening.</li>
+        <li>Bank, SWIFT, core-banking or trade-platform integration.</li>
+        <li>Saved cases, server-side audit logs or institutionally certified records.</li>
+        <li>Regulatory, legal or final financial-crime determinations.</li>
+      </ul>
+
+      <h2>Analytics and external services</h2>
+      <p>The public app does not intentionally send transaction content to an analytics service. The site loads from GitHub Pages and the transaction-monitoring page loads the PDF.js library from cdnjs. Their own infrastructure, browser and network logs may be governed by their respective policies.</p>
+
+      <h2>Institutional deployment</h2>
+      <p>Before a pilot uses real data, the deployment should have a formal privacy notice, lawful processing basis, retention and deletion policy, data-residency decision, access controls, encryption, vendor agreements, security testing and an approved incident-response process.</p>
+
+      <h2>Contact</h2>
+      <p>For a pilot discussion, contact <a href="mailto:regtechnexusai@gmail.com">regtechnexusai@gmail.com</a>. A domain-authenticated business email and formal company details should be added before institutional procurement.</p>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
+      <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./index.html">Home</a>
+        <a href="./methodology.html">Methodology</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+      <p>Public demo only. Human review remains required.</p>
+      <span>© <span id="year"></span> RegTech Nexus AI</span>
+    </footer>
+    <script>document.querySelector("#year").textContent = new Date().getFullYear();</script>
+  </body>
+</html>
