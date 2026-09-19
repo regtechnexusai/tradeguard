@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=13";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=26";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -421,10 +421,8 @@ export function validateInput(input) {
 
   if (!input.hsCode) {
     errors.hsCode = "HS Code is required.";
-  } else if (!/^\d{8}$/.test(input.hsCode)) {
-    errors.hsCode = "Enter exactly 8 digits for the HS Code.";
-  } else if (!input.hsCodeVerified) {
-    errors.hsCode = "Verify a valid HS Code from the tariff reference.";
+  } else if (!/^\d{6,10}$/.test(input.hsCode)) {
+    errors.hsCode = "Enter a 6–10 digit HS Code.";
   }
 
   if (

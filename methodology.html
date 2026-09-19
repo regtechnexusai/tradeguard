@@ -6,7 +6,7 @@
     <meta name="description" content="TradeGuard public demo methodology, scoring and limitations." />
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/methodology.html" />
     <title>Methodology and Limitations | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=25" />
+    <link rel="stylesheet" href="./style.css?v=26" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -26,11 +26,35 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Explainable review logic</div>
       <h1>Methodology and limitations</h1>
       <p class="info-lead">TradeGuard is a public, client-side demonstration of transparent review rules. It prioritises evidence and human judgement; it does not make autonomous compliance decisions.</p>
-      <p class="info-meta">Public methodology note · 19 September 2026</p>
+      <p class="info-meta">Public methodology note · v26 · 19 September 2026</p>
+
+      <h2>Implementation boundary</h2>
+      <p>The public v26 build uses deterministic browser-side rules and does not call an AI API or make an autonomous compliance decision. “RegTech Nexus AI” is the publisher name; the public workflow should be understood as explainable rule-based review support. Any future AI component would require separate documentation, testing and governance.</p>
 
       <h2>TBML Check</h2>
       <p>The TBML workspace structures a trade case around goods, price and valuation, HS-code alignment, quantity and unit, documents, route and ports, related parties or UBO concerns, third-party payment, repeated or unsupported shipments, business-profile mismatch and unusual payment terms.</p>
       <p>Additional control-context fields cover jurisdiction, PEP and sanctions status, restricted or dual-use goods, payment transparency and source of funds or wealth. These are control findings and readiness information, not automatic sanctions, STR or legal conclusions.</p>
+
+      <h3>TBML indicator weights in the public build</h3>
+      <ul>
+        <li>Material price deviation: +25; significant price deviation: +15.</li>
+        <li>Related-party concern: +15; third-party payment: +10.</li>
+        <li>Route or port anomaly: +10; document inconsistency: +15.</li>
+        <li>Duplicate or unsupported shipment concern: +20.</li>
+        <li>Goods / HS-code mismatch: +15; quantity / unit inconsistency: +10.</li>
+        <li>Business-profile mismatch: +10; unusual payment terms: +10.</li>
+      </ul>
+      <p>Control-only context findings, including jurisdiction, PEP/sanctions status, restricted goods, payment transparency and source of funds, do not add numeric points in this public build.</p>
+
+      <h3>Price-deviation rule</h3>
+      <p>When comparable positive values are available, the deviation is 0% when the declared unit price is within the reviewer-entered market range. Above the upper bound it is calculated as <strong>(declared price − upper bound) ÷ upper bound × 100</strong>; below the lower bound it is <strong>(lower bound − declared price) ÷ lower bound × 100</strong>. The current public thresholds are +15 at 50% or more and +25 at 100% or more. No live market-price feed is used; the reviewer supplies the range.</p>
+
+      <h3>Risk bands, cap and duplicate prevention</h3>
+      <p>Decision-ready bands are Low 0–24, Medium 25–49, High 50–74 and Critical 75–100. Raw scored points are capped at 100 for the TBML workspace. The six published Transaction Monitoring patterns currently total 95 points; its 100 cap is a defensive guard for future configured rules and does not activate under the current six-rule set.</p>
+      <p>Quick toggles and structured indicators use the same-concept suppression rules in the browser code, so a price, document, route, related-party, third-party-payment or goods/HS signal is not counted twice when one source already produced the corresponding flag.</p>
+
+      <h3>Decision-readiness gate</h3>
+      <p>Data completeness is the percentage of configured review fields that are non-blank. Data integrity is assessed separately for comparable currency, unit, HS-linked unit profile, price range and related context. “Unknown / not provided” is treated as not assessed, not as clean evidence. A result can show an indicative score while the decision-ready score remains withheld when integrity, evidence, confidence, route context or reviewer-note requirements are unresolved.</p>
 
       <h2>Transaction Monitoring</h2>
       <p>The public early-warning workspace uses configurable illustrative weights. The current pattern weights are:</p>
@@ -42,13 +66,14 @@
         <li>Route or corridor change: +10</li>
         <li>Channel or product change: +10</li>
       </ul>
-      <p>The configured total is capped at 100. Evidence-supported and unverified contributions are shown separately. If more than 50% of the displayed contribution is unverified, the signal is labelled <strong>Pending evidence</strong>. If an expected transaction or value baseline is missing, the relevant baseline-dependent rule is not evaluated.</p>
+      <p>The configured total is capped at 100 as a defensive guard. Evidence-supported and unverified contributions are shown separately. If more than 50% of the displayed contribution is unverified, the signal is labelled <strong>Pending evidence</strong>. If an expected transaction or value baseline is missing, the relevant baseline-dependent rule is not evaluated.</p>
 
       <h2>PDF input modes</h2>
       <p><strong>Full statement mode</strong> uses available transaction text and limited context indicators to pre-fill a local review. <strong>Transaction history-only mode</strong> uses anonymised transaction rows while the reviewer manually supplies an anonymised reference and any available profession, profile, baseline and evidence context. In both modes, extracted values require reviewer confirmation.</p>
 
       <h2>Data sources and configuration</h2>
-      <p>The public build uses a configured tariff/HS-code reference and user-supplied transaction or market inputs. It does not connect to a live sanctions, PEP, adverse-media, market-price, SWIFT or core-banking data feed. Country-specific tariff datasets, thresholds, weights, data lineage and approval controls must be configured and validated for an institutional pilot.</p>
+      <p>The public build currently uses one configured national tariff reference containing 7,420 records for tariff year 2026–2027; the packaged dataset carries its source metadata. It is not a universal tariff database. The form accepts a 6–10 digit HS-code format: six digits represent the harmonised level, while exact national 8- or 10-digit verification requires the relevant country reference to be configured. An unrecognised code may continue to an indicative review, but the result remains not decision-ready until the tariff mapping is verified.</p>
+      <p>It does not connect to a live sanctions, PEP, adverse-media, market-price, SWIFT or core-banking data feed. Country-specific tariff datasets, thresholds, weights, data lineage and approval controls must be configured and validated for an institutional pilot.</p>
 
       <h2>What the score means</h2>
       <p>The score is an indicative prioritisation signal. It is not a probability of money laundering, a finding of TBML, a sanctions determination, a regulatory rating or a substitute for investigation. A high score can reflect missing or unverified evidence, while a low score does not prove low risk.</p>
@@ -56,12 +81,19 @@
       <h2>Production readiness boundary</h2>
       <p>This public build has no backend, login, role-based access, saved case record, server-side audit log, live screening integration or regulatory certification. Browser rules can be inspected and altered. Institutional deployment therefore requires secure hosting, identity and access management, server-side case storage, audit logging, versioned rule governance, independent testing, privacy controls, operational resilience and applicable regulatory review.</p>
 
+      <h2>Version and change log</h2>
+      <ul>
+        <li><strong>v26 · 19 September 2026:</strong> reconciled the public preview arithmetic, aligned the Transaction Monitoring preview and upload warning, added 6–10 digit HS-code format handling with an exact-mapping gate, published TBML weights and formulae, pinned PDF.js with integrity verification, and added the About and security-boundary page.</li>
+        <li>Future changes to weights, thresholds, tariff references or PDF extraction behaviour should be recorded here before institutional use.</li>
+      </ul>
+
       <div class="info-callout"><strong>Human review required:</strong> TradeGuard can organise evidence and prioritise review signals. An authorised reviewer remains responsible for validating evidence, documenting rationale and deciding the appropriate next action under the institution’s approved policy.</div>
     </main>
 
     <footer class="site-footer section-shell">
       <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./about.html">About and security</a>
         <a href="./index.html">Home</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
         <a href="./terms.html">Terms</a>

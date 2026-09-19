@@ -13,7 +13,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/" />
     <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css?v=25" />
+    <link rel="stylesheet" href="./style.css?v=26" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -61,9 +61,9 @@
               <span class="mini-label">ILLUSTRATIVE PREVIEW</span>
               <span class="status-pill status-high">HIGH</span>
             </div>
-            <div class="visual-score">65<span>/100</span></div>
+            <div class="visual-score">55<span>/100</span></div>
             <p>Enhanced review recommended</p>
-            <div class="signal-line"><span style="width: 65%"></span></div>
+            <div class="signal-line"><span style="width: 55%"></span></div>
             <div class="visual-meta"><span>Price deviation</span><strong>+25</strong></div>
             <div class="visual-meta"><span>Document mismatch</span><strong>+15</strong></div>
             <div class="visual-meta"><span>Related party</span><strong>+15</strong></div>
@@ -140,9 +140,9 @@
             <div class="form-grid">
               <div class="field">
                 <label for="hsCode"><span>HS Code <em>(required to start assessment)</em></span></label>
-                <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" placeholder="e.g. 52010000" required aria-describedby="hsCodeDescription" />
+                <input id="hsCode" name="hsCode" type="text" inputmode="numeric" maxlength="10" pattern="[0-9]{6,10}" placeholder="e.g. 52010000 or 520100" required aria-describedby="hsCodeDescription" />
                 <button id="lookupHsCode" class="text-button" type="button">Verify HS Code</button>
-                <small id="hsCodeDescription" aria-live="polite">Required: enter an 8-digit HS Code from the configured country tariff reference.</small>
+                <small id="hsCodeDescription" aria-live="polite">Required: enter a 6–10 digit HS Code. Exact tariff verification depends on the configured country reference.</small>
               </div>
 
               <div id="commodityField" class="field derived-field" hidden>
@@ -619,7 +619,7 @@
           <div>
             <div class="eyebrow">Early access</div>
             <h2>Test the workflow with your own review team.</h2>
-            <p>Request a pilot conversation for a bank, exporter, importer, C&F agent or compliance team.</p>
+            <p>Request a pilot conversation for bank trade-finance and compliance operations. Exporters, importers and C&amp;F teams can be supported in a scoped pilot.</p>
             <p class="pilot-email-note">
               Or email us directly if your email app is configured:
               <a href="mailto:regtechnexusai@gmail.com?subject=TradeGuard%20pilot%20request&amp;body=Hello%20RegTech%20Nexus%20AI%2C%0A%0AI%20would%20like%20to%20discuss%20a%20TradeGuard%20pilot.%0A%0AOrganisation%3A%20%0AOrganisation%20type%3A%20%0A%0ARegards%2C%0A" aria-label="Email RegTech Nexus AI about a TradeGuard pilot">regtechnexusai@gmail.com</a>
@@ -648,6 +648,7 @@
       </div>
       <a class="footer-link" href="https://regtechnexusai.github.io/tradeguard/" target="_blank" rel="noopener noreferrer">regtechnexusai.github.io/tradeguard/</a>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./about.html">About and security</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
         <a href="./terms.html">Terms</a>
@@ -656,6 +657,6 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=25"></script>
+    <script type="module" src="./main.js?v=26"></script>
   </body>
 </html>

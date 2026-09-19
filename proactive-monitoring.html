@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=25" />
+    <link rel="stylesheet" href="./style.css?v=26" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -56,9 +56,9 @@
               <span class="mini-label">EARLY-WARNING PREVIEW</span>
               <span class="status-pill status-medium">REVIEW</span>
             </div>
-            <div class="visual-score">04<span>signals</span></div>
+            <div class="visual-score">03<span>signals</span></div>
             <p>Focused review recommended</p>
-            <div class="signal-line"><span style="width: 68%"></span></div>
+            <div class="signal-line"><span style="width: 45%"></span></div>
             <div class="visual-meta"><span>Velocity shift</span><strong>+20</strong></div>
             <div class="visual-meta"><span>New counterparties</span><strong>+15</strong></div>
             <div class="visual-meta"><span>Route change</span><strong>+10</strong></div>
@@ -101,7 +101,7 @@
                   <h3>Upload transaction statement PDF</h3>
                   <p>Choose a full statement for automatic extraction, or use transaction-history-only mode when the PDF has no account, customer or bank header. The file is read locally in this browser; missing baseline or context data remains clearly marked.</p>
                 </div>
-                <span class="file-retention-note">Cleared after local review</span>
+                <span class="file-retention-note">Browser-local · cleared after analysis</span>
               </div>
               <div class="pdf-mode-controls" role="group" aria-label="PDF input mode">
                 <button id="fullStatementModeButton" class="mode-button is-active" type="button" aria-pressed="true">Full statement · auto-fill</button>
@@ -312,7 +312,7 @@
           <div>
             <div class="eyebrow">Early access</div>
             <h2>Test the workflow with your own review team.</h2>
-            <p>Request a pilot conversation for a bank, exporter, importer, C&amp;F agent or compliance team.</p>
+            <p>Request a pilot conversation for bank trade-finance and compliance operations. Exporters, importers and C&amp;F teams can be supported in a scoped pilot.</p>
             <p class="pilot-email-note">
               Or email us directly:
               <a href="mailto:regtechnexusai@gmail.com?subject=TradeGuard%20pilot%20request&amp;body=Hello%20RegTech%20Nexus%20AI%2C%0A%0AI%20would%20like%20to%20discuss%20a%20TradeGuard%20pilot.%0A%0AOrganisation%3A%20%0AOrganisation%20type%3A%20%0A%0ARegards%2C%0A" aria-label="Email RegTech Nexus AI about a TradeGuard pilot">regtechnexusai@gmail.com</a>
@@ -339,6 +339,7 @@
       <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
       <a class="footer-link" href="./index.html#monitoring-modes">TradeGuard monitoring modes</a>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./about.html">About and security</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
         <a href="./terms.html">Terms</a>
@@ -347,7 +348,7 @@
       <span>© <span id="year"></span> RegTech Nexus AI</span>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script type="module" src="./proactive-monitoring.js?v=25"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" integrity="sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module" src="./proactive-monitoring.js?v=26"></script>
   </body>
 </html>

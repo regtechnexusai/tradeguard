@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=16";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=16";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=26";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=26";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -197,13 +197,13 @@ function verifyHsCode() {
   if (unitProfileNote) unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
 
   if (!code) {
-    hsCodeDescription.textContent = "Required: enter an 8-digit HS Code from the tariff reference.";
+    hsCodeDescription.textContent = "Required: enter a 6–10 digit HS Code. Exact tariff verification depends on the configured country reference.";
     hsCodeDescription.style.color = "";
     return false;
   }
 
-  if (!/^\d{8}$/.test(code)) {
-    hsCodeDescription.textContent = "HS Code must contain exactly 8 digits.";
+  if (!/^\d{6,10}$/.test(code)) {
+    hsCodeDescription.textContent = "HS Code must contain 6 to 10 digits.";
     hsCodeDescription.style.color = "#b42318";
     return false;
   }
@@ -219,7 +219,7 @@ function verifyHsCode() {
 
   if (!item) {
     hsCodeDescription.textContent =
-      "HS Code was not found in the configured country tariff reference.";
+      "Code format accepted, but this code is not in the current public tariff reference. You may continue with an indicative review; exact tariff mapping is required for a decision-ready result.";
     hsCodeDescription.style.color = "#b42318";
     return false;
   }
@@ -357,7 +357,7 @@ hsCodeInput?.addEventListener("input", () => {
   setUnitOptions();
   unitProfileNote.textContent = "Verify the HS Code to display the expected unit profile.";
   unitProfileNote.style.color = "";
-  if (cleanCode(hsCodeInput.value).length === 8) verifyHsCode();
+  if (cleanCode(hsCodeInput.value).length >= 6) verifyHsCode();
 });
 hsCodeInput?.addEventListener("change", verifyHsCode);
 

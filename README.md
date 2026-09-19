@@ -1,12 +1,12 @@
 # TradeGuard by RegTech Nexus AI
 
-A static, low-cost public MVP for an explainable, rule-based trade-finance and TBML risk-review workspace.
+A static, low-cost public MVP (v26) for an explainable, rule-based trade-finance and TBML risk-review workspace.
 
 ## What this version does
 
 - Presents the TradeGuard product concept through two separate workspaces: TBML Check and Transaction Monitoring.
 - Accepts fictional or anonymised sample transaction inputs.
-- Applies transparent rule-based red-flag scoring with raw and capped points.
+- Applies transparent rule-based red-flag scoring with raw and capped points; the public preview arithmetic reconciles visibly.
 - Lets a visitor run an indicative risk check with only HS Code, route countries and core counterparty status; detailed fields remain optional.
 - Shows an indicative score when supported signals are available, while withholding the decision-ready score when evidence or integrity gates are not met.
 - Separates data completeness from data integrity/comparability.
@@ -20,16 +20,18 @@ A static, low-cost public MVP for an explainable, rule-based trade-finance and T
 - Supports two PDF paths: full-statement mode for available context pre-fill, and transaction-history-only mode for anonymised transaction rows plus manually supplied context.
 - Clears the browser file input and temporary extracted text after analysis; the public build has no upload endpoint or case database.
 - Shows a clear privacy and PDF-handling notice, plus a methodology and limitations page.
+- Includes an About and security-boundary page that separates public-demo capability from institutional deployment requirements.
 - Prepares a pilot request in a pre-filled email draft. A configured mail client is required; a direct email fallback is shown.
 - Uses glossy, raised 3D styling for primary, navigation, utility and workspace buttons.
 - Keeps “Human review required” visible as the review principle.
 - Adds review-only context controls for jurisdiction risk, PEP/screening, restricted or dual-use goods, payment transparency and source of funds/wealth.
 - Keeps control-only findings outside the numeric score; they require evidence and authorised human review.
+- Accepts a 6–10 digit HS-code format; six-digit harmonised inputs and country-specific 8/10-digit extensions remain subject to exact tariff-reference verification.
 - Separates FATF/AML-CFT controls from BCBS governance and IFRS 9 credit-risk / expected-credit-loss evidence paths.
 
 This public version does **not** upload or store documents on a TradeGuard server, call an AI API, connect to a bank, provide live sanctions/PEP screening, save cases, or make a regulatory determination. It uses deterministic browser-side rules and is not audit-grade or institutionally certified.
 
-Read [`privacy.html`](./privacy.html) for PDF handling and public-demo privacy limitations. Read [`methodology.html`](./methodology.html) for scoring weights, evidence gating, data boundaries and production-readiness limits.
+Read [`privacy.html`](./privacy.html) for PDF handling and public-demo privacy limitations. Read [`methodology.html`](./methodology.html) for indicator weights, score bands, price-deviation logic, evidence gating, data boundaries and production-readiness limits.
 
 ## Run locally
 

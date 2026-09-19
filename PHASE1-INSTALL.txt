@@ -15,6 +15,14 @@ main.js
 report.js
 rules.js
 style.css
+methodology.html
+privacy.html
+terms.html
+about.html
+proactive-monitoring.html
+proactive-monitoring.js
+README.md
+PHASE1-INSTALL.txt
 
 Keep these existing files in the repository:
 regtech-nexus-ai-logo.png
@@ -24,8 +32,11 @@ HS Code, origin country and destination country are required to start the
 indicative assessment. Beneficial ownership, buyer–seller relationship and payer
 relationship are also required selections, with “Unknown / not provided” as a
 valid option so a visitor is not blocked when the information is unavailable.
-After a valid HS Code is verified, the Product / commodity field is populated
-automatically from the tariff description.
+The HS Code accepts 6–10 digits. After an exact code is verified against the
+configured reference, the Product / commodity field is populated automatically
+from the tariff description. An unrecognised but well-formed code can continue
+to an indicative review, but exact tariff mapping is required for a decision-ready
+result.
 Quantity, declared price, market range, unit, currency, market source, source
 date and valuation basis are optional. When enough price fields are supplied,
 TradeGuard calculates an indicative price comparison; otherwise it explains
@@ -55,12 +66,12 @@ invoice, passport, NID, bank or SWIFT documents to this public workspace.
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=25
+https://regtechnexusai.github.io/tradeguard/?v=26
 
 The proactive workspace report uses a case-file layout. Profession is selected
 from a controlled list, customer references are masked by default, unsupported
-pattern contributions are visibly flagged, and disposition confirmation
-requires written rationale.
+pattern contributions are visibly flagged, and the visible status remains
+“Human review required”.
 
 The “Email pilot request” button opens a pre-filled email draft to
 regtechnexusai@gmail.com with the applicant's name, organisation and
