@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TradeGuard Document Assessment — browser-local OCR-assisted review for KYC, AOF, trade, loan, financial-statement and collateral documents." />
+    <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/document-assessment.html" />
+    <link rel="icon" type="image/png" href="./regtech-nexus-ai-logo.png" />
+    <meta property="og:title" content="Document Assessment | TradeGuard" />
+    <meta property="og:description" content="OCR-assisted, browser-local document review support for KYC, AOF, trade, loan, financial-statement and collateral documents." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/document-assessment.html" />
+    <meta property="og:image" content="https://regtechnexusai.github.io/tradeguard/regtech-nexus-ai-logo.png" />
+    <meta property="og:image:alt" content="RegTech Nexus AI — TradeGuard" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Document Assessment | TradeGuard" />
+    <meta name="twitter:description" content="OCR-assisted, browser-local document review support for KYC, AOF, trade, loan, financial-statement and collateral documents." />
+    <meta name="twitter:image" content="https://regtechnexusai.github.io/tradeguard/regtech-nexus-ai-logo.png" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: blob:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; worker-src 'self' blob: https://cdn.jsdelivr.net; form-action 'self' mailto:;" />
+    <title>Document Assessment | TradeGuard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css?v=38" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand brand-image" href="./index.html#top" aria-label="TradeGuard home">
+        <img class="brand-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
+      </a>
+      <nav class="nav-links" aria-label="Page navigation">
+        <a href="./guide.html">User guide</a>
+        <a href="./document-assessment.html">Document assessment</a>
+        <a href="./methodology.html">Methodology</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./about.html">About and security</a>
+        <a class="nav-cta" href="./index.html#pilot">Request pilot</a>
+      </nav>
+    </header>
+
+    <main class="section-shell info-page document-assessment-page">
+      <div class="eyebrow"><span class="pulse-dot"></span> OCR-assisted document review</div>
+      <h1>Document Assessment</h1>
+      <p class="info-lead">Review selected KYC/AOF, trade, loan, financial-statement and collateral documents in the browser. The workspace extracts selectable text and can use OCR for scanned pages or images; it identifies potential document anomalies for human review.</p>
+      <p class="info-meta" data-build-version data-build-label="Document assessment">Document assessment</p>
+
+      <div class="info-callout"><strong>Privacy and scope:</strong> Files are processed locally in this browser and are not uploaded to a TradeGuard server. Optional OCR loads the open-source Tesseract.js engine and language assets from a CDN; the documents themselves remain in the browser. Use fictional, synthetic or anonymised files only.</div>
+
+      <section id="documentCheck" class="section-block document-check-section">
+        <div class="workspace-grid document-assessment-grid">
+          <form id="documentForm" class="panel form-panel" novalidate>
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">STEP 01</span>
+                <h3>Select assessment</h3>
+                <p class="form-intro">Choose the document family, then select up to five local PDF or image files.</p>
+              </div>
+              <div class="panel-actions">
+                <button id="documentResetButton" class="text-button" type="button">Start new assessment</button>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <label class="field field-wide">
+                <span>Assessment type <em>(required)</em></span>
+                <select id="documentAssessmentType" required>
+                  <option value="">Select assessment type</option>
+                  <option value="kyc-aof">KYC / AOF documents</option>
+                  <option value="trade-documents">Trade documents</option>
+                  <option value="loan-credit">Loan / credit documents</option>
+                  <option value="financial-statements">Financial statements</option>
+                  <option value="collateral">Collateral / security documents</option>
+                </select>
+                <small id="documentAssessmentHint">The selected profile controls the expected document fields and anomaly checks.</small>
+              </label>
+
+              <label class="field field-wide">
+                <span>PDF or image documents <em>(up to 5 files; 10 MB each; 40 MB combined)</em></span>
+                <input id="documentFileInput" type="file" accept="application/pdf,.pdf,image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple />
+                <small>Selectable-text PDFs are read directly. Scanned PDFs and images are rendered and sent to the browser-local OCR worker.</small>
+              </label>
+
+              <label class="field field-wide checkbox-field">
+                <input id="documentPrivacyAcknowledge" type="checkbox" />
+                <span>I understand that this public demo is for fictional or anonymised documents only and that OCR output requires human verification.</span>
+              </label>
+            </div>
+
+            <div id="documentFileStatus" class="file-status" role="status" aria-live="polite">No documents selected.</div>
+            <div id="documentFormMessage" class="form-message" role="status" aria-live="polite"></div>
+            <button id="runDocumentAssessment" class="button button-primary button-full" type="submit">Run document assessment <span class="button-icon" aria-hidden="true">→</span></button>
+          </form>
+
+          <section id="documentReport" class="panel report-panel document-report-panel is-empty" aria-live="polite">
+            <div class="panel-heading">
+              <div>
+                <span class="panel-kicker">STEP 02</span>
+                <h3>Document Assessment Report</h3>
+              </div>
+              <div class="panel-actions">
+                <button id="documentCopyButton" class="text-button" type="button" disabled>Copy summary</button>
+                <button id="documentPrintButton" class="text-button" type="button" disabled>Print / Save PDF</button>
+                <button id="documentDownloadButton" class="text-button" type="button" disabled>Download TXT</button>
+              </div>
+              <p class="export-note">The report contains metadata and flags, not extracted document text.</p>
+            </div>
+
+            <div id="documentEmpty" class="empty-report">
+              <div class="empty-icon">▧</div>
+              <h3>Your document assessment will appear here</h3>
+              <p>Select a document family and local files, then run the assessment.</p>
+            </div>
+
+            <div id="documentReportContent" class="document-report-content" hidden>
+              <div class="report-brand-header">
+                <div class="report-brand-left">
+                  <img src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
+                  <div>
+                    <strong>TradeGuard</strong>
+                    <span>by RegTech Nexus AI | Explainable review support</span>
+                  </div>
+                </div>
+                <div class="report-brand-right">
+                  <strong>DOCUMENT REVIEW OUTPUT</strong>
+                  <span>Case ID: <b id="documentHeaderCaseId">-</b></span>
+                  <span>Generated: <b id="documentHeaderGeneratedAt">-</b></span>
+                </div>
+              </div>
+
+              <div class="document-report-overview">
+                <div>
+                  <span class="mini-label">INDICATIVE DOCUMENT SIGNAL</span>
+                  <div class="report-score"><span id="documentScore">0</span><small>/100</small></div>
+                  <span id="documentBand" class="status-pill status-not-ready">HUMAN REVIEW</span>
+                </div>
+                <div class="document-scan-badge"><strong id="documentOcrBadge">OCR / TEXT</strong><span id="documentOcrBadgeNote">Browser-local extraction</span></div>
+              </div>
+
+              <div class="decision-readiness is-blocked">
+                <div>
+                  <strong id="documentStatus">Human review required</strong>
+                  <p id="documentStatusMessage">Document signals are indicative and require verification against the original files.</p>
+                </div>
+                <div class="raw-score"><span>DOCUMENTS REVIEWED</span><strong id="documentCount">0</strong></div>
+              </div>
+
+              <div class="report-detail-card">
+                <div class="report-subheading"><span>Assessment profile</span><span id="documentProfileLabel">-</span></div>
+                <p id="documentProfileDescription"></p>
+              </div>
+
+              <div class="report-subheading"><span>Detected document flags</span><span id="documentFlagCount">0 flags</span></div>
+              <div id="documentFlags" class="flag-list"></div>
+
+              <div class="report-subheading"><span>Extraction and file checks</span><span>Metadata only</span></div>
+              <div id="documentFileResults" class="document-file-results"></div>
+
+              <div class="recommendation-box">
+                <span class="recommendation-icon">✓</span>
+                <div><strong>Suggested next steps</strong><ol id="documentNextSteps" class="report-action-list"></ol></div>
+              </div>
+
+              <div class="report-footer-note"><strong>Assessment disclaimer:</strong> This output identifies potential document-quality and consistency indicators for analyst review. It is not a finding of fraud, money laundering, creditworthiness or legal liability. The authorised reviewer must inspect the original documents and apply applicable laws, regulations and institutional policy.</div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <h2>What this module checks</h2>
+      <div class="feature-grid document-scope-grid">
+        <article class="feature-card"><span class="feature-number">01</span><h3>KYC / AOF</h3><p>Identity, address, occupation, beneficial ownership, source-of-funds and signature completeness signals.</p></article>
+        <article class="feature-card"><span class="feature-number">02</span><h3>Trade documents</h3><p>Invoice, packing list, bill of lading, parties, HS code, quantity, price, route and document-consistency signals.</p></article>
+        <article class="feature-card"><span class="feature-number">03</span><h3>Credit documents</h3><p>Loan applications, financial statements and collateral files for completeness, consistency and missing-control signals.</p></article>
+      </div>
+
+      <div class="info-callout"><strong>OCR limitation:</strong> OCR quality depends on resolution, language, layout and document condition. The output is a screening aid only; it must not replace review of the original document or an institutionally governed credit, KYC or AML process.</div>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
+      <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./index.html">Home</a>
+        <a href="./guide.html">User guide</a>
+        <a href="./document-assessment.html">Document assessment</a>
+        <a href="./methodology.html">Methodology</a>
+        <a href="./privacy.html">Privacy and PDF handling</a>
+        <a href="./about.html">About and security</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+      <p>Rule-based review support. Human review remains required.</p>
+      <div class="footer-company-details">
+        <p><strong>RegTech Nexus AI</strong> is an IT product publisher and a sister concern of Travel To Know.</p>
+        <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
+        <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
+      </div>
+      <span data-build-version data-build-format="footer">© 2026 RegTech Nexus AI · v38</span>
+    </footer>
+
+    <script type="module" src="./site-version.js?v=38"></script>
+    <script type="module" src="./document-assessment.js?v=38"></script>
+  </body>
+</html>
