@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=39";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=40";
 
 const WEBSITE_DISCLAIMER =
   "The system identifies potential risk indicators for analyst review; the responsible officer makes the final assessment based on available evidence and applicable laws, regulations and institutional policy.";
