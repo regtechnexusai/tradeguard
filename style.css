@@ -286,6 +286,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .report-panel .panel-actions { flex-wrap: wrap; }
 .report-panel .text-button { border-color: #cbdce6; color: #0b1630; background: #fff; }
 .report-panel .text-button:hover:not(:disabled) { border-color: #2563eb; color: #2563eb; background: #f4f8ff; }
+.report-panel .export-note { flex-basis: 100%; margin: 7px 0 0; color: #607089; font-size: 9px; line-height: 1.4; }
 .report-footer-note { padding: 12px 13px; border: 1px solid #d7e2ef; border-radius: 11px; color: #607089; background: #f5f8fc; font-style: normal; }
 
 @media (max-width: 700px) {
@@ -297,8 +298,9 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   @page { size: letter; margin: .35in; }
   *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body.print-report-mode { min-width: 0; color: #17233a; background: #fff; }
-  body.print-report-mode .orb,
-  body.print-report-mode .shell > :not(#risk-check) { display: none !important; }
+  body.print-report-mode > :not(main),
+  body.print-report-mode main > :not(#risk-check) { display: none !important; }
+  body.print-report-mode main { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-report-mode #risk-check { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-report-mode #risk-check > :not(.report-panel) { display: none !important; }
   body.print-report-mode .report-panel { display: block !important; max-width: none; padding: 0 !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
@@ -399,8 +401,9 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   @page { size: letter; margin: .35in; }
   *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body.print-transaction-report-mode { min-width: 0; color: #17233a; background: #fff; }
-  body.print-transaction-report-mode .orb,
-  body.print-transaction-report-mode .shell > :not(#proactive-check) { display: none !important; }
+  body.print-transaction-report-mode > :not(main),
+  body.print-transaction-report-mode main > :not(#proactive-check) { display: none !important; }
+  body.print-transaction-report-mode main { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-transaction-report-mode #proactive-check { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-transaction-report-mode #proactive-check > :not(.report-panel) { display: none !important; }
   body.print-transaction-report-mode .report-panel { display: block !important; max-width: none; padding: 0 !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }

@@ -1,19 +1,26 @@
-# TradeGuard report export fix — v33
+# TradeGuard site update — v35
 
 ## Problem identified
 
-The styled report PDF is valid, but the downloaded TXT file shown in photo 3 is being opened by some Android viewers as legacy ANSI text. UTF-8 punctuation is therefore displayed as mojibake such as `â€“`, `â€™` and `â€¢`.
+This package combines the v34 PDF report fix with the final site-consistency pass. Photo 1 contains the report information; photo 2 is the clean, card-based PDF reference.
 
-The attached `TG-20260922133816-828F49-report.txt` is a text export, not a PDF. The styled report PDF must be produced with **Print / Save PDF** from the report screen.
+The styled PDF must be produced with **Print / Save PDF** from the report screen. **Download TXT** remains available as a plain-text copy.
 
 ## Fixes
 
-- Added a UTF-8 BOM to the TBML Check TXT export.
-- Added the same UTF-8 BOM to the Transaction Monitoring TXT export.
+- Added a UTF-8 BOM to both TXT exports so Android viewers recognise UTF-8 punctuation correctly.
+- Corrected TBML print isolation so only the TBML report is printed.
+- Corrected Transaction Monitoring print isolation so only the Transaction Monitoring report is printed.
+- Added an export note explaining the difference between the styled PDF and plain TXT copy.
+- Updated `report.js` to import `rules.js?v=35`, matching `main.js` and removing stale ES-module cache drift.
+- Standardized top navigation and footer links across all six pages.
+- Added shared `site-version.js` build metadata: v35, 22 September 2026.
+- Standardized copyright output and social-share metadata across all six pages.
+- Kept the guide labels aligned with the actual Copy summary, Print / Save PDF and Download TXT controls.
 - Preserved the styled Print / Save PDF output, logo, case metadata, evidence gate and website disclaimer.
-- Bumped asset versions to v33 to prevent stale browser cache files.
+- Bumped asset versions to v35 to prevent stale browser cache files.
 - Included the synchronized guide, Transaction Monitoring page, stylesheet and logo.
 
 ## Deployment
 
-Upload the package files to the TradeGuard site root. Keep the existing `rules.js`, `hs-codes.json`, `pdf.mjs`, `pdf.worker.mjs` and other supporting files in the root. The TXT export fix applies to both report modules.
+Upload the package files to the TradeGuard site root. Keep the existing `rules.js`, `hs-codes.json`, `pdf.mjs`, `pdf.worker.mjs` and other supporting files in the root. The TXT export and PDF print fixes apply to both report modules.

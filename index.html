@@ -13,9 +13,15 @@
     <meta property="og:description" content="Explainable, rule-based trade-finance and TBML review support with human review required." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/" />
+    <meta property="og:image" content="https://regtechnexusai.github.io/tradeguard/regtech-nexus-ai-logo.png" />
+    <meta property="og:image:alt" content="RegTech Nexus AI — TradeGuard" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="TradeGuard | RegTech Nexus AI" />
+    <meta name="twitter:description" content="Explainable, rule-based trade-finance and TBML review support with human review required." />
+    <meta name="twitter:image" content="https://regtechnexusai.github.io/tradeguard/regtech-nexus-ai-logo.png" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css?v=33" />
+    <link rel="stylesheet" href="./style.css?v=35" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -31,6 +37,9 @@
       </a>
       <nav class="nav-links" aria-label="Main navigation">
         <a href="./guide.html">User guide</a>
+        <a href="./methodology.html">Methodology</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./about.html">About and security</a>
         <a class="nav-cta" href="#pilot">Request pilot</a>
       </nav>
     </header>
@@ -564,6 +573,7 @@
                   <button id="printReportButton" class="text-button" type="button" disabled>Print / Save PDF</button>
                   <button id="downloadReportButton" class="text-button" type="button" disabled>Download TXT</button>
                 </div>
+                <p class="export-note">Print / Save PDF creates the styled report. Download TXT creates a plain-text copy.</p>
             </div>
 
             <div id="emptyReport" class="empty-report">
@@ -670,10 +680,11 @@
       </div>
       <a class="footer-link" href="https://regtechnexusai.github.io/tradeguard/" target="_blank" rel="noopener noreferrer">regtechnexusai.github.io/tradeguard/</a>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./index.html">Home</a>
         <a href="./guide.html">User guide</a>
-        <a href="./about.html">About and security</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
+        <a href="./about.html">About and security</a>
         <a href="./terms.html">Terms</a>
       </nav>
       <div class="footer-company-details">
@@ -682,9 +693,10 @@
         <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
       </div>
       <p>Rule-based review support. Not a regulatory determination or legal interpretation.</p>
-      <span>© 2026 RegTech Nexus AI</span>
+      <span data-build-version data-build-format="footer">© 2026 RegTech Nexus AI · v35</span>
     </footer>
 
-    <script type="module" src="./main.js?v=33"></script>
+    <script type="module" src="./site-version.js?v=35"></script>
+    <script type="module" src="./main.js?v=35"></script>
   </body>
 </html>

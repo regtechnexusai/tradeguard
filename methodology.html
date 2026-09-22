@@ -5,9 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TradeGuard public demo methodology, scoring and limitations." />
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/methodology.html" />
+    <link rel="icon" type="image/png" href="./regtech-nexus-ai-logo.png" />
+    <meta property="og:title" content="Methodology and Limitations | TradeGuard" />
+    <meta property="og:description" content="TradeGuard public demo methodology, scoring and limitations." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/methodology.html" />
+    <meta property="og:image" content="https://regtechnexusai.github.io/tradeguard/regtech-nexus-ai-logo.png" />
+    <meta property="og:image:alt" content="RegTech Nexus AI — TradeGuard" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Methodology and Limitations | TradeGuard" />
+    <meta name="twitter:description" content="TradeGuard public demo methodology, scoring and limitations." />
+    <meta name="twitter:image" content="https://regtechnexusai.github.io/tradeguard/regtech-nexus-ai-logo.png" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>Methodology and Limitations | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=29" />
+    <link rel="stylesheet" href="./style.css?v=35" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -18,7 +29,10 @@
         <img class="brand-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
       </a>
       <nav class="nav-links" aria-label="Page navigation">
+        <a href="./guide.html">User guide</a>
+        <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy</a>
+        <a href="./about.html">About and security</a>
         <a class="nav-cta" href="./index.html#pilot">Request pilot</a>
       </nav>
     </header>
@@ -27,10 +41,10 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Explainable review logic</div>
       <h1>Methodology and limitations</h1>
       <p class="info-lead">TradeGuard is a public, client-side demonstration of transparent review rules. It prioritises evidence and human judgement; it does not make autonomous compliance decisions.</p>
-      <p class="info-meta">Public methodology note · v29 · 22 September 2026</p>
+      <p class="info-meta" data-build-version data-build-label="Public methodology note">Public methodology note</p>
 
       <h2>Implementation boundary</h2>
-      <p>The public v29 build uses deterministic browser-side rules and does not call an AI API or make an autonomous compliance decision. “RegTech Nexus AI” is the publisher name; the public workflow should be understood as explainable rule-based review support. Any future AI component would require separate documentation, testing and governance.</p>
+      <p>The public v35 build uses deterministic browser-side rules and does not call an AI API or make an autonomous compliance decision. “RegTech Nexus AI” is the publisher name; the public workflow should be understood as explainable rule-based review support. Any future AI component would require separate documentation, testing and governance.</p>
 
       <h2>TBML Check</h2>
       <p>The TBML workspace structures a trade case around goods, price and valuation, HS-code alignment, quantity and unit, documents, route and ports, related parties or UBO concerns, third-party payment, repeated or unsupported shipments, business-profile mismatch and unusual payment terms.</p>
@@ -108,6 +122,7 @@
 
       <h2>Version and change log</h2>
       <ul>
+        <li><strong>v35 · 22 September 2026:</strong> aligned report PDF print isolation, corrected the shared rules import version, unified navigation and footer links, and added shared build metadata and social-share tags.</li>
         <li><strong>v29 · 22 September 2026:</strong> added a simple user guide, explicit analyst disclaimer, 7–365 day monitoring options, multi-PDF local analysis, downloadable text reports, risk-type labels, OCR/document-scope limitations and an indicator-to-reference crosswalk.</li>
         <li><strong>v28 · 20 September 2026:</strong> added a mobile-upload fallback by placing the pinned self-hosted PDF.js files at repository root, so GitHub mobile upload does not require nested-folder preservation; updated all cache-busting references.</li>
         <li><strong>v27 · 19 September 2026:</strong> removed unsupported AI-style wording, added a PDF consent gate and identifier warning, moved PDF.js to a pinned self-hosted build with evaluation disabled, aligned local-processing language, added publisher/contact details, added reference families and expanded the public security boundary.</li>
@@ -121,10 +136,11 @@
     <footer class="site-footer section-shell">
       <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
       <nav class="footer-links" aria-label="Legal and product information">
-        <a href="./guide.html">User guide</a>
-        <a href="./about.html">About and security</a>
         <a href="./index.html">Home</a>
+        <a href="./guide.html">User guide</a>
+        <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
+        <a href="./about.html">About and security</a>
         <a href="./terms.html">Terms</a>
       </nav>
       <p>Rule-based review support. Not a regulatory determination.</p>
@@ -133,7 +149,8 @@
         <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
         <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
       </div>
-      <span>© 2026 RegTech Nexus AI</span>
+      <span data-build-version data-build-format="footer">© 2026 RegTech Nexus AI · v35</span>
     </footer>
+    <script type="module" src="./site-version.js?v=35"></script>
   </body>
 </html>
