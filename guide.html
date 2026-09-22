@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=37" />
+    <link rel="stylesheet" href="./style.css?v=38" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -33,6 +33,7 @@
       </a>
       <nav class="nav-links" aria-label="Page navigation">
         <a href="./guide.html">User guide</a>
+        <a href="./document-assessment.html">Document assessment</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy</a>
         <a href="./about.html">About and security</a>
@@ -90,19 +91,29 @@
         <li><strong>Human review required:</strong> the responsible officer must validate evidence and determine the appropriate next action.</li>
       </ul>
 
-      <h2>6. Current scope and roadmap</h2>
-      <p>The public build does not perform live sanctions or PEP screening, OCR-based KYC/AOF validation, trade-document reconciliation, credit-file analysis, core-banking integration, saved-case management or server-side audit logging.</p>
-      <p>Future institutional modules may support OCR and structured checks for Account Opening Forms, KYC records, trade documents, financial statements, loan applications and collateral files. Such modules require approved data processing, document taxonomies, validation, access controls and human review.</p>
-
-      <h3>Indicative OCR and document-controls roadmap</h3>
+      
+      <h2>6. Document Assessment workflow</h2>
       <ol>
-        <li><strong>0–3 months — discovery and prototype:</strong> define document taxonomies, OCR/PDF extraction, confidence scoring, PII handling and retention controls.</li>
+        <li>Open <strong>Document Assessment</strong> and choose KYC/AOF, trade, loan/credit, financial statement or collateral/security review.</li>
+        <li>Select up to five local PDF or image files and confirm that they are fictional or anonymised.</li>
+        <li>The browser extracts selectable text and uses OCR for scanned pages or images when needed.</li>
+        <li>Review the document-quality, completeness and inconsistency flags against the original documents.</li>
+        <li>Use <strong>Copy summary</strong>, <strong>Print / Save PDF</strong> or <strong>Download TXT</strong> to retain the indicative note.</li>
+      </ol>
+
+      <h2>7. Current scope and roadmap</h2>
+      <p>The public build does not perform live sanctions or PEP screening, core-banking integration, saved-case management or server-side audit logging. The new Document Assessment workspace provides browser-local selectable-text extraction and optional OCR-assisted checks for document completeness and inconsistency; it remains an indicative review aid.</p>
+      <p>Further institutional modules may extend the public document workspace with governed OCR language packs, structured document taxonomies, field-level reconciliation, approved data processing, access controls and human review.</p>
+
+      <h3>Institutional document-controls roadmap</h3>
+      <ol>
+        <li><strong>0–3 months — refinement and prototype governance:</strong> define document taxonomies, OCR/PDF extraction, confidence scoring, PII handling and retention controls.</li>
         <li><strong>3–6 months — controlled pilot:</strong> test KYC/AOF and loan/credit-document checks with reviewer workflows, false-positive testing and exception handling.</li>
         <li><strong>6–12 months — institutional readiness:</strong> add access controls, audit logging, model/rule governance, retention controls and a scoped pilot with approved institutions.</li>
       </ol>
-      <p class="info-note">Timing is indicative only and depends on approved data governance, security review, representative documents and institutional or regulatory approval. OCR is not enabled in this public build.</p>
+      <p class="info-note">Timing is indicative only and depends on approved data governance, security review, representative documents and institutional or regulatory approval. OCR is best-effort and optional in this public build; verify every result against the original document.</p>
 
-      <h2>7. Privacy and safe use</h2>
+      <h2>8. Privacy and safe use</h2>
       <p>Do not upload real bank statements, customer records, identity documents, LC files, payment messages or confidential trade documents to this public demo. Read the <a href="./privacy.html">Privacy and PDF handling</a> page before testing.</p>
 
       <div class="info-callout"><strong>Remember:</strong> A high signal is a reason to review, not proof of wrongdoing. A low signal does not prove low risk.</div>
@@ -113,6 +124,7 @@
       <nav class="footer-links" aria-label="Legal and product information">
         <a href="./index.html">Home</a>
         <a href="./guide.html">User guide</a>
+        <a href="./document-assessment.html">Document assessment</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
         <a href="./about.html">About and security</a>
@@ -124,8 +136,8 @@
         <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
         <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
       </div>
-      <span data-build-version data-build-format="footer">© 2026 RegTech Nexus AI · v37</span>
+      <span data-build-version data-build-format="footer">© 2026 RegTech Nexus AI · v38</span>
     </footer>
-    <script type="module" src="./site-version.js?v=37"></script>
+    <script type="module" src="./site-version.js?v=38"></script>
   </body>
 </html>
