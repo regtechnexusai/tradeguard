@@ -1,25 +1,22 @@
-# TradeGuard report export update
+# TradeGuard transaction-monitoring report update
 
-This package updates the public TradeGuard report presentation without changing the risk-calculation rules.
+This package updates the legacy `proactive-monitoring.html` report so it uses the same modern report presentation as the TBML report.
 
 ## Replace these files
 
-- `index.html`
-- `main.js`
-- `report.js`
+- `proactive-monitoring.html`
+- `proactive-monitoring.js`
 - `style.css`
 - `regtech-nexus-ai-logo.png`
 
-Keep the existing `rules.js`, `hs-codes.json`, data files and other website assets unchanged.
+Keep the existing PDF worker files, `pdf.mjs`, `pdf.worker.mjs`, and other data files unchanged.
 
-## What changed
+## Changes
 
-- Added the RegTech Nexus AI / TradeGuard report header and case metadata.
-- Added a `Print / Save PDF` action for browser-based PDF export.
-- Kept the plain-text download as `Download TXT`.
-- Added the website disclaimer to the rendered and downloaded report.
-- Improved price-anomaly wording to identify the upper market range.
-- Added cache-busting version `v=30` to the updated stylesheet and modules.
-- Added print CSS so the report prints without the input form or surrounding website sections.
-
-After uploading the files, open the site, load a sample case, run the risk check, and select `Print / Save PDF` to save the designed report as PDF.
+- Replaced the old Case file visual treatment with the TradeGuard / RegTech Nexus AI report header.
+- Added modern score, gauge, evidence-supported and unverified-point presentation.
+- Added responsive mobile layout matching the TBML report.
+- Added the website disclaimer and final-review warning.
+- Added `Print / Save PDF` and retained `Download TXT`.
+- Added print CSS that hides the form and prints only the transaction-monitoring report.
+- Bumped the page assets to cache version `v=31`.

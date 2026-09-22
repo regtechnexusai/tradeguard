@@ -313,6 +313,106 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   body.print-report-mode .report-footer-note { margin-top: 14px; }
 }
 
+/* Transaction-monitoring report update v31: align the legacy case-file report with the TBML report. */
+.case-file-report { color: #17233a; background: rgba(255,255,255,.86); }
+.case-file-report > .panel-heading { padding-bottom: 16px; border-bottom: 0; }
+.case-file-report > .panel-heading h3 { color: #0b1630; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: clamp(22px, 3vw, 30px); letter-spacing: -.04em; }
+.case-file-report .panel-kicker, .case-file-report .mini-label { color: #607089; letter-spacing: .1em; text-transform: uppercase; }
+.case-file-report .text-button { border-color: #cbdce6; border-radius: 10px; color: #0b1630; background: #fff; box-shadow: 0 4px 0 #d4e3eb; }
+.case-file-report .text-button:hover { border-color: #2563eb; color: #2563eb; box-shadow: 0 4px 0 #c0d2df; }
+.case-file-report .report-content { padding: 20px; border: 1px solid #d7e2ef; border-radius: 18px; background: #fff; box-shadow: 0 14px 30px rgba(11,31,58,.06); }
+.case-file-report .masked-account-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 18px; padding: 16px 18px; border: 1px solid #cfe0ed; border-left: 5px solid #2563eb; border-radius: 15px; color: #17233a; background: linear-gradient(145deg, #eef6ff, #ffffff); }
+.case-file-report .masked-account-banner strong { display: block; margin-top: 5px; color: #0b1630; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 18px; font-weight: 600; letter-spacing: .06em; }
+.case-file-report .masked-account-banner small { display: block; margin-top: 4px; color: #607089; font-size: 9px; }
+.case-file-report .masked-account-banner .mini-label { color: #607089; }
+.case-file-report .case-file-reveal { min-height: 32px; padding: 7px 12px; border: 1px solid #b9cfe0; border-radius: 9px; color: #0b1630; background: #fff; font-size: 10px; font-weight: 750; }
+.case-file-report .case-file-reveal:hover { color: #2563eb; border-color: #2563eb; background: #f4f8ff; }
+.case-file-report .report-overview { display: grid; grid-template-columns: minmax(0, 1fr) 150px; align-items: center; gap: 20px; padding: 22px; border: 1px solid #d7e2ef; border-radius: 18px; background: linear-gradient(135deg, #f0f8ff, #fbfdff); }
+.case-file-report .report-score { margin: 10px 0 9px; color: #0b1630; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 64px; font-weight: 800; letter-spacing: -.08em; line-height: .9; }
+.case-file-report .report-score small { margin-left: 4px; color: #607089; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 14px; letter-spacing: 0; }
+.case-file-report .report-gauge { width: 128px; height: 128px; border: 9px solid #dcecf6; background: conic-gradient(#1967d2 0deg, #dcecf6 0deg); }
+.case-file-report .report-gauge span { background: #fbfdff; }
+.case-file-report .status-pill { display: inline-flex; border: 1px solid #b42318; border-radius: 9px; color: #8c1f28; background: #fff4f4; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.case-file-report .status-pill.status-provisional { border-style: solid; }
+.case-file-report .ratio-callout { margin-top: 10px; color: #8c1f28; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 9px; font-weight: 650; }
+.case-file-report .evidence-gap-summary { max-width: 250px; margin-top: 10px; padding: 7px 9px; border-left: 3px solid #8c1f28; color: #8c1f28; background: #fff7f7; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 9px; line-height: 1.35; }
+.case-file-report .decision-readiness { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 16px 0; padding: 16px; border: 1px solid #f0c6ca; border-radius: 15px; background: #fff8f8; }
+.case-file-report .decision-readiness strong { color: #b42318; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 14px; }
+.case-file-report .decision-readiness p { margin: 6px 0 0; color: #607089; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 11px; line-height: 1.55; }
+.case-file-report .score-breakdown { display: grid; grid-template-columns: repeat(3, minmax(70px, 1fr)); gap: 10px; min-width: 270px; }
+.case-file-report .score-breakdown > div { display: grid; gap: 4px; padding-left: 10px; border-left: 1px solid #d7e2ef; }
+.case-file-report .score-breakdown span { color: #607089; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 8px; letter-spacing: .04em; }
+.case-file-report .score-breakdown strong { color: #b42318; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 16px; font-weight: 700; }
+.case-file-report .report-meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 16px 0; }
+.case-file-report .report-meta-item { display: block; min-width: 0; padding: 11px; border: 1px solid #dceaf3; border-radius: 11px; background: #f8fcff; }
+.case-file-report .report-meta-item span { display: block; color: #607089; font-size: 8px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.case-file-report .report-meta-item strong { display: block; margin-top: 5px; overflow-wrap: anywhere; color: #0b1630; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10px; font-weight: 700; line-height: 1.4; }
+.case-file-report .report-summary { margin: 16px 0; padding: 13px 14px; border: 1px solid #dceaf3; border-radius: 13px; color: #607089; background: #fbfdff; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 11px; line-height: 1.6; }
+.case-file-report .report-summary strong { color: #0b1630; }
+.case-file-report .report-detail-card { margin: 16px 0; padding: 15px; border: 1px solid #dceaf3; border-radius: 13px; background: #fbfdff; }
+.case-file-report .report-detail-heading { padding: 0; margin-bottom: 11px; color: #0b1630; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 13px; font-weight: 800; }
+.case-file-report .report-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+.case-file-report .report-detail-grid > div { display: block; min-width: 0; padding: 8px 0; border-bottom: 1px solid #e4edf4; }
+.case-file-report .report-detail-grid span { color: #607089; font-size: 8px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.case-file-report .report-detail-grid strong { display: block; margin-top: 4px; overflow-wrap: anywhere; color: #17233a; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10px; font-weight: 650; line-height: 1.45; }
+.case-file-report .hypothesis-box { margin: 16px 0; padding: 14px; border: 1px solid #e8dcb9; border-radius: 13px; background: #fffaf0; }
+.case-file-report .hypothesis-box .mini-label { color: #9a6816; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 8px; }
+.case-file-report .hypothesis-box p { margin: 7px 0 0; color: #695b3a; font-size: 10px; line-height: 1.55; }
+.case-file-report .score-basis-note { margin: 16px 0; padding: 12px 14px; border-left: 3px solid #2563eb; color: #607089; background: #f5fbff; font-size: 10px; line-height: 1.5; }
+.case-file-report .score-basis-note strong { color: #0b1630; }
+.case-file-report .report-subheading { margin: 18px 0 10px; padding: 0; border: 0; color: #0b1630; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 13px; font-weight: 800; }
+.case-file-report .report-subheading span:last-child { color: #607089; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10px; }
+.case-file-report .flag-list { display: grid; gap: 9px; border: 0; }
+.case-file-report .flag-item { display: grid; grid-template-columns: 9px 1fr auto; gap: 10px; align-items: start; padding: 12px; border: 1px solid #e4edf4; border-radius: 11px; background: #fcfeff; }
+.case-file-report .flag-item.evidence-gap { border-left: 4px solid #b42318; background: #fff8f8; }
+.case-file-report .flag-marker { background: #e0a140; box-shadow: 0 0 0 4px rgba(224,161,64,.13); }
+.case-file-report .flag-item.evidence-gap .flag-marker { background: #b42318; box-shadow: 0 0 0 4px rgba(180,35,24,.12); }
+.case-file-report .flag-item strong { color: #0b1630; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 11px; font-weight: 800; }
+.case-file-report .flag-item p { color: #607089; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10px; line-height: 1.45; }
+.case-file-report .flag-points { color: #b42318; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; }
+.case-file-report .recommendation-box { display: flex; gap: 11px; margin-top: 18px; padding: 14px; border: 1px solid #ccefe5; border-radius: 13px; background: #f0fcf8; }
+.case-file-report .recommendation-icon { display: grid; flex: 0 0 23px; height: 23px; place-items: center; border-radius: 7px; color: #167c62; background: #d8f4eb; font-size: 11px; font-weight: 800; }
+.case-file-report .recommendation-box strong { color: #126c57; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 12px; }
+.case-file-report .report-action-list { color: #4d766c; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 10px; line-height: 1.45; }
+.case-file-report .report-footer-note { margin-top: 16px; padding: 12px 13px; border: 1px solid #d7e2ef; border-radius: 11px; color: #607089; background: #f5f8fc; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 9px; font-style: normal; line-height: 1.5; }
+
+@media (max-width: 760px) {
+  .case-file-report .report-overview { grid-template-columns: minmax(0, 1fr) 116px; padding: 17px; }
+  .case-file-report .report-score { font-size: 54px; }
+  .case-file-report .report-gauge { width: 100px; height: 100px; border-width: 8px; }
+  .case-file-report .decision-readiness { align-items: flex-start; flex-direction: column; }
+  .case-file-report .score-breakdown { width: 100%; min-width: 0; }
+}
+
+@media (max-width: 560px) {
+  .case-file-report .report-content { padding: 14px; }
+  .case-file-report .report-brand-header { margin-bottom: 14px; }
+  .case-file-report .report-overview { grid-template-columns: 1fr; }
+  .case-file-report .report-gauge { justify-self: end; }
+  .case-file-report .report-meta-grid, .case-file-report .report-detail-grid { grid-template-columns: 1fr; }
+  .case-file-report .score-breakdown { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .case-file-report .score-breakdown > div { padding-left: 6px; }
+  .case-file-report .score-breakdown strong { font-size: 14px; }
+}
+
+@media print {
+  @page { size: letter; margin: .35in; }
+  *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body.print-transaction-report-mode { min-width: 0; color: #17233a; background: #fff; }
+  body.print-transaction-report-mode .orb,
+  body.print-transaction-report-mode .shell > :not(#proactive-check) { display: none !important; }
+  body.print-transaction-report-mode #proactive-check { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
+  body.print-transaction-report-mode #proactive-check > :not(.report-panel) { display: none !important; }
+  body.print-transaction-report-mode .report-panel { display: block !important; max-width: none; padding: 0 !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
+  body.print-transaction-report-mode .report-panel > .panel-heading,
+  body.print-transaction-report-mode .report-panel > .empty-report { display: none !important; }
+  body.print-transaction-report-mode #proactiveContent { display: block !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+  body.print-transaction-report-mode .flag-item,
+  body.print-transaction-report-mode .report-meta-item,
+  body.print-transaction-report-mode .report-detail-card,
+  body.print-transaction-report-mode .recommendation-box { break-inside: avoid; }
+}
+
 .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
 .feature-card { min-height: 205px; padding: 25px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.66); }
 .feature-number { color: var(--blue); font-size: 11px; font-weight: 850; letter-spacing: .12em; }

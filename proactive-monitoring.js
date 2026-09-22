@@ -12,6 +12,7 @@ const pdfModeNote = document.querySelector("#pdfModeNote");
 const transactionPdfStatus = document.querySelector("#transactionPdfStatus");
 const pdfPrivacyAcknowledge = document.querySelector("#pdfPrivacyAcknowledge");
 const copyButton = document.querySelector("#proactiveCopyButton");
+const printButton = document.querySelector("#proactivePrintButton");
 const downloadButton = document.querySelector("#proactiveDownloadButton");
 const revealAccountButton = document.querySelector("#proactiveRevealAccount");
 const accountValue = document.querySelector("#proactiveAccountValue");
@@ -24,6 +25,8 @@ const pilotMessage = document.querySelector("#pilotMessage");
 const reportPanel = document.querySelector("#proactiveReport");
 const emptyReport = document.querySelector("#proactiveEmpty");
 const reportContent = document.querySelector("#proactiveContent");
+const headerCaseId = document.querySelector("#proactiveHeaderCaseId");
+const headerGeneratedAt = document.querySelector("#proactiveHeaderGeneratedAt");
 let latestSummary = "";
 let latestResult = null;
 let latestInput = null;
@@ -417,7 +420,9 @@ function buildSummary(result, input) {
     `Typology hypothesis: ${typologyHypothesis(result, input)}`,
     "Suggested next steps:",
     steps.map((step, index) => `${index + 1}. ${step}`).join("\n"),
-    "Next step: Human review is required before any further action."
+    "Next step: Human review is required before any further action.",
+    "The system identifies potential risk indicators for analyst review; the responsible officer makes the final assessment based on available evidence and applicable laws, regulations and institutional policy.",
+    "Assessment output only. It is not a final TBML determination. Final transaction decisions remain with the authorised reviewer under applicable law, regulation and institutional policy."
   ].join("\n");
 }
 
@@ -532,6 +537,8 @@ function render(result, input) {
 
   document.querySelector("#proactiveCaseId").textContent = currentCaseId;
   document.querySelector("#proactiveGeneratedAt").textContent = currentGeneratedAt;
+  if (headerCaseId) headerCaseId.textContent = currentCaseId;
+  if (headerGeneratedAt) headerGeneratedAt.textContent = currentGeneratedAt;
   document.querySelector("#proactiveReviewContext").innerHTML = [
     ["Customer / account", maskAccountReference(input.customerReference)],
     ["Evidence input", input.pdfMode],
@@ -559,6 +566,7 @@ function render(result, input) {
   latestInput = input;
   latestSummary = buildSummary(result, input);
   if (copyButton) copyButton.disabled = false;
+  if (printButton) printButton.disabled = false;
   if (downloadButton) downloadButton.disabled = false;
 }
 
@@ -638,6 +646,7 @@ resetButton?.addEventListener("click", () => {
     copyButton.textContent = "Copy summary";
   }
   if (downloadButton) downloadButton.disabled = true;
+  if (printButton) printButton.disabled = true;
   refreshPdfControls();
 });
 
@@ -706,6 +715,16 @@ downloadButton?.addEventListener("click", () => {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(url);
+});
+
+printButton?.addEventListener("click", () => {
+  if (!latestSummary) return;
+  document.body.classList.add("print-transaction-report-mode");
+  window.setTimeout(() => window.print(), 80);
+});
+
+window.addEventListener("afterprint", () => {
+  document.body.classList.remove("print-transaction-report-mode");
 });
 
 revealAccountButton?.addEventListener("click", () => {

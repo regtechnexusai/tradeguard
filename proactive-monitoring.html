@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=29" />
+    <link rel="stylesheet" href="./style.css?v=31" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -246,12 +246,13 @@
           <section id="proactiveReport" class="panel report-panel case-file-report is-empty" aria-live="polite">
             <div class="panel-heading">
               <div>
-                <span class="panel-kicker">Case file</span>
-                <h3>Transaction monitoring report</h3>
+                <span class="panel-kicker">STEP 02</span>
+                <h3>TradeGuard Transaction Monitoring Report</h3>
               </div>
                 <div class="panel-actions">
                   <button id="proactiveCopyButton" class="text-button" type="button" disabled>Copy summary</button>
-                  <button id="proactiveDownloadButton" class="text-button" type="button" disabled>Download report</button>
+                  <button id="proactivePrintButton" class="text-button" type="button" disabled>Print / Save PDF</button>
+                  <button id="proactiveDownloadButton" class="text-button" type="button" disabled>Download TXT</button>
                 </div>
             </div>
 
@@ -262,6 +263,20 @@
             </div>
 
             <div id="proactiveContent" class="report-content" hidden>
+              <div class="report-brand-header proactive-brand-header">
+                <div class="report-brand-left">
+                  <img src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI - TradeGuard" />
+                  <div>
+                    <strong>TradeGuard</strong>
+                    <span>by RegTech Nexus AI | Explainable review support</span>
+                  </div>
+                </div>
+                <div class="report-brand-right">
+                  <strong>REVIEW OUTPUT</strong>
+                  <span>Case ID: <b id="proactiveHeaderCaseId">-</b></span>
+                  <span>Generated: <b id="proactiveHeaderGeneratedAt">-</b></span>
+                </div>
+              </div>
               <div class="masked-account-banner">
                 <div>
                   <span class="mini-label">Customer reference</span>
@@ -305,7 +320,7 @@
               <div class="report-subheading"><span>Detected patterns</span><span id="proactiveFlagCount">0 flags</span></div>
               <div id="proactiveFlags" class="flag-list"></div>
               <div class="recommendation-box"><span class="recommendation-icon">✓</span><div><strong>Suggested next steps</strong><ol id="proactiveNextSteps" class="report-action-list"></ol></div></div>
-              <div class="report-footer-note">Assessment output only. It is not a finding of money laundering or other wrongdoing. Human review is required before any further action under applicable law, regulation and institutional policy.</div>
+              <div class="report-footer-note">The system identifies potential risk indicators for analyst review; the responsible officer makes the final assessment based on available evidence and applicable laws, regulations and institutional policy. Assessment output only. It is not a final TBML determination. Final transaction decisions remain with the authorised reviewer under applicable law, regulation and institutional policy.</div>
             </div>
           </section>
         </div>
@@ -369,6 +384,6 @@
       <span>© 2026 RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./proactive-monitoring.js?v=29"></script>
+    <script type="module" src="./proactive-monitoring.js?v=31"></script>
   </body>
 </html>
