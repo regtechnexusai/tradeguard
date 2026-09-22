@@ -321,7 +321,7 @@ function buildFlags(profile, results) {
 function fileResultMarkup(result) {
   const extraction = result.ocrError ? "OCR unavailable" : result.method;
   const chars = normalise(result.text).length;
-  return "<article class="document-file-result"><div><strong>" + escapeHtml(result.name) + "</strong><small>" + escapeHtml(result.type) + " · " + result.pages + " page(s) · " + Math.round(result.size / 1024) + " KB</small></div><span>" + escapeHtml(extraction) + "<br><small>" + chars + " extracted characters</small></span></article>";
+  return "<article class=\"document-file-result\"><div><strong>" + escapeHtml(result.name) + "</strong><small>" + escapeHtml(result.type) + " · " + result.pages + " page(s) · " + Math.round(result.size / 1024) + " KB</small></div><span>" + escapeHtml(extraction) + "<br><small>" + chars + " extracted characters</small></span></article>";
 }
 
 function buildSummary(profile, results, analysis, generatedAt) {
