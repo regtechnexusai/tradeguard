@@ -1,4 +1,4 @@
-const BUILD_VERSION = "v38";
+const BUILD_VERSION = "v39";
 const BUILD_DATE = "22 September 2026";
 
 document.querySelectorAll("[data-build-version]").forEach((element) => {
