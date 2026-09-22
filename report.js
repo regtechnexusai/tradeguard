@@ -1,4 +1,48 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=29";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=30";
+
+const WEBSITE_DISCLAIMER =
+  "The system identifies potential risk indicators for analyst review; the responsible officer makes the final assessment based on available evidence and applicable laws, regulations and institutional policy.";
+
+function createCaseId() {
+  const now = new Date();
+  const stamp = [
+    now.getUTCFullYear(),
+    String(now.getUTCMonth() + 1).padStart(2, "0"),
+    String(now.getUTCDate()).padStart(2, "0"),
+    String(now.getUTCHours()).padStart(2, "0"),
+    String(now.getUTCMinutes()).padStart(2, "0"),
+    String(now.getUTCSeconds()).padStart(2, "0")
+  ].join("");
+  const suffix = Math.random().toString(16).slice(2, 8).toUpperCase();
+  return `TG-${stamp}-${suffix}`;
+}
+
+function ensureReportHeader(reportContent) {
+  let header = reportContent.querySelector(".report-brand-header");
+  if (!header) {
+    header = document.createElement("div");
+    header.className = "report-brand-header";
+    reportContent.prepend(header);
+  }
+
+  const caseId = reportContent.dataset.caseId || createCaseId();
+  const generatedAt = reportContent.dataset.generatedAt || new Date().toISOString().replace("T", " ").replace(".000Z", " UTC");
+  reportContent.dataset.caseId = caseId;
+  reportContent.dataset.generatedAt = generatedAt;
+  header.innerHTML = `
+    <div class="report-brand-left">
+      <img src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI - TradeGuard" />
+      <div>
+        <strong>TradeGuard</strong>
+        <span>by RegTech Nexus AI | Explainable review support</span>
+      </div>
+    </div>
+    <div class="report-brand-right">
+      <strong>REVIEW OUTPUT</strong>
+      <span>Case ID: ${escapeHtml(caseId)}</span>
+      <span>Generated: ${escapeHtml(generatedAt)}</span>
+    </div>`;
+}
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -120,6 +164,8 @@ export function renderReport(result, input) {
   const integrityList = document.querySelector("#dataIntegrityList");
   const reviewContext = document.querySelector("#reviewContext");
 
+  ensureReportHeader(reportContent);
+
   const completeness = calculateDataCompleteness(input);
   const integrity = result.integrity || assessDataIntegrity(input);
 
@@ -167,7 +213,7 @@ export function renderReport(result, input) {
       ? "Price comparison was not issued because the supplied price inputs are incomplete or not comparable to the verified HS Code and unit."
       : "Price comparison was not run because the optional price fields were not provided.")
     : result.deviation > 0
-      ? `The declared price is approximately ${Math.round(result.deviation)}% outside the supplied market range.`
+      ? `The declared price is approximately ${Math.round(result.deviation)}% above the supplied upper market range.`
       : "The declared price falls inside the supplied market range.";
 
   const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; product/commodity was populated from the verified tariff description.`;
@@ -253,6 +299,8 @@ export function renderReport(result, input) {
 
   return [
     "TradeGuard by RegTech Nexus AI",
+    `Case ID: ${reportContent.dataset.caseId}`,
+    `Generated: ${reportContent.dataset.generatedAt}`,
     `Product: ${input.productName}`,
     `Route: ${input.originCountry} → ${input.destinationCountry}`,
     input.hsCode ? `HS Code: ${input.hsCode}` : "HS Code: Not provided",
@@ -285,7 +333,8 @@ export function renderReport(result, input) {
     ...result.flags.map((flag) => `- ${flag.title} [Risk type: ${flag.riskType || "Trade-finance risk"}]: ${flag.detail}`),
     `Suggested next step: ${result.recommendation}`,
     "Assessment is indicative and depends on the quality, completeness and genuineness of the information provided.",
-    "Assessment output only. It is not a final TBML determination. Final decisions remain with the authorised reviewer."
+    WEBSITE_DISCLAIMER,
+    "Assessment output only. It is not a final TBML determination. Final transaction decisions remain with the authorised reviewer under applicable law, regulation and institutional policy."
   ].join("\n");
 }
 

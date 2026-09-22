@@ -1,11 +1,12 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=29";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=29";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=30";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=30";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
 const resetButton = document.querySelector("#resetButton");
 const formMessage = document.querySelector("#formMessage");
 const copyReportButton = document.querySelector("#copyReportButton");
+const printReportButton = document.querySelector("#printReportButton");
 const downloadReportButton = document.querySelector("#downloadReportButton");
 const pilotForm = document.querySelector("#pilotForm");
 const pilotMessage = document.querySelector("#pilotMessage");
@@ -264,6 +265,7 @@ riskForm.addEventListener("submit", (event) => {
   const result = calculateRisk(input);
   latestReport = renderReport(result, input);
   copyReportButton.disabled = false;
+  if (printReportButton) printReportButton.disabled = false;
   downloadReportButton.disabled = false;
   document.querySelector("#reportPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 });
@@ -284,6 +286,7 @@ function resetReport() {
   emptyReport.hidden = false;
   reportContent.hidden = true;
   copyReportButton.disabled = true;
+  if (printReportButton) printReportButton.disabled = true;
   downloadReportButton.disabled = true;
   latestReport = "";
 }
@@ -330,11 +333,22 @@ downloadReportButton.addEventListener("click", () => {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "tradeguard-tbml-review-report.txt";
+  const caseId = document.querySelector("#reportContent")?.dataset.caseId || "tradeguard-review";
+  anchor.download = `${caseId}-report.txt`;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(url);
+});
+
+printReportButton?.addEventListener("click", () => {
+  if (!latestReport) return;
+  document.body.classList.add("print-report-mode");
+  window.setTimeout(() => window.print(), 80);
+});
+
+window.addEventListener("afterprint", () => {
+  document.body.classList.remove("print-report-mode");
 });
 
 pilotForm.addEventListener("submit", (event) => {
