@@ -275,6 +275,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 
 /* Report export update v30: branded, print-ready review output. */
 .report-content { padding: 20px; border: 1px solid #d7e2ef; border-radius: 18px; background: #fff; box-shadow: 0 14px 30px rgba(11, 31, 58, .06); }
+.tradeguard-print-snapshot { display: none; }
 .report-brand-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 0 16px; margin-bottom: 18px; border-bottom: 1px solid #d7e2ef; }
 .report-brand-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .report-brand-left img { width: 54px; height: 54px; object-fit: contain; border-radius: 10px; background: #fff; mix-blend-mode: multiply; }
@@ -303,12 +304,15 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   body.print-report-mode main { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-report-mode #risk-check { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-report-mode #risk-check > :not(.report-panel) { display: none !important; }
+  body.print-report-mode #risk-check > .report-panel:not(.tradeguard-print-snapshot) { display: none !important; }
+  body.print-report-mode #risk-check > .tradeguard-print-snapshot { display: block !important; }
   body.print-report-mode .report-panel { display: block !important; max-width: none; padding: 0 !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
   body.print-report-mode .report-panel > .panel-heading,
   body.print-report-mode .report-panel > .empty-report { display: none !important; }
   body.print-report-mode #emptyReport { display: none !important; }
   body.print-report-mode #reportContent,
-  body.print-report-mode #reportContent[hidden] { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+  body.print-report-mode #reportContent[hidden],
+  body.print-report-mode .tradeguard-print-snapshot .report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
   body.print-report-mode .report-brand-header { margin-bottom: 14px; }
   body.print-report-mode .flag-item,
   body.print-report-mode .data-completeness-card,
@@ -408,12 +412,15 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   body.print-transaction-report-mode main { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-transaction-report-mode #proactive-check { display: block !important; min-height: 0; padding: 0 !important; margin: 0 !important; }
   body.print-transaction-report-mode #proactive-check > :not(.report-panel) { display: none !important; }
+  body.print-transaction-report-mode #proactive-check > .report-panel:not(.tradeguard-print-snapshot) { display: none !important; }
+  body.print-transaction-report-mode #proactive-check > .tradeguard-print-snapshot { display: block !important; }
   body.print-transaction-report-mode .report-panel { display: block !important; max-width: none; padding: 0 !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
   body.print-transaction-report-mode .report-panel > .panel-heading,
   body.print-transaction-report-mode .report-panel > .empty-report { display: none !important; }
   body.print-transaction-report-mode #proactiveEmpty { display: none !important; }
   body.print-transaction-report-mode #proactiveContent,
-  body.print-transaction-report-mode #proactiveContent[hidden] { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+  body.print-transaction-report-mode #proactiveContent[hidden],
+  body.print-transaction-report-mode .tradeguard-print-snapshot .report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
   body.print-transaction-report-mode .flag-item,
   body.print-transaction-report-mode .report-meta-item,
   body.print-transaction-report-mode .report-detail-card,

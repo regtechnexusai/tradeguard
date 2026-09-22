@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=36";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=36";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=37";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=37";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -23,6 +23,42 @@ const UTF8_BOM = "\uFEFF";
 let hsCodeIndex = new Map();
 let hsCodesLoaded = false;
 const allUnitOptions = ["Piece", "Kilogram", "Tonne", "Metre", "Yard", "Litre", "Carton", "Set", "Other"];
+
+function preparePrintSnapshot(sourceContent, parent) {
+  if (!sourceContent || !parent) return null;
+
+  document.querySelector(".tradeguard-print-snapshot")?.remove();
+  const snapshot = document.createElement("section");
+  snapshot.className = `${sourceContent.closest(".report-panel")?.className || "panel report-panel"} tradeguard-print-snapshot`;
+  snapshot.classList.remove("is-empty");
+  snapshot.setAttribute("aria-label", "TradeGuard report print snapshot");
+
+  const clone = sourceContent.cloneNode(true);
+  clone.removeAttribute("hidden");
+  snapshot.appendChild(clone);
+  parent.appendChild(snapshot);
+  return snapshot;
+}
+
+function printSnapshot(sourceContent, parent, modeClass) {
+  const snapshot = preparePrintSnapshot(sourceContent, parent);
+  if (!snapshot) return;
+
+  document.body.classList.add(modeClass);
+  const imagePromises = [...snapshot.querySelectorAll("img")].map((image) => {
+    if (image.complete) return Promise.resolve();
+    return new Promise((resolve) => {
+      image.addEventListener("load", resolve, { once: true });
+      image.addEventListener("error", resolve, { once: true });
+    });
+  });
+  const fontsReady = document.fonts?.ready || Promise.resolve();
+  const ready = Promise.all([fontsReady, ...imagePromises]);
+  const timeout = new Promise((resolve) => window.setTimeout(resolve, 1000));
+  Promise.race([ready, timeout]).then(() => {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.print()));
+  });
+}
 
 function clearFieldError(id) {
   const control = document.querySelector(`#${id}`);
@@ -345,13 +381,8 @@ downloadReportButton.addEventListener("click", () => {
 printReportButton?.addEventListener("click", () => {
   if (!latestReport) return;
   const reportPanel = document.querySelector("#reportPanel");
-  const emptyReport = document.querySelector("#emptyReport");
   const reportContent = document.querySelector("#reportContent");
-  reportPanel?.classList.remove("is-empty");
-  emptyReport?.setAttribute("hidden", "");
-  reportContent?.removeAttribute("hidden");
-  document.body.classList.add("print-report-mode");
-  window.setTimeout(() => window.print(), 250);
+  printSnapshot(reportContent, reportPanel?.parentElement, "print-report-mode");
 });
 
 window.addEventListener("afterprint", () => {

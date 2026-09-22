@@ -38,6 +38,42 @@ let selectedPdfFiles = [];
 let pdfInputMode = "full-statement";
 let pdfContextImported = false;
 
+function preparePrintSnapshot(sourceContent, parent) {
+  if (!sourceContent || !parent) return null;
+
+  document.querySelector(".tradeguard-print-snapshot")?.remove();
+  const snapshot = document.createElement("section");
+  snapshot.className = `${sourceContent.closest(".report-panel")?.className || "panel report-panel"} tradeguard-print-snapshot`;
+  snapshot.classList.remove("is-empty");
+  snapshot.setAttribute("aria-label", "TradeGuard report print snapshot");
+
+  const clone = sourceContent.cloneNode(true);
+  clone.removeAttribute("hidden");
+  snapshot.appendChild(clone);
+  parent.appendChild(snapshot);
+  return snapshot;
+}
+
+function printSnapshot(sourceContent, parent, modeClass) {
+  const snapshot = preparePrintSnapshot(sourceContent, parent);
+  if (!snapshot) return;
+
+  document.body.classList.add(modeClass);
+  const imagePromises = [...snapshot.querySelectorAll("img")].map((image) => {
+    if (image.complete) return Promise.resolve();
+    return new Promise((resolve) => {
+      image.addEventListener("load", resolve, { once: true });
+      image.addEventListener("error", resolve, { once: true });
+    });
+  });
+  const fontsReady = document.fonts?.ready || Promise.resolve();
+  const ready = Promise.all([fontsReady, ...imagePromises]);
+  const timeout = new Promise((resolve) => window.setTimeout(resolve, 1000));
+  Promise.race([ready, timeout]).then(() => {
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.print()));
+  });
+}
+
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
 const MAX_PDF_FILES = 5;
 const MAX_TOTAL_PDF_BYTES = 40 * 1024 * 1024;
@@ -720,11 +756,7 @@ downloadButton?.addEventListener("click", () => {
 
 printButton?.addEventListener("click", () => {
   if (!latestSummary) return;
-  reportPanel?.classList.remove("is-empty");
-  emptyReport?.setAttribute("hidden", "");
-  reportContent?.removeAttribute("hidden");
-  document.body.classList.add("print-transaction-report-mode");
-  window.setTimeout(() => window.print(), 250);
+  printSnapshot(reportContent, reportPanel?.parentElement, "print-transaction-report-mode");
 });
 
 window.addEventListener("afterprint", () => {
