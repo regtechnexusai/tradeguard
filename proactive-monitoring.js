@@ -28,6 +28,7 @@ const reportContent = document.querySelector("#proactiveContent");
 const headerCaseId = document.querySelector("#proactiveHeaderCaseId");
 const headerGeneratedAt = document.querySelector("#proactiveHeaderGeneratedAt");
 let latestSummary = "";
+const UTF8_BOM = "\uFEFF";
 let latestResult = null;
 let latestInput = null;
 let currentCaseId = "";
@@ -706,7 +707,7 @@ copyButton?.addEventListener("click", async () => {
 
 downloadButton?.addEventListener("click", () => {
   if (!latestSummary) return;
-  const blob = new Blob([latestSummary], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob([UTF8_BOM, latestSummary], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;

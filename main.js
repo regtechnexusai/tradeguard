@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=30";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=30";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=33";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=33";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -19,6 +19,7 @@ const unitInput = document.querySelector("#unitOfMeasure");
 const unitProfileNote = document.querySelector("#unitProfileNote");
 
 let latestReport = "";
+const UTF8_BOM = "\uFEFF";
 let hsCodeIndex = new Map();
 let hsCodesLoaded = false;
 const allUnitOptions = ["Piece", "Kilogram", "Tonne", "Metre", "Yard", "Litre", "Carton", "Set", "Other"];
@@ -329,7 +330,7 @@ copyReportButton.addEventListener("click", async () => {
 
 downloadReportButton.addEventListener("click", () => {
   if (!latestReport) return;
-  const blob = new Blob([latestReport], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob([UTF8_BOM, latestReport], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
