@@ -444,7 +444,7 @@ function preparePrintSnapshot() {
     return;
   }
 
-  const stylesheet = new URL("./style.css?v=39", window.location.href).href;
+  const stylesheet = new URL("./style.css?v=40", window.location.href).href;
   popup.document.open();
   popup.document.write(`<!doctype html>
 <html lang="en">
