@@ -41,23 +41,58 @@ function preparePrintSnapshot(sourceContent, parent) {
 }
 
 function printSnapshot(sourceContent, parent, modeClass) {
-  const snapshot = preparePrintSnapshot(sourceContent, parent);
-  if (!snapshot) return;
+  const clone = sourceContent?.cloneNode(true);
+  if (!clone) return;
 
-  document.body.classList.add(modeClass);
-  const imagePromises = [...snapshot.querySelectorAll("img")].map((image) => {
-    if (image.complete) return Promise.resolve();
-    return new Promise((resolve) => {
-      image.addEventListener("load", resolve, { once: true });
-      image.addEventListener("error", resolve, { once: true });
-    });
+  clone.removeAttribute("hidden");
+  clone.querySelectorAll("img").forEach((image) => {
+    const source = image.getAttribute("src");
+    if (source) image.src = new URL(source, window.location.href).href;
   });
-  const fontsReady = document.fonts?.ready || Promise.resolve();
-  const ready = Promise.all([fontsReady, ...imagePromises]);
-  const timeout = new Promise((resolve) => window.setTimeout(resolve, 1000));
-  Promise.race([ready, timeout]).then(() => {
-    window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.print()));
-  });
+
+  const popup = window.open("", "_blank");
+  if (!popup) {
+    const snapshot = preparePrintSnapshot(sourceContent, parent);
+    if (!snapshot) return;
+    document.body.classList.add(modeClass);
+    window.setTimeout(() => window.print(), 350);
+    return;
+  }
+
+  const stylesheet = new URL("./style.css?v=39", window.location.href).href;
+  const title = "TradeGuard TBML Review Report";
+  popup.document.open();
+  popup.document.write(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${title}</title>
+  <link rel="stylesheet" href="${stylesheet}">
+  <style>
+    @page { size: Letter; margin: .35in; }
+    html, body { margin: 0; padding: 0; background: #fff; }
+    body { color: #17233a; font-family: Inter, Arial, sans-serif; }
+    .print-window-main { width: min(100%, 1040px); margin: 0 auto; }
+    .print-window-report { display: block !important; width: auto !important; max-width: none !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #fff !important; }
+    .print-window-report .report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
+    .print-window-report .report-footer-note, .print-window-report .recommendation-box, .print-window-report .flag-item { break-inside: avoid; }
+  </style>
+</head>
+<body>
+  <main class="print-window-main">
+    <section class="panel report-panel print-window-report">${clone.outerHTML}</section>
+  </main>
+</body>
+</html>`);
+  popup.document.close();
+
+  const startPrint = () => {
+    popup.focus();
+    window.setTimeout(() => popup.print(), 450);
+  };
+  if (popup.document.readyState === "complete") startPrint();
+  else popup.addEventListener("load", startPrint, { once: true });
 }
 
 function clearFieldError(id) {
