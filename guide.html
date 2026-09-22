@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=29" />
+    <link rel="stylesheet" href="./style.css?v=32" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -35,7 +35,7 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Simple operating guide</div>
       <h1>How to use TradeGuard</h1>
       <p class="info-lead">TradeGuard is a public, rule-based review-support workspace. It helps an authorised reviewer organise information and identify potential risk indicators; it does not make a final compliance decision.</p>
-      <p class="info-meta">Public guide · v29 · 22 September 2026</p>
+      <p class="info-meta">Public guide · v32 · 22 September 2026</p>
 
       <div class="info-callout"><strong>Important disclaimer:</strong> The system identifies potential risk indicators for analyst review. The final assessment must be made by the responsible officer using available evidence, applicable laws and regulations, and the institution’s approved policy.</div>
 
@@ -51,7 +51,7 @@
         <li>Add price, quantity, unit, parties, route, document and payment information where available.</li>
         <li>Select only the red-flag indicators supported by the available evidence.</li>
         <li>Review the score, data completeness, data integrity, evidence requirements and suggested next step.</li>
-        <li>Use <strong>Copy summary</strong> or <strong>Download report</strong> to retain the indicative review note.</li>
+        <li>Use <strong>Copy summary</strong>, <strong>Print / Save PDF</strong> or <strong>Download TXT</strong> to retain the indicative review note.</li>
       </ol>
 
       <h2>3. Transaction Monitoring workflow</h2>
@@ -77,13 +77,21 @@
         <li><strong>Risk signal:</strong> the configured prioritisation score; it is not a probability or legal conclusion.</li>
         <li><strong>Evidence-supported:</strong> the portion supported by the details supplied in the review.</li>
         <li><strong>Unverified:</strong> selected patterns that still require supporting evidence.</li>
-        <li><strong>Risk type:</strong> the broad review category, such as valuation, counterparty, funds-flow, geographic, channel, document or customer-profile risk.</li>
+        <li><strong>Risk type / typology lens:</strong> the broad review category, such as valuation, counterparty, funds-flow, geographic, channel, document or customer-profile risk. Any typology mapping is indicative and is not a FATF determination or proof of wrongdoing.</li>
         <li><strong>Human review required:</strong> the responsible officer must validate evidence and determine the appropriate next action.</li>
       </ul>
 
       <h2>6. Current scope and roadmap</h2>
       <p>The public build does not perform live sanctions or PEP screening, OCR-based KYC/AOF validation, trade-document reconciliation, credit-file analysis, core-banking integration, saved-case management or server-side audit logging.</p>
       <p>Future institutional modules may support OCR and structured checks for Account Opening Forms, KYC records, trade documents, financial statements, loan applications and collateral files. Such modules require approved data processing, document taxonomies, validation, access controls and human review.</p>
+
+      <h3>Indicative OCR and document-controls roadmap</h3>
+      <ol>
+        <li><strong>0–3 months — discovery and prototype:</strong> define document taxonomies, OCR/PDF extraction, confidence scoring, PII handling and retention controls.</li>
+        <li><strong>3–6 months — controlled pilot:</strong> test KYC/AOF and loan/credit-document checks with reviewer workflows, false-positive testing and exception handling.</li>
+        <li><strong>6–12 months — institutional readiness:</strong> add access controls, audit logging, model/rule governance, retention controls and a scoped pilot with approved institutions.</li>
+      </ol>
+      <p class="info-note">Timing is indicative only and depends on approved data governance, security review, representative documents and institutional or regulatory approval. OCR is not enabled in this public build.</p>
 
       <h2>7. Privacy and safe use</h2>
       <p>Do not upload real bank statements, customer records, identity documents, LC files, payment messages or confidential trade documents to this public demo. Read the <a href="./privacy.html">Privacy and PDF handling</a> page before testing.</p>

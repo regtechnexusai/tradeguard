@@ -678,6 +678,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .info-page a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
 .info-callout { margin: 24px 0; padding: 18px 20px; border-left: 4px solid var(--cyan); color: #45657f; background: rgba(255,255,255,.68); font-size: 12px; line-height: 1.65; }
 .info-callout strong { color: var(--navy); }
+.info-note { margin-top: 12px; padding: 11px 13px; border-left: 3px solid var(--blue); color: var(--muted); background: #f5fbff; font-size: 11px !important; line-height: 1.55 !important; }
 .standards-map { overflow-x: auto; margin: 15px 0 8px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.72); }
 .standards-map table { width: 100%; min-width: 720px; border-collapse: collapse; }
 .standards-map th, .standards-map td { padding: 11px 12px; border-bottom: 1px solid #e3edf3; text-align: left; vertical-align: top; color: var(--muted); font-size: 10px; line-height: 1.5; }

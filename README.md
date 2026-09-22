@@ -1,22 +1,23 @@
-# TradeGuard transaction-monitoring report update
+# TradeGuard guide alignment update — v32
 
-This package updates the legacy `proactive-monitoring.html` report so it uses the same modern report presentation as the TBML report.
+Checked against the live TradeGuard build on 22 September 2026.
 
-## Replace these files
+## Confirmed live capabilities
 
-- `proactive-monitoring.html`
-- `proactive-monitoring.js`
-- `style.css`
-- `regtech-nexus-ai-logo.png`
+- Transaction Monitoring accepts up to 5 PDFs, 10 MB per file and 40 MB combined.
+- Monitoring windows include 7, 30, 90, 180 and 365 days.
+- The Transaction Monitoring report includes Copy summary, Print / Save PDF and Download TXT.
 
-Keep the existing PDF worker files, `pdf.mjs`, `pdf.worker.mjs`, and other data files unchanged.
+## Changes in this package
 
-## Changes
+- Updated `guide.html` to v32.
+- Updated the TBML report guidance to name all available retention actions.
+- Added the indicative 0–3, 3–6 and 6–12 month OCR/document-controls roadmap.
+- Clarified that risk-type/typology wording is indicative and not a FATF determination.
+- Included the synchronized Transaction Monitoring page, module and stylesheet with v32 cache versions.
 
-- Replaced the old Case file visual treatment with the TradeGuard / RegTech Nexus AI report header.
-- Added modern score, gauge, evidence-supported and unverified-point presentation.
-- Added responsive mobile layout matching the TBML report.
-- Added the website disclaimer and final-review warning.
-- Added `Print / Save PDF` and retained `Download TXT`.
-- Added print CSS that hides the form and prints only the transaction-monitoring report.
-- Bumped the page assets to cache version `v=31`.
+OCR-based KYC/AOF/loan/credit-document analysis is not implemented in the public build; this update records it as a roadmap item only.
+
+## Deployment
+
+Copy the package files into the TradeGuard site root, preserving the existing PDF worker/module and supporting data files. No server-side service is required for these changes.
