@@ -73,7 +73,7 @@ function printSnapshot(sourceContent, parent, modeClass) {
     return;
   }
 
-  const stylesheet = new URL("./style.css?v=39", window.location.href).href;
+  const stylesheet = new URL("./style.css?v=40", window.location.href).href;
   const title = "TradeGuard Transaction Monitoring Report";
   popup.document.open();
   popup.document.write(`<!doctype html>
