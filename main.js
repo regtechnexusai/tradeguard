@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=35";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=35";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=36";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=36";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
@@ -344,8 +344,14 @@ downloadReportButton.addEventListener("click", () => {
 
 printReportButton?.addEventListener("click", () => {
   if (!latestReport) return;
+  const reportPanel = document.querySelector("#reportPanel");
+  const emptyReport = document.querySelector("#emptyReport");
+  const reportContent = document.querySelector("#reportContent");
+  reportPanel?.classList.remove("is-empty");
+  emptyReport?.setAttribute("hidden", "");
+  reportContent?.removeAttribute("hidden");
   document.body.classList.add("print-report-mode");
-  window.setTimeout(() => window.print(), 80);
+  window.setTimeout(() => window.print(), 250);
 });
 
 window.addEventListener("afterprint", () => {

@@ -720,8 +720,11 @@ downloadButton?.addEventListener("click", () => {
 
 printButton?.addEventListener("click", () => {
   if (!latestSummary) return;
+  reportPanel?.classList.remove("is-empty");
+  emptyReport?.setAttribute("hidden", "");
+  reportContent?.removeAttribute("hidden");
   document.body.classList.add("print-transaction-report-mode");
-  window.setTimeout(() => window.print(), 80);
+  window.setTimeout(() => window.print(), 250);
 });
 
 window.addEventListener("afterprint", () => {
