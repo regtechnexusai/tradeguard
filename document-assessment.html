@@ -83,6 +83,15 @@
                 <small>Selectable-text PDFs are read directly. Scanned PDFs and images are rendered and sent to the browser-local OCR worker.</small>
               </label>
 
+              <label class="field field-wide">
+                <span>OCR language</span>
+                <select id="documentOcrLanguage">
+                  <option value="eng">English</option>
+                  <option value="eng+ben">English + Bangla</option>
+                </select>
+                <small>The Bangla language model is downloaded only when selected and may take longer on the first assessment.</small>
+              </label>
+
               <label class="field field-wide checkbox-field">
                 <input id="documentPrivacyAcknowledge" type="checkbox" />
                 <span>I understand that this public demo is for fictional or anonymised documents only and that OCR output requires human verification.</span>
