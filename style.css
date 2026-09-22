@@ -711,7 +711,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 }
 
 
-/* Document Assessment v38: OCR-assisted and credit-document review workspace. */
+/* Document Assessment v39: OCR-assisted and credit-document review workspace. */
 .monitoring-card-document { border-color: #e9c6b5; background: linear-gradient(145deg, #fffaf7, #ffe9de); }
 .monitoring-card-document:hover { border-color: #c86b4c; }
 .monitoring-icon-document { color: #a54b31; background: #fff1e9; }
