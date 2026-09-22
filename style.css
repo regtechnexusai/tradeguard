@@ -760,3 +760,26 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   body.document-print-mode .document-file-result,
   body.document-print-mode .recommendation-box { break-inside: avoid; }
 }
+
+
+/* TradeGuard v39 visual and print reliability refinements. */
+.monitoring-icon-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.monitoring-icon-transaction { color: #124d86; border-color: #a8c7e8; background: #d8e8fb; }
+.monitoring-card-document { border-color: #d7b28f; background: linear-gradient(135deg, #fff4ed 0%, #fff1cc 52%, #eef8ff 100%); }
+.monitoring-card-document:hover { border-color: #c86b4c; }
+.monitoring-icon-document { color: #fff; border-color: #d7b28f; background: conic-gradient(#d97a4b 0 33%, #e3b23c 33% 66%, #4b94c6 66% 100%); }
+.monitoring-icon-document svg { fill: none; stroke: none; }
+.monitoring-icon-document .document-outline { fill: none; stroke: #b64b32; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.monitoring-icon-document .document-fold { fill: none; stroke: #d79a24; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.monitoring-icon-document .document-lines { fill: none; stroke: #2c7fb6; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.human-review-badge { display: inline-flex; width: max-content; max-width: 100%; padding: 9px 12px; border: 1px solid #8f1d2c; border-radius: 8px; color: #fff; background: #b42335; box-shadow: 0 4px 0 #7f1d2d, 0 8px 16px rgba(127, 29, 45, .15); cursor: default; font-size: 11px; font-weight: 850; letter-spacing: .08em; line-height: 1.2; pointer-events: none; text-transform: uppercase; }
+.document-nav-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0 26px; }
+.document-nav-actions .button { min-height: 46px; }
+@media (max-width: 900px) {
+  .monitoring-icon-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .monitoring-icon-grid { grid-template-columns: 1fr; }
+  .document-nav-actions { flex-direction: column; align-items: stretch; }
+  .document-nav-actions .button { width: 100%; }
+}
