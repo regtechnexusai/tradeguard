@@ -5,6 +5,7 @@ GlobalWorkerOptions.workerSrc = "./pdf.worker.mjs";
 const form = document.querySelector("#documentForm");
 const typeInput = document.querySelector("#documentAssessmentType");
 const fileInput = document.querySelector("#documentFileInput");
+const ocrLanguageInput = document.querySelector("#documentOcrLanguage");
 const privacyInput = document.querySelector("#documentPrivacyAcknowledge");
 const fileStatus = document.querySelector("#documentFileStatus");
 const formMessage = document.querySelector("#documentFormMessage");
@@ -26,7 +27,7 @@ const UTF8_BOM = "\uFEFF";
 
 let latestSummary = "";
 let latestAssessment = null;
-let ocrWorkerPromise = null;
+const ocrWorkers = new Map();
 let currentCaseId = "";
 
 const profiles = {
@@ -148,21 +149,24 @@ function validateFiles(files) {
 }
 
 async function loadOcrWorker() {
-  if (!ocrWorkerPromise) {
-    ocrWorkerPromise = import(OCR_MODULE_URL).then(async (module) => {
+  const languageKey = ocrLanguageInput?.value || "eng";
+  if (!ocrWorkers.has(languageKey)) {
+    const workerPromise = import(OCR_MODULE_URL).then(async (module) => {
       const createWorker = module.createWorker || (module.default && module.default.createWorker);
       if (!createWorker) throw new Error("OCR engine did not load.");
-      return createWorker("eng", 1, {
+      const language = languageKey === "eng+ben" ? ["eng", "ben"] : "eng";
+      return createWorker(language, 1, {
         logger: (message) => {
-          if (message && message.status) setProgress("OCR: " + message.status + (message.progress ? " " + Math.round(message.progress * 100) + "%" : ""));
+          if (message && message.status) setProgress("OCR (" + languageKey + "): " + message.status + (message.progress ? " " + Math.round(message.progress * 100) + "%" : ""));
         }
       });
     }).catch((error) => {
-      ocrWorkerPromise = null;
+      ocrWorkers.delete(languageKey);
       throw error;
     });
+    ocrWorkers.set(languageKey, workerPromise);
   }
-  return ocrWorkerPromise;
+  return ocrWorkers.get(languageKey);
 }
 
 async function recogniseCanvas(canvas) {
