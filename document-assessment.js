@@ -365,7 +365,7 @@ function renderReport(profile, results, analysis) {
   document.querySelector("#documentFlagCount").textContent = analysis.flags.length + (analysis.flags.length === 1 ? " flag" : " flags");
   document.querySelector("#documentFlags").innerHTML = analysis.flags.length
     ? analysis.flags.map((flag) => "<article class="flag-item evidence-gap"><span class="flag-marker"></span><div><strong>" + escapeHtml(flag.title) + "</strong><small class="flag-risk-type">Risk type: " + escapeHtml(flag.riskType) + "</small><p>" + escapeHtml(flag.detail) + "</p></div><span class="flag-points">+" + flag.points + "</span></article>").join("")
-    : "<article class="flag-item"><span class="flag-marker" style="background:#14866b"></span><div><strong>No configured anomaly detected</strong><p>Continue with human review and the institution's document checklist.</p></div><span class="flag-points">—</span></article>";
+    : '<article class="flag-item"><span class="flag-marker" style="background:#14866b"></span><div><strong>No configured anomaly detected</strong><p>Continue with human review and the institution's document checklist.</p></div><span class="flag-points">—</span></article>';
   document.querySelector("#documentFileResults").innerHTML = results.map(fileResultMarkup).join("");
   document.querySelector("#documentNextSteps").innerHTML = [
     "Inspect the original documents and validate all extracted fields.",
