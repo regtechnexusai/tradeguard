@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=38" />
+    <link rel="stylesheet" href="./style.css?v=39" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -47,6 +47,11 @@
       <p class="info-lead">Review selected KYC/AOF, trade, loan, financial-statement and collateral documents in the browser. The workspace extracts selectable text and can use OCR for scanned pages or images; it identifies potential document anomalies for human review.</p>
       <p class="info-meta" data-build-version data-build-label="Document assessment">Document assessment</p>
 
+      <div class="document-nav-actions" aria-label="Workspace navigation">
+        <a class="button button-primary" href="./index.html#risk-check">Back to TBML Check <span class="button-icon" aria-hidden="true">←</span></a>
+        <a class="button button-quiet" href="./proactive-monitoring.html">Back to Transaction Monitoring <span class="button-icon" aria-hidden="true">←</span></a>
+      </div>
+
       <div class="info-callout"><strong>Privacy and scope:</strong> Files are processed locally in this browser and are not uploaded to a TradeGuard server. Optional OCR loads the open-source Tesseract.js engine and language assets from a CDN; the documents themselves remain in the browser. Use fictional, synthetic or anonymised files only.</div>
 
       <section id="documentCheck" class="section-block document-check-section">
@@ -59,6 +64,7 @@
                 <p class="form-intro">Choose the document family, then select up to five local PDF or image files.</p>
               </div>
               <div class="panel-actions">
+                <button id="documentSampleButton" class="text-button" type="button">Load sample OCR case</button>
                 <button id="documentResetButton" class="text-button" type="button">Start new assessment</button>
               </div>
             </div>
@@ -209,6 +215,6 @@
     </footer>
 
     <script type="module" src="./site-version.js?v=38"></script>
-    <script type="module" src="./document-assessment.js?v=38"></script>
+    <script type="module" src="./document-assessment.js?v=39"></script>
   </body>
 </html>
