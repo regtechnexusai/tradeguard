@@ -783,3 +783,5 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   .document-nav-actions { flex-direction: column; align-items: stretch; }
   .document-nav-actions .button { width: 100%; }
 }
+
+.human-review-card .human-review-badge { color: #fff; font-size: 11px; }
