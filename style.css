@@ -785,3 +785,15 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 }
 
 .human-review-card .human-review-badge { color: #fff; font-size: 11px; }
+
+
+/* TradeGuard v40 workspace navigation. */
+.workspace-entry-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.workspace-entry-actions .workspace-document-button { color: #6f3a21; border-color: #e7c5a8; background: linear-gradient(145deg, #fff7ef, #ffe7d5); }
+.workspace-entry-actions .workspace-document-button:hover { border-color: #c86b4c; }
+.workspace-switch-actions { display: grid; gap: 12px; align-items: center; }
+.workspace-switch-actions .button { width: 100%; }
+.workspace-nav-label { margin-top: 16px; }
+@media (max-width: 640px) {
+  .workspace-entry-actions { grid-template-columns: 1fr; }
+}
