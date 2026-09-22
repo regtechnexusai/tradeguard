@@ -7,7 +7,7 @@
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/privacy.html" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>Privacy and PDF Handling | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=28" />
+    <link rel="stylesheet" href="./style.css?v=29" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -27,14 +27,14 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Public demo notice</div>
       <h1>Privacy and PDF handling</h1>
       <p class="info-lead">TradeGuard is a static public demonstration workspace. It is intended for fictional, synthetic or anonymised information—not confidential customer, bank or trade documents.</p>
-      <p class="info-meta">Last updated: 20 September 2026 · public build v28</p>
+      <p class="info-meta">Last updated: 22 September 2026 · public build v29</p>
 
       <div class="info-callout"><strong>Important:</strong> Before selecting a PDF, acknowledge that the public demo accepts only fictional, synthetic or anonymised data. Remove names, account numbers, bank and branch details, opening dates, email addresses and other identifiers.</div>
 
       <h2>How the public PDF review works</h2>
       <ol>
-        <li>The selected PDF is read in the browser using a pinned self-hosted PDF.js 6.3.289 build included at repository root in this public package.</li>
-        <li>The browser extracts available text and applies the visible transaction-monitoring rules locally, with PDF.js evaluation disabled for this parser path.</li>
+        <li>Up to five selected PDFs are read in the browser using the pinned self-hosted PDF.js 6.3.289 build included at repository root in this public package; each file is limited to 10 MB and the combined selection to 40 MB.</li>
+        <li>The browser extracts available selectable text and applies the visible transaction-monitoring rules locally, with PDF.js evaluation disabled for this parser path. OCR for scanned/image-only documents is not included in this public build.</li>
         <li>The app does not provide a TradeGuard server upload endpoint, user account, case database or cloud case store. The PDF bytes are passed to the in-page parser rather than to a TradeGuard API.</li>
         <li>After analysis, the file input, temporary text reference and PDF.js document object are cleared by the page.</li>
       </ol>
@@ -69,6 +69,7 @@
     <footer class="site-footer section-shell">
       <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./guide.html">User guide</a>
         <a href="./about.html">About and security</a>
         <a href="./index.html">Home</a>
         <a href="./methodology.html">Methodology</a>

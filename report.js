@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=28";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=29";
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -241,6 +241,7 @@ export function renderReport(result, input) {
         <span class="flag-marker"></span>
         <div>
           <strong>${escapeHtml(flag.title)}</strong>
+          <small class="flag-risk-type">Risk type: ${escapeHtml(flag.riskType || "Trade-finance risk")}</small>
           <p>${escapeHtml(flag.detail)}</p>
         </div>
         <span class="flag-points">${flag.controlOnly ? "CONTROL" : `+${flag.points}`}</span>
@@ -281,7 +282,7 @@ export function renderReport(result, input) {
     `Indicator confidence: ${input.indicatorConfidence || "Not provided"}`,
     `Evidence status: ${input.evidenceStatus || "Not provided"}`,
     `Detected flags: ${result.flags.length}`,
-    ...result.flags.map((flag) => `- ${flag.title}: ${flag.detail}`),
+    ...result.flags.map((flag) => `- ${flag.title} [Risk type: ${flag.riskType || "Trade-finance risk"}]: ${flag.detail}`),
     `Suggested next step: ${result.recommendation}`,
     "Assessment is indicative and depends on the quality, completeness and genuineness of the information provided.",
     "Assessment output only. It is not a final TBML determination. Final decisions remain with the authorised reviewer."

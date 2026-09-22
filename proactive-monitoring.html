@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TradeGuard Transaction Monitoring — an explainable, rule-based early-warning review workspace." />
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/proactive-monitoring.html" />
+    <link rel="icon" type="image/png" href="./regtech-nexus-ai-logo.png" />
     <meta property="og:title" content="Transaction Monitoring | TradeGuard" />
     <meta property="og:description" content="Rule-based early-warning transaction review with human review required." />
     <meta property="og:type" content="website" />
@@ -14,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css?v=28" />
+    <link rel="stylesheet" href="./style.css?v=29" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -25,6 +26,7 @@
         <img class="brand-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
       </a>
       <nav class="nav-links" aria-label="Main navigation">
+        <a href="./guide.html">User guide</a>
         <a href="./index.html#monitoring-modes">Monitoring modes</a>
         <a href="#proactive-check">Transaction review</a>
         <a class="nav-cta" href="#pilot">Request pilot</a>
@@ -78,7 +80,7 @@
             <div class="eyebrow">Transaction monitoring</div>
             <h2>Run an early-warning review</h2>
           </div>
-          <p>Upload a transaction PDF for a rule-based preliminary review. A complete statement can populate available context automatically; a transaction-history-only PDF can be paired with manually entered anonymised context.</p>
+          <p>Designed for bank and financial-institution compliance teams, trade-finance reviewers, auditors and controlled pilot users. Upload a transaction PDF for a rule-based preliminary review. A complete statement can populate available context automatically; a transaction-history-only PDF can be paired with manually entered anonymised context.</p>
         </div>
 
         <div class="workspace-grid">
@@ -108,6 +110,7 @@
                 <button id="fullStatementModeButton" class="mode-button is-active" type="button" aria-pressed="true">Full statement · auto-fill</button>
                 <button id="transactionOnlyModeButton" class="mode-button" type="button" aria-pressed="false">Transaction history only · manual context</button>
               </div>
+              <div class="info-callout compact-callout"><strong>Reviewer disclaimer:</strong> The system identifies potential risk indicators for analyst review. The final assessment must be made by the responsible officer based on available evidence and applicable laws, regulations and institutional policy.</div>
               <p id="pdfModeNote" class="pdf-mode-note">Full-statement mode will use available transaction and context signals to pre-fill this local review. You can correct or replace them before running the review.</p>
               <label class="consent-check" for="pdfPrivacyAcknowledge">
                 <input id="pdfPrivacyAcknowledge" type="checkbox" />
@@ -115,14 +118,15 @@
               </label>
               <label class="file-dropzone" for="transactionPdfInput">
                 <span class="upload-icon" aria-hidden="true">↑</span>
-                <span><strong>Choose a transaction PDF</strong><small>PDF only · up to 10 MB · processed in this browser; not sent to a TradeGuard server</small></span>
-                <input id="transactionPdfInput" type="file" accept="application/pdf,.pdf" />
+                <span><strong>Choose transaction PDF file(s)</strong><small>Up to 5 PDFs · each up to 10 MB · combined limit 40 MB · processed in this browser</small></span>
+                <input id="transactionPdfInput" type="file" accept="application/pdf,.pdf" multiple />
               </label>
               <div id="transactionPdfStatus" class="file-status" role="status" aria-live="polite">No PDF selected.</div>
               <div class="file-actions">
                 <button id="analyzePdfButton" class="text-button" type="button" disabled>Analyze transaction PDF</button>
                 <button id="clearPdfButton" class="text-button" type="button" disabled>Clear PDF from browser</button>
               </div>
+              <p class="pdf-scope-note"><strong>Current public scope:</strong> TradeGuard extracts selectable text from PDF statements. Scanned/image-only PDFs, Account Opening Forms, KYC files, trade documents and loan documents require OCR and structured document controls that are reserved for an approved institutional deployment.</p>
               <p class="pdf-privacy-note"><strong>Privacy notice:</strong> The PDF is parsed in this browser and is not sent to a TradeGuard server. Remove names, account numbers, bank and branch details, opening dates, email addresses and other identifiers before selecting a file. If identifier-like text is detected, the page will show a warning; continue only when the data is fictional or anonymised. <a href="./privacy.html">See PDF handling details.</a></p>
             </div>
 
@@ -137,6 +141,8 @@
                   <option>Last 7 days</option>
                   <option>Last 30 days</option>
                   <option>Last 90 days</option>
+                  <option>Last 180 days</option>
+                  <option>Last 365 days</option>
                 </select>
               </label>
               <label class="field">
@@ -170,6 +176,7 @@
                 <select id="baselineWindow">
                   <option>Trailing 90-day average</option>
                   <option>Trailing 180-day average</option>
+                  <option>Trailing 365-day average</option>
                   <option>Customer profile baseline</option>
                   <option>Not provided - no customer baseline supplied</option>
                 </select>
@@ -242,7 +249,10 @@
                 <span class="panel-kicker">Case file</span>
                 <h3>Transaction monitoring report</h3>
               </div>
-              <button id="proactiveCopyButton" class="text-button" type="button" disabled>Copy summary</button>
+                <div class="panel-actions">
+                  <button id="proactiveCopyButton" class="text-button" type="button" disabled>Copy summary</button>
+                  <button id="proactiveDownloadButton" class="text-button" type="button" disabled>Download report</button>
+                </div>
             </div>
 
             <div id="proactiveEmpty" class="empty-report">
@@ -295,7 +305,7 @@
               <div class="report-subheading"><span>Detected patterns</span><span id="proactiveFlagCount">0 flags</span></div>
               <div id="proactiveFlags" class="flag-list"></div>
               <div class="recommendation-box"><span class="recommendation-icon">✓</span><div><strong>Suggested next steps</strong><ol id="proactiveNextSteps" class="report-action-list"></ol></div></div>
-              <div class="report-footer-note">Assessment output only. It is not a finding of money laundering or other wrongdoing. Human review is required before any further action.</div>
+              <div class="report-footer-note">Assessment output only. It is not a finding of money laundering or other wrongdoing. Human review is required before any further action under applicable law, regulation and institutional policy.</div>
             </div>
           </section>
         </div>
@@ -344,6 +354,7 @@
       <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
       <a class="footer-link" href="./index.html#monitoring-modes">TradeGuard monitoring modes</a>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./guide.html">User guide</a>
         <a href="./about.html">About and security</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
@@ -358,6 +369,6 @@
       <span>© 2026 RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./proactive-monitoring.js?v=28"></script>
+    <script type="module" src="./proactive-monitoring.js?v=29"></script>
   </body>
 </html>

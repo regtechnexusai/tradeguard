@@ -1,4 +1,4 @@
-TradeGuard public build — installation and review boundaries
+TradeGuard public build v29 — installation and review boundaries
 
 The website shows separate TBML Check and Transaction Monitoring entry points.
 The Transaction Monitoring workspace is in proactive-monitoring.html, with
@@ -26,6 +26,7 @@ pdf.worker.mjs
 LICENSE
 README.md
 PHASE1-INSTALL.txt
+guide.html
 
 Keep these existing files in the repository:
 regtech-nexus-ai-logo.png
@@ -69,7 +70,7 @@ invoice, passport, NID, bank or SWIFT documents to this public workspace.
 The main transaction button in this package is labelled “Run Risk Check”.
 Upload the extracted files themselves; GitHub Pages will not extract a ZIP
 automatically. After uploading, commit the changes to the main branch and open:
-https://regtechnexusai.github.io/tradeguard/?v=28
+https://regtechnexusai.github.io/tradeguard/?v=29
 
 The proactive workspace report uses a case-file layout. Profession is selected
 from a controlled list, customer references are masked by default, unsupported
@@ -83,10 +84,15 @@ Neither option sends automatically; the user must review and press Send.
 
 Transaction Monitoring PDF handling:
 The PDF is read in the browser using the pinned self-hosted PDF.js 6.3.289
-build at repository root and is not sent to a TradeGuard server. The user must acknowledge the
+build at repository root and is not sent to a TradeGuard server. Up to five
+PDF files can be selected together; each is limited to 10 MB and the combined
+selection to 40 MB. The user must acknowledge the
 public-demo data warning before selecting a file. Identifier-like text such as
 account labels/numbers or email addresses produces a visible warning; continue
 only with fictional or anonymised data. Full-statement mode can pre-fill available context.
+The public build extracts selectable text only; OCR for scanned/image-only PDFs
+and structured AOF/KYC, trade-document or credit-document analysis are roadmap
+items for an approved institutional deployment.
 Transaction-history-only mode is provided for anonymised rows when names,
 account numbers, bank details and other identifiers have been removed; the
 reviewer can then enter an anonymised reference, profession, profile, baseline

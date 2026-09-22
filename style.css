@@ -513,6 +513,12 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .file-status.is-success { color: var(--green); }
 .file-status.is-processing { color: var(--amber); }
 .file-status.is-warning { color: #9a6816; }
+.file-status.is-processing { font-weight: 700; }
+.pdf-scope-note { margin: 10px 0 0; color: #61798d; font-size: 10px; line-height: 1.55; }
+.pdf-scope-note strong { color: var(--navy); }
+.compact-callout { margin: 14px 0; padding: 12px 14px; font-size: 11px; }
+.flag-risk-type { display: block; margin-top: 4px; color: #2b6b9e; font-size: 9px; font-weight: 700; letter-spacing: .02em; }
+.file-dropzone input:disabled + * { opacity: .58; }
 .file-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .pdf-mode-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .mode-button { min-height: 38px; padding: 8px 11px; border: 1px solid #cbdce6; border-radius: 9px; color: var(--navy); background: #fff; font-size: 10px; font-weight: 750; cursor: pointer; }
@@ -532,6 +538,12 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .info-page a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
 .info-callout { margin: 24px 0; padding: 18px 20px; border-left: 4px solid var(--cyan); color: #45657f; background: rgba(255,255,255,.68); font-size: 12px; line-height: 1.65; }
 .info-callout strong { color: var(--navy); }
+.standards-map { overflow-x: auto; margin: 15px 0 8px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.72); }
+.standards-map table { width: 100%; min-width: 720px; border-collapse: collapse; }
+.standards-map th, .standards-map td { padding: 11px 12px; border-bottom: 1px solid #e3edf3; text-align: left; vertical-align: top; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.standards-map th { color: var(--navy); background: #f3f9fc; font-size: 9px; letter-spacing: .06em; text-transform: uppercase; }
+.standards-map tr:last-child td { border-bottom: 0; }
+.standards-map td:first-child { min-width: 155px; color: var(--navy); font-weight: 700; }
 .info-meta { color: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; }
 
 @media (max-width: 640px) {

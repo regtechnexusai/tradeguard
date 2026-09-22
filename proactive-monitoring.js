@@ -12,6 +12,7 @@ const pdfModeNote = document.querySelector("#pdfModeNote");
 const transactionPdfStatus = document.querySelector("#transactionPdfStatus");
 const pdfPrivacyAcknowledge = document.querySelector("#pdfPrivacyAcknowledge");
 const copyButton = document.querySelector("#proactiveCopyButton");
+const downloadButton = document.querySelector("#proactiveDownloadButton");
 const revealAccountButton = document.querySelector("#proactiveRevealAccount");
 const accountValue = document.querySelector("#proactiveAccountValue");
 const accountNote = document.querySelector("#proactiveAccountNote");
@@ -29,11 +30,13 @@ let latestInput = null;
 let currentCaseId = "";
 let currentGeneratedAt = "";
 let accountRevealed = false;
-let selectedPdfFile = null;
+let selectedPdfFiles = [];
 let pdfInputMode = "full-statement";
 let pdfContextImported = false;
 
 const MAX_PDF_BYTES = 10 * 1024 * 1024;
+const MAX_PDF_FILES = 5;
+const MAX_TOTAL_PDF_BYTES = 40 * 1024 * 1024;
 
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -70,7 +73,7 @@ function setPdfMode(mode) {
 }
 
 function clearPdfAttachment(statusText = "No PDF selected.") {
-  selectedPdfFile = null;
+  selectedPdfFiles = [];
   if (transactionPdfInput) transactionPdfInput.value = "";
   if (analyzePdfButton) analyzePdfButton.disabled = true;
   if (clearPdfButton) clearPdfButton.disabled = true;
@@ -80,8 +83,8 @@ function clearPdfAttachment(statusText = "No PDF selected.") {
 function refreshPdfControls() {
   const acknowledged = Boolean(pdfPrivacyAcknowledge?.checked);
   if (transactionPdfInput) transactionPdfInput.disabled = !acknowledged;
-  if (analyzePdfButton) analyzePdfButton.disabled = !selectedPdfFile || !acknowledged;
-  if (clearPdfButton) clearPdfButton.disabled = !selectedPdfFile;
+  if (analyzePdfButton) analyzePdfButton.disabled = !selectedPdfFiles.length || !acknowledged;
+  if (clearPdfButton) clearPdfButton.disabled = !selectedPdfFiles.length;
 }
 
 function formatFileSize(bytes) {
@@ -120,7 +123,7 @@ async function extractPdfText(file) {
   return pages.join("\n");
 }
 
-function extractPdfSignals(rawText) {
+function extractPdfSignals(rawText, fileCount = 1) {
   const lines = String(rawText || "")
     .replaceAll("\u00a0", " ")
     .split(/\r?\n/)
@@ -153,7 +156,7 @@ function extractPdfSignals(rawText) {
   return {
     observedTransactions,
     observedValue,
-    transactionDetail: `PDF extraction identified ${observedTransactions} transaction entr${observedTransactions === 1 ? "y" : "ies"} and ${amountMatches.length} amount reference${amountMatches.length === 1 ? "" : "s"}. Extracted values require reviewer confirmation.`,
+    transactionDetail: `${fileCount > 1 ? `${fileCount} PDF files` : "PDF extraction"} identified ${observedTransactions} transaction entr${observedTransactions === 1 ? "y" : "ies"} and ${amountMatches.length} amount reference${amountMatches.length === 1 ? "" : "s"}. Extracted values require reviewer confirmation.`,
     rapidInOut: hasInbound && hasOutbound,
     channelChange: channels.length >= 2,
     extractedLineCount: lines.length,
@@ -183,7 +186,13 @@ function applyPdfContext(extracted, rawText) {
   const lowerText = String(rawText || "").toLowerCase();
   const detectedProfession = professionOptions.find((profession) => lowerText.includes(profession.toLowerCase()));
   const detectedCurrency = /\bBDT\b|৳/i.test(rawText) ? "BDT" : value("monitoringCurrency") || "Other / not provided";
-  const detectedWindow = /90\s*[- ]?day/i.test(rawText) ? "Last 90 days" : value("monitoringWindow") || "Last 90 days";
+  const detectedWindow = /365\s*[- ]?day|12\s*month/i.test(rawText)
+    ? "Last 365 days"
+    : /180\s*[- ]?day|6\s*month/i.test(rawText)
+      ? "Last 180 days"
+      : /90\s*[- ]?day|3\s*month/i.test(rawText)
+        ? "Last 90 days"
+        : value("monitoringWindow") || "Last 90 days";
   const detectedSegment = /\bindividual\b|savings account|housewife/i.test(rawText) ? "Individual" : value("customerSegment") || "Individual";
   const hasExpectedBaseline = Number(value("expectedTransactions")) > 0 || Number(value("expectedValue")) > 0;
   const transactionOnly = pdfInputMode === "transaction-only";
@@ -202,21 +211,29 @@ function applyPdfContext(extracted, rawText) {
 }
 
 async function analyzePdf() {
-  if (!selectedPdfFile) return;
+  if (!selectedPdfFiles.length) return;
   if (!pdfPrivacyAcknowledge?.checked) {
     setPdfStatus("Acknowledge the public-demo data warning before selecting a PDF.", "is-error");
     return;
   }
-  const file = selectedPdfFile;
   if (analyzePdfButton) analyzePdfButton.disabled = true;
-  setPdfStatus("Reading PDF locally…", "is-processing");
+  setPdfStatus(`Reading ${selectedPdfFiles.length} PDF${selectedPdfFiles.length === 1 ? "" : "s"} locally…`, "is-processing");
   let analysisSucceeded = false;
 
   let rawText = "";
   try {
-    rawText = await extractPdfText(file);
+    const files = [...selectedPdfFiles];
+    const textParts = [];
+    for (let index = 0; index < files.length; index += 1) {
+      setPdfStatus(`Reading PDF ${index + 1} of ${files.length} locally…`, "is-processing");
+      textParts.push(await extractPdfText(files[index]));
+    }
+    rawText = textParts.join("\n");
+    if (!rawText.trim()) {
+      throw new Error("No selectable text was found. This may be a scanned or image-only PDF; OCR is not included in the public build.");
+    }
     const potentialIdentifiers = detectPotentialIdentifiers(rawText);
-    const extracted = extractPdfSignals(rawText);
+    const extracted = extractPdfSignals(rawText, files.length);
     applyPdfContext(extracted, rawText);
     rawText = "";
 
@@ -237,7 +254,7 @@ async function analyzePdf() {
       const identifierNote = potentialIdentifiers.length
         ? ` Potential identifier-like text detected (${potentialIdentifiers.join(", ")}); use only fictional or anonymised data.`
         : "";
-      setPdfStatus(`Transaction history extracted locally (${extracted.observedTransactions || 0} transaction entries identified). The browser file reference was cleared after analysis.${identifierNote}`, potentialIdentifiers.length ? "is-warning" : "is-success");
+      setPdfStatus(`${files.length} transaction PDF${files.length === 1 ? "" : "s"} extracted locally (${extracted.observedTransactions || 0} transaction entries identified). The browser file references were cleared after analysis.${identifierNote}`, potentialIdentifiers.length ? "is-warning" : "is-success");
       document.querySelector("#customerReference")?.focus();
     } else {
       render(calculateSignal(input), input);
@@ -245,7 +262,7 @@ async function analyzePdf() {
       const identifierNote = potentialIdentifiers.length
         ? ` Potential identifier-like text detected (${potentialIdentifiers.join(", ")}); use only fictional or anonymised data.`
         : "";
-      setPdfStatus(`PDF analysed locally (${extracted.observedTransactions || 0} transaction entries identified). The browser file reference was cleared after analysis.${identifierNote}`, potentialIdentifiers.length ? "is-warning" : "is-success");
+      setPdfStatus(`${files.length} PDF${files.length === 1 ? "" : "s"} analysed locally (${extracted.observedTransactions || 0} transaction entries identified). The browser file references were cleared after analysis.${identifierNote}`, potentialIdentifiers.length ? "is-warning" : "is-success");
       reportPanel?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   } catch (error) {
@@ -253,7 +270,7 @@ async function analyzePdf() {
     if (message) message.textContent = "The PDF could not be analysed. Review the file type and try again.";
   } finally {
     rawText = "";
-    selectedPdfFile = null;
+    selectedPdfFiles = [];
     if (transactionPdfInput) transactionPdfInput.value = "";
     refreshPdfControls();
     pdfContextImported = analysisSucceeded;
@@ -396,7 +413,7 @@ function buildSummary(result, input) {
     `Evidence gaps: ${unsupported ? `${unsupported} of ${result.score} points are unverified` : "None identified in the selected patterns"}`,
     "Status: Human review required",
     "Detected patterns:",
-    result.flags.length ? result.flags.map((flag) => `- ${flag.title} (+${flag.points}): ${flagDetail(flag, input)}`).join("\n") : "- No configured pattern was triggered",
+    result.flags.length ? result.flags.map((flag) => `- ${flag.title} (+${flag.points}) [Risk type: ${flag.riskType}]: ${flagDetail(flag, input)}`).join("\n") : "- No configured pattern was triggered",
     `Typology hypothesis: ${typologyHypothesis(result, input)}`,
     "Suggested next steps:",
     steps.map((step, index) => `${index + 1}. ${step}`).join("\n"),
@@ -453,6 +470,18 @@ function calculateSignal(input) {
   if (input.rapidInOut) flags.push({ title: "Rapid in-and-out flow", detail: "Funds may be moving shortly after receipt or crediting.", points: 20, evidenceGap: !input.flowEvidence, action: "Review the funds-flow sequence, purpose and supporting payment evidence." });
   if (input.routeChange) flags.push({ title: "Route or corridor change", detail: "The observed corridor differs from the normal customer pattern.", points: 10, evidenceGap: !input.corridorDetail, action: "Confirm the commercial rationale, counterparties and jurisdictional context." });
   if (input.channelChange) flags.push({ title: "Channel or product change", detail: "A new channel or product is being used compared with the expected pattern.", points: 10, evidenceGap: !input.channelDetail, action: "Confirm customer intent, channel controls and the reason for the change." });
+
+  const riskTypes = {
+    "Transaction velocity shift": "Behavioural / velocity risk",
+    "Value-pattern shift": "Behavioural / value risk",
+    "New counterparty pattern": "Counterparty / network risk",
+    "Rapid in-and-out flow": "Funds-flow / layering risk",
+    "Route or corridor change": "Geographic / corridor risk",
+    "Channel or product change": "Channel / product risk"
+  };
+  flags.forEach((flag) => {
+    flag.riskType = riskTypes[flag.title] || "Transaction-monitoring risk";
+  });
 
   const score = Math.min(flags.reduce((total, flag) => total + flag.points, 0), 100);
   const band = score >= 75 ? "Critical" : score >= 50 ? "High" : score >= 25 ? "Medium" : "Low";
@@ -522,7 +551,7 @@ function render(result, input) {
   document.querySelector("#proactiveScoreBasis").textContent = `Configured score ${result.score}/100; evidence-supported score ${supported}/100; unverified contribution ${unsupported} points. Applied bands: Low 0-24, Medium 25-49, High 50-74, Critical 75-100. More than 50% unverified keeps the signal pending evidence. ${notes.length ? `${notes.join(" ")} ` : ""}Weights require institutional calibration before operational use.`;
 
   document.querySelector("#proactiveFlags").innerHTML = result.flags.length
-    ? result.flags.map((flag) => `<article class="flag-item${flag.evidenceGap ? " evidence-gap" : ""}"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong>${flag.evidenceGap ? "<span class=\"evidence-warning\">UNVERIFIED — EVIDENCE REQUIRED</span>" : ""}<p>${escapeHtml(flagDetail(flag, input))}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
+    ? result.flags.map((flag) => `<article class="flag-item${flag.evidenceGap ? " evidence-gap" : ""}"><span class="flag-marker"></span><div><strong>${escapeHtml(flag.title)}</strong><small class="flag-risk-type">Risk type: ${escapeHtml(flag.riskType)}</small>${flag.evidenceGap ? "<span class=\"evidence-warning\">UNVERIFIED — EVIDENCE REQUIRED</span>" : ""}<p>${escapeHtml(flagDetail(flag, input))}</p></div><span class="flag-points">+${flag.points}</span></article>`).join("")
     : `<div class="flag-item"><span class="flag-marker" style="background:#14866b;box-shadow:0 0 0 4px rgba(20,134,107,.13)"></span><div><strong>No configured pattern was triggered</strong><p>Add reliable transaction history and supporting context for a more specific review signal.</p></div><span class="flag-points" style="color:#14866b">—</span></div>`;
 
   document.querySelector("#proactiveNextSteps").innerHTML = nextSteps(result).map((step) => `<li>${escapeHtml(step)}</li>`).join("");
@@ -530,42 +559,53 @@ function render(result, input) {
   latestInput = input;
   latestSummary = buildSummary(result, input);
   if (copyButton) copyButton.disabled = false;
+  if (downloadButton) downloadButton.disabled = false;
 }
 
 transactionPdfInput?.addEventListener("change", () => {
-  const file = transactionPdfInput.files?.[0];
-  if (!file) {
+  const files = [...(transactionPdfInput.files || [])];
+  if (!files.length) {
     pdfContextImported = false;
     clearPdfAttachment();
     return;
   }
 
-  const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-  if (!isPdf) {
+  if (files.length > MAX_PDF_FILES) {
+    pdfContextImported = false;
+    clearPdfAttachment(`Select no more than ${MAX_PDF_FILES} PDF files at a time.`);
+    return;
+  }
+  const invalidFile = files.find((file) => !(file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")));
+  if (invalidFile) {
     pdfContextImported = false;
     clearPdfAttachment("Only PDF files are allowed.");
     return;
   }
-  if (file.size > MAX_PDF_BYTES) {
+  const oversizedFile = files.find((file) => file.size > MAX_PDF_BYTES);
+  if (oversizedFile) {
     pdfContextImported = false;
-    clearPdfAttachment(`This PDF is ${formatFileSize(file.size)}. The maximum allowed size is 10 MB.`);
+    clearPdfAttachment(`${oversizedFile.name} is ${formatFileSize(oversizedFile.size)}. The maximum allowed size for each PDF is 10 MB.`);
+    return;
+  }
+  const totalBytes = files.reduce((total, file) => total + file.size, 0);
+  if (totalBytes > MAX_TOTAL_PDF_BYTES) {
+    pdfContextImported = false;
+    clearPdfAttachment(`The selected PDFs total ${formatFileSize(totalBytes)}. The combined maximum is 40 MB.`);
     return;
   }
 
-  selectedPdfFile = file;
+  selectedPdfFiles = files;
   pdfContextImported = false;
-  if (analyzePdfButton) analyzePdfButton.disabled = false;
-  if (clearPdfButton) clearPdfButton.disabled = false;
   refreshPdfControls();
-  setPdfStatus(`${file.name} selected · ${formatFileSize(file.size)} · browser-local processing only; not sent to a TradeGuard server.`);
+  setPdfStatus(`${files.length} PDF${files.length === 1 ? "" : "s"} selected · ${formatFileSize(totalBytes)} total · browser-local processing only; not sent to a TradeGuard server.`);
 });
 
 fullStatementModeButton?.addEventListener("click", () => setPdfMode("full-statement"));
 transactionOnlyModeButton?.addEventListener("click", () => setPdfMode("transaction-only"));
 pdfPrivacyAcknowledge?.addEventListener("change", () => {
-  if (!pdfPrivacyAcknowledge.checked && selectedPdfFile) {
+  if (!pdfPrivacyAcknowledge.checked && selectedPdfFiles.length) {
     clearPdfAttachment("Acknowledgement removed. No PDF is selected.");
-  } else if (pdfPrivacyAcknowledge.checked && !selectedPdfFile) {
+  } else if (pdfPrivacyAcknowledge.checked && !selectedPdfFiles.length) {
     setPdfStatus("Acknowledgement recorded. Choose an anonymised PDF to continue.");
   }
   refreshPdfControls();
@@ -597,6 +637,7 @@ resetButton?.addEventListener("click", () => {
     copyButton.disabled = true;
     copyButton.textContent = "Copy summary";
   }
+  if (downloadButton) downloadButton.disabled = true;
   refreshPdfControls();
 });
 
@@ -652,6 +693,19 @@ copyButton?.addEventListener("click", async () => {
   } catch {
     copyButton.textContent = "Select report manually";
   }
+});
+
+downloadButton?.addEventListener("click", () => {
+  if (!latestSummary) return;
+  const blob = new Blob([latestSummary], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${currentCaseId || "tradeguard-transaction-monitoring-report"}.txt`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 });
 
 revealAccountButton?.addEventListener("click", () => {

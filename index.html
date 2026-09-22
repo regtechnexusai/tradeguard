@@ -8,13 +8,14 @@
       content="TradeGuard by RegTech Nexus AI — an explainable, rule-based trade-finance and TBML review workspace."
     />
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/" />
+    <link rel="icon" type="image/png" href="./regtech-nexus-ai-logo.png" />
     <meta property="og:title" content="TradeGuard | RegTech Nexus AI" />
     <meta property="og:description" content="Explainable, rule-based trade-finance and TBML review support with human review required." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>TradeGuard | RegTech Nexus AI</title>
-    <link rel="stylesheet" href="./style.css?v=28" />
+    <link rel="stylesheet" href="./style.css?v=29" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -29,6 +30,7 @@
         />
       </a>
       <nav class="nav-links" aria-label="Main navigation">
+        <a href="./guide.html">User guide</a>
         <a class="nav-cta" href="#pilot">Request pilot</a>
       </nav>
     </header>
@@ -83,6 +85,21 @@
         <div><span class="trust-icon">03</span><strong>Human-led</strong><small>Reviewer judgement remains central</small></div>
       </section>
 
+      <section class="section-shell section-block audience-section">
+        <div class="section-heading compact-heading">
+          <div>
+            <div class="eyebrow">Purpose and users</div>
+            <h2>Built for evidence-led financial-crime review.</h2>
+          </div>
+          <p>TradeGuard organises early-warning signals for authorised analysts. It supports review; it does not replace investigation, legal judgement or institutional decision-making.</p>
+        </div>
+        <div class="feature-grid audience-grid">
+          <article class="feature-card"><span class="feature-number">01</span><h3>Who it supports</h3><p>Bank compliance and trade-finance teams, financial institutions, auditors, exporters, importers and C&amp;F or trade consultants in a controlled review workflow.</p></article>
+          <article class="feature-card"><span class="feature-number">02</span><h3>What it checks</h3><p>Trade valuation, HS-code alignment, parties, routes and documents, plus emerging transaction patterns such as velocity, value, counterparties and funds flow.</p></article>
+          <article class="feature-card"><span class="feature-number">03</span><h3>What it does not decide</h3><p>It does not determine money laundering, sanctions exposure, STR filing or legal liability. A responsible officer must assess the evidence under applicable rules.</p></article>
+        </div>
+      </section>
+
       <section id="monitoring-modes" class="section-shell section-block monitoring-modes-section">
         <div class="section-heading compact-heading">
           <div>
@@ -121,7 +138,7 @@
             <div class="eyebrow">Sample transaction review</div>
             <h2>Run a TradeGuard risk check</h2>
           </div>
-          <p>Use fictional or anonymised information only. This public demo has no case database and does not intentionally retain submitted transaction documents. <a href="./privacy.html">Read the privacy and demo limitations.</a></p>
+          <p>Use fictional or anonymised information only. This public demo has no case database and does not intentionally retain submitted transaction documents. The system identifies potential risk indicators for analyst review; the responsible officer makes the final assessment based on available evidence and applicable laws, regulations and institutional policy. <a href="./privacy.html">Read the privacy and demo limitations.</a></p>
         </div>
 
         <div class="workspace-grid">
@@ -542,7 +559,10 @@
                 <span class="panel-kicker">STEP 02</span>
                 <h3>Risk intelligence report</h3>
               </div>
-              <button id="copyReportButton" class="text-button" type="button" disabled>Copy summary</button>
+                <div class="panel-actions">
+                  <button id="copyReportButton" class="text-button" type="button" disabled>Copy summary</button>
+                  <button id="downloadReportButton" class="text-button" type="button" disabled>Download report</button>
+                </div>
             </div>
 
             <div id="emptyReport" class="empty-report">
@@ -594,7 +614,7 @@
                 <span class="recommendation-icon">✓</span>
                 <div><strong>Suggested next step</strong><p id="recommendationText"></p></div>
               </div>
-              <div class="report-footer-note">Assessment output only. It is not a final TBML determination. Final transaction decisions remain with the authorised reviewer.</div>
+              <div class="report-footer-note">Assessment output only. It is not a final TBML determination. Final transaction decisions remain with the authorised reviewer under applicable law, regulation and institutional policy.</div>
             </div>
           </section>
         </div>
@@ -649,6 +669,7 @@
       </div>
       <a class="footer-link" href="https://regtechnexusai.github.io/tradeguard/" target="_blank" rel="noopener noreferrer">regtechnexusai.github.io/tradeguard/</a>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./guide.html">User guide</a>
         <a href="./about.html">About and security</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>
@@ -663,6 +684,6 @@
       <span>© 2026 RegTech Nexus AI</span>
     </footer>
 
-    <script type="module" src="./main.js?v=28"></script>
+    <script type="module" src="./main.js?v=29"></script>
   </body>
 </html>

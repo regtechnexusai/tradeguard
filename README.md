@@ -1,6 +1,6 @@
 # TradeGuard by RegTech Nexus AI
 
-A static, low-cost public MVP (v28) for an explainable, rule-based trade-finance and TBML risk-review workspace.
+A static, low-cost public MVP (v29) for an explainable, rule-based trade-finance and TBML risk-review workspace.
 
 ## What this version does
 
@@ -17,9 +17,12 @@ A static, low-cost public MVP (v28) for an explainable, rule-based trade-finance
 - Provides a “Start new case” reset flow to prevent prior-case carry-over.
 - Provides a separate `proactive-monitoring.html` Transaction Monitoring workspace with a functional early-warning review.
 - Accepts a transaction-statement PDF up to 10 MB for browser-local text extraction using the pinned self-hosted PDF.js 6.3.289 build at repository root for simple GitHub mobile upload.
+- Accepts up to five PDF files together, with a 40 MB combined limit, for local aggregation of selectable transaction text.
+- Provides 7, 30, 90, 180 and 365-day monitoring windows, visible risk-type labels, a simple user guide and downloadable text reports.
 - Supports two PDF paths: full-statement mode for available context pre-fill, and transaction-history-only mode for anonymised transaction rows plus manually supplied context.
 - Requires an acknowledgement that the file is fictional, synthetic or anonymised; warns on account/email/identity-like text, clears the browser file input and temporary extracted text after analysis, and has no upload endpoint or case database.
 - Shows a clear privacy and PDF-handling notice, plus a methodology and limitations page.
+- States clearly that OCR for scanned/image-only PDFs and structured AOF/KYC, trade-document and credit-document analysis are institutional roadmap items, not public-demo capabilities.
 - Includes an About and security-boundary page that separates public-demo capability from institutional deployment requirements.
 - Publishes the supplied RegTech Nexus AI / Travel To Know publisher relationship, office and phone details without inventing an unprovided registered entity number.
 - Prepares a pilot request in a pre-filled email draft. A configured mail client is required for the mailto action; a direct email fallback and publisher phone are shown.

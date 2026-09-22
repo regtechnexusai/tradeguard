@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TradeGuard user guide: purpose, modules, inputs, PDF review and interpretation." />
+    <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/guide.html" />
+    <link rel="icon" type="image/png" href="./regtech-nexus-ai-logo.png" />
+    <meta property="og:title" content="User Guide | TradeGuard" />
+    <meta property="og:description" content="A simple guide to using TradeGuard's TBML Check and Transaction Monitoring workspaces." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://regtechnexusai.github.io/tradeguard/guide.html" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
+    <title>User Guide | TradeGuard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Zilla+Slab:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style.css?v=29" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand brand-image" href="./index.html#top" aria-label="TradeGuard home">
+        <img class="brand-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" />
+      </a>
+      <nav class="nav-links" aria-label="Page navigation">
+        <a href="./methodology.html">Methodology</a>
+        <a class="nav-cta" href="./index.html#pilot">Request pilot</a>
+      </nav>
+    </header>
+
+    <main class="section-shell info-page">
+      <div class="eyebrow"><span class="pulse-dot"></span> Simple operating guide</div>
+      <h1>How to use TradeGuard</h1>
+      <p class="info-lead">TradeGuard is a public, rule-based review-support workspace. It helps an authorised reviewer organise information and identify potential risk indicators; it does not make a final compliance decision.</p>
+      <p class="info-meta">Public guide · v29 · 22 September 2026</p>
+
+      <div class="info-callout"><strong>Important disclaimer:</strong> The system identifies potential risk indicators for analyst review. The final assessment must be made by the responsible officer using available evidence, applicable laws and regulations, and the institution’s approved policy.</div>
+
+      <h2>1. Choose the right workspace</h2>
+      <ul>
+        <li><strong>TBML Check:</strong> use for a trade-level review involving goods, HS Code, price, parties, routes, payments and documents.</li>
+        <li><strong>Transaction Monitoring:</strong> use for emerging behavioural patterns such as unusual velocity, value shifts, new counterparties, rapid funds flow, corridor changes or channel changes.</li>
+      </ul>
+
+      <h2>2. TBML Check workflow</h2>
+      <ol>
+        <li>Enter the HS Code, origin and destination country.</li>
+        <li>Add price, quantity, unit, parties, route, document and payment information where available.</li>
+        <li>Select only the red-flag indicators supported by the available evidence.</li>
+        <li>Review the score, data completeness, data integrity, evidence requirements and suggested next step.</li>
+        <li>Use <strong>Copy summary</strong> or <strong>Download report</strong> to retain the indicative review note.</li>
+      </ol>
+
+      <h2>3. Transaction Monitoring workflow</h2>
+      <ol>
+        <li>Select the monitoring period: 7, 30, 90, 180 or 365 days.</li>
+        <li>Choose the customer segment, profession and appropriate baseline window.</li>
+        <li>Enter the expected and observed transaction count/value where reliable baseline information exists.</li>
+        <li>Select only supported patterns and provide details for flow, counterparty, route or channel changes.</li>
+        <li>Review the configured score, evidence-supported score, unverified contribution, risk type and required human review.</li>
+      </ol>
+
+      <h2>4. PDF review</h2>
+      <ul>
+        <li>Use fictional, synthetic or anonymised PDFs only.</li>
+        <li>Full-statement mode can pre-fill available context. Transaction-history-only mode is suitable when names, account numbers and bank details have been removed; context can be entered manually.</li>
+        <li>Up to five PDF files may be selected together. Each file can be up to 10 MB, with a combined limit of 40 MB.</li>
+        <li>PDF text is extracted locally in the browser and is not sent to a TradeGuard server.</li>
+        <li>The public build extracts selectable text. Scanned/image-only PDFs may not produce usable text because OCR is not included in this public build.</li>
+      </ul>
+
+      <h2>5. How to interpret the output</h2>
+      <ul>
+        <li><strong>Risk signal:</strong> the configured prioritisation score; it is not a probability or legal conclusion.</li>
+        <li><strong>Evidence-supported:</strong> the portion supported by the details supplied in the review.</li>
+        <li><strong>Unverified:</strong> selected patterns that still require supporting evidence.</li>
+        <li><strong>Risk type:</strong> the broad review category, such as valuation, counterparty, funds-flow, geographic, channel, document or customer-profile risk.</li>
+        <li><strong>Human review required:</strong> the responsible officer must validate evidence and determine the appropriate next action.</li>
+      </ul>
+
+      <h2>6. Current scope and roadmap</h2>
+      <p>The public build does not perform live sanctions or PEP screening, OCR-based KYC/AOF validation, trade-document reconciliation, credit-file analysis, core-banking integration, saved-case management or server-side audit logging.</p>
+      <p>Future institutional modules may support OCR and structured checks for Account Opening Forms, KYC records, trade documents, financial statements, loan applications and collateral files. Such modules require approved data processing, document taxonomies, validation, access controls and human review.</p>
+
+      <h2>7. Privacy and safe use</h2>
+      <p>Do not upload real bank statements, customer records, identity documents, LC files, payment messages or confidential trade documents to this public demo. Read the <a href="./privacy.html">Privacy and PDF handling</a> page before testing.</p>
+
+      <div class="info-callout"><strong>Remember:</strong> A high signal is a reason to review, not proof of wrongdoing. A low signal does not prove low risk.</div>
+    </main>
+
+    <footer class="site-footer section-shell">
+      <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
+      <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./index.html">Home</a>
+        <a href="./methodology.html">Methodology</a>
+        <a href="./privacy.html">Privacy and PDF handling</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+      <p>Rule-based review support. Human review remains required.</p>
+      <div class="footer-company-details">
+        <p><strong>RegTech Nexus AI</strong> is an IT product publisher and a sister concern of Travel To Know.</p>
+        <p>Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh.</p>
+        <p>Phone: <a href="tel:+8801772282925">+880 1772 282925</a></p>
+      </div>
+      <span>© 2026 RegTech Nexus AI</span>
+    </footer>
+  </body>
+</html>

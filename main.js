@@ -1,11 +1,12 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=28";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=28";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=29";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=29";
 
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
 const resetButton = document.querySelector("#resetButton");
 const formMessage = document.querySelector("#formMessage");
 const copyReportButton = document.querySelector("#copyReportButton");
+const downloadReportButton = document.querySelector("#downloadReportButton");
 const pilotForm = document.querySelector("#pilotForm");
 const pilotMessage = document.querySelector("#pilotMessage");
 const lookupHsCode = document.querySelector("#lookupHsCode");
@@ -263,6 +264,7 @@ riskForm.addEventListener("submit", (event) => {
   const result = calculateRisk(input);
   latestReport = renderReport(result, input);
   copyReportButton.disabled = false;
+  downloadReportButton.disabled = false;
   document.querySelector("#reportPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
@@ -282,6 +284,7 @@ function resetReport() {
   emptyReport.hidden = false;
   reportContent.hidden = true;
   copyReportButton.disabled = true;
+  downloadReportButton.disabled = true;
   latestReport = "";
 }
 
@@ -319,6 +322,19 @@ copyReportButton.addEventListener("click", async () => {
   } catch {
     copyReportButton.textContent = "Select report manually";
   }
+});
+
+downloadReportButton.addEventListener("click", () => {
+  if (!latestReport) return;
+  const blob = new Blob([latestReport], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "tradeguard-tbml-review-report.txt";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 });
 
 pilotForm.addEventListener("submit", (event) => {

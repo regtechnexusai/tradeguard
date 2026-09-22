@@ -7,7 +7,7 @@
     <link rel="canonical" href="https://regtechnexusai.github.io/tradeguard/about.html" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; form-action 'self' mailto:;" />
     <title>About and Security Boundary | TradeGuard</title>
-    <link rel="stylesheet" href="./style.css?v=28" />
+    <link rel="stylesheet" href="./style.css?v=29" />
   </head>
   <body>
     <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -27,7 +27,7 @@
       <div class="eyebrow"><span class="pulse-dot"></span> Publisher and deployment boundary</div>
       <h1>About TradeGuard</h1>
       <p class="info-lead">TradeGuard is published by RegTech Nexus AI as an explainable, rule-based review-support workspace for trade-finance and transaction-monitoring workflows.</p>
-      <p class="info-meta">Public build v28 · 20 September 2026</p>
+      <p class="info-meta">Public build v29 · 22 September 2026</p>
 
       <h2>Publisher</h2>
       <p>TradeGuard is an IT product of RegTech Nexus AI, a sister concern of Travel To Know. Corporate office: 28/A-2, Toyenbee Circular Road, 1st Floor, Motijheel Commercial Area, Dhaka-1000, Bangladesh. Phone: <a href="tel:+8801772282925">+880 1772 282925</a>. The registered legal entity name and registration or trade-licence number are not stated in this public build and must be confirmed before institutional contracting.</p>
@@ -38,7 +38,7 @@
       <h2>Public security boundary</h2>
       <ul>
         <li>Static public deployment on GitHub Pages with no login, backend, case database or server-side audit log.</li>
-        <li>Transaction-monitoring PDF text extraction is performed in the browser with the pinned self-hosted PDF.js 6.3.289 build at repository root; no TradeGuard upload endpoint is provided.</li>
+        <li>Transaction-monitoring PDF text extraction is performed in the browser with the pinned self-hosted PDF.js 6.3.289 build at repository root; multiple PDFs can be analysed locally, but no TradeGuard upload endpoint is provided.</li>
         <li>No live sanctions, PEP, adverse-media, market-price, bank, SWIFT or core-banking integration is included.</li>
         <li>The public build is not audit-grade, institutionally certified or suitable for confidential customer data.</li>
       </ul>
@@ -53,6 +53,7 @@
     <footer class="site-footer section-shell">
       <div class="footer-brand"><img class="footer-logo" src="./regtech-nexus-ai-logo.png" alt="RegTech Nexus AI — TradeGuard" /></div>
       <nav class="footer-links" aria-label="Legal and product information">
+        <a href="./guide.html">User guide</a>
         <a href="./index.html">Home</a>
         <a href="./methodology.html">Methodology</a>
         <a href="./privacy.html">Privacy and PDF handling</a>

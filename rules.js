@@ -421,6 +421,35 @@ export function calculateRisk(input) {
     });
   }
 
+  const riskTypesById = {
+    "price-material": "Valuation / trade mispricing risk",
+    "price-significant": "Valuation / trade mispricing risk",
+    "tbml-price-value-anomaly": "Valuation / trade mispricing risk",
+    "related-party": "Party / UBO risk",
+    "tbml-related-party-ubo": "Party / UBO risk",
+    "third-party-payment": "Payment transparency risk",
+    "tbml-third-party-payment": "Payment transparency risk",
+    "route-anomaly": "Geographic / routing risk",
+    "tbml-route-port-anomaly": "Geographic / routing risk",
+    "document-mismatch": "Document integrity risk",
+    "tbml-document-inconsistency": "Document integrity risk",
+    "duplicate-invoice": "Shipment / document authenticity risk",
+    "goods-hs-mismatch-auto": "Goods / HS classification risk",
+    "tbml-goods-hs-mismatch": "Goods / HS classification risk",
+    "tbml-quantity-unit-mismatch": "Quantity / unit consistency risk",
+    "tbml-multiple-phantom-shipment": "Shipment authenticity risk",
+    "tbml-business-profile-mismatch": "Customer-profile / economic rationale risk",
+    "tbml-unusual-payment-terms": "Payment-terms risk",
+    "jurisdiction-risk-context": "Jurisdictional / sanctions context",
+    "pep-screening-context": "PEP / screening context",
+    "restricted-goods-context": "Restricted-goods / export-control context",
+    "payment-transparency-context": "Payment transparency context",
+    "source-of-funds-context": "Source-of-funds / wealth context"
+  };
+  flags.forEach((flag) => {
+    flag.riskType = riskTypesById[flag.id] || (flag.controlOnly ? "Control / regulatory context" : "Trade-finance risk");
+  });
+
   const scoredFlags = flags.filter((flag) => !flag.controlOnly);
   const rawScore = scoredFlags.reduce((total, flag) => total + flag.points, 0);
   const cappedScore = clamp(rawScore, 0, 100);
