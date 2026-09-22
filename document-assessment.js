@@ -11,6 +11,7 @@ const fileStatus = document.querySelector("#documentFileStatus");
 const formMessage = document.querySelector("#documentFormMessage");
 const runButton = document.querySelector("#runDocumentAssessment");
 const resetButton = document.querySelector("#documentResetButton");
+const sampleButton = document.querySelector("#documentSampleButton");
 const reportPanel = document.querySelector("#documentReport");
 const emptyReport = document.querySelector("#documentEmpty");
 const reportContent = document.querySelector("#documentReportContent");
@@ -422,15 +423,100 @@ async function runAssessment() {
 }
 
 function preparePrintSnapshot() {
-  document.querySelector(".document-print-snapshot")?.remove();
-  const snapshot = document.createElement("section");
-  snapshot.className = "panel document-print-snapshot";
-  const clone = reportContent.cloneNode(true);
+  const clone = reportContent?.cloneNode(true);
+  if (!clone) return;
+
   clone.removeAttribute("hidden");
-  snapshot.appendChild(clone);
-  document.querySelector("#documentCheck").appendChild(snapshot);
-  document.body.classList.add("document-print-mode");
-  window.setTimeout(() => window.print(), 350);
+  clone.querySelectorAll("img").forEach((image) => {
+    const source = image.getAttribute("src");
+    if (source) image.src = new URL(source, window.location.href).href;
+  });
+
+  const popup = window.open("", "_blank");
+  if (!popup) {
+    document.querySelector(".document-print-snapshot")?.remove();
+    const snapshot = document.createElement("section");
+    snapshot.className = "panel document-print-snapshot";
+    snapshot.appendChild(clone);
+    document.querySelector("#documentCheck").appendChild(snapshot);
+    document.body.classList.add("document-print-mode");
+    window.setTimeout(() => window.print(), 350);
+    return;
+  }
+
+  const stylesheet = new URL("./style.css?v=39", window.location.href).href;
+  popup.document.open();
+  popup.document.write(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TradeGuard Document Assessment Report</title>
+  <link rel="stylesheet" href="${stylesheet}">
+  <style>
+    @page { size: Letter; margin: .35in; }
+    html, body { margin: 0; padding: 0; background: #fff; }
+    body { color: #17233a; font-family: Inter, Arial, sans-serif; }
+    .print-window-main { width: min(100%, 1040px); margin: 0 auto; }
+    .print-window-report { display: block !important; width: auto !important; max-width: none !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #fff !important; }
+    .print-window-report .document-report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
+    .print-window-report .report-footer-note, .print-window-report .recommendation-box, .print-window-report .flag-item, .print-window-report .document-file-result { break-inside: avoid; }
+  </style>
+</head>
+<body>
+  <main class="print-window-main">
+    <section class="panel report-panel document-report-panel print-window-report">${clone.outerHTML}</section>
+  </main>
+</body>
+</html>`);
+  popup.document.close();
+
+  const startPrint = () => {
+    popup.focus();
+    window.setTimeout(() => popup.print(), 450);
+  };
+  if (popup.document.readyState === "complete") startPrint();
+  else popup.addEventListener("load", startPrint, { once: true });
+}
+
+function loadSampleCase() {
+  const profile = profiles["kyc-aof"];
+  typeInput.value = "kyc-aof";
+  ocrLanguageInput.value = "eng";
+  privacyInput.checked = true;
+  fileInput.value = "";
+
+  const results = [
+    {
+      name: "Sample_KYC_AOF_application.pdf",
+      type: "Synthetic sample",
+      size: 84 * 1024,
+      pages: 2,
+      text: "Applicant Sample. Identity document, national ID, residential address, occupation, beneficial owner, source of funds, signed declaration and consent.",
+      selectableChars: 150,
+      method: "Synthetic sample text",
+      ocrAttempted: false,
+      ocrError: ""
+    },
+    {
+      name: "Sample_Address_Proof.png",
+      type: "Synthetic OCR sample",
+      size: 52 * 1024,
+      pages: 1,
+      text: "Applicant Sample. Proof of address and utility bill. Signature unverified. Source of funds requires confirmation.",
+      selectableChars: 0,
+      method: "Synthetic OCR sample",
+      ocrAttempted: true,
+      ocrError: ""
+    }
+  ];
+
+  const analysis = buildFlags(profile, results);
+  profileHint.textContent = profile.setHint;
+  renderReport(profile, results, analysis);
+  updateStatus("Synthetic OCR sample case loaded. No file was uploaded.", "is-ready");
+  formMessage.textContent = "Sample case loaded. Use the report controls to test Copy summary, Print / Save PDF and Download TXT.";
+  window.setTimeout(() => document.querySelector("#documentReport")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
 }
 
 typeInput.addEventListener("change", () => {
@@ -442,6 +528,8 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   runAssessment();
 });
+
+sampleButton?.addEventListener("click", loadSampleCase);
 
 copyButton.addEventListener("click", async () => {
   if (!latestSummary) return;
