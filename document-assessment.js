@@ -367,6 +367,7 @@ function renderReport(profile, results, analysis) {
   document.querySelector("#documentProfileDescription").textContent = profile.description;
   document.querySelector("#documentOcrBadge").textContent = analysis.ocrFailures ? "OCR / REVIEW" : "OCR / TEXT";
   document.querySelector("#documentOcrBadgeNote").textContent = analysis.ocrFailures ? "Extraction requires manual confirmation" : "Browser-local extraction completed";
+  document.querySelector("#documentExtractionLabel").textContent = analysis.ocrFailures ? "Text/OCR requires review" : "Text/OCR extracted";
   document.querySelector("#documentFlagCount").textContent = analysis.flags.length + (analysis.flags.length === 1 ? " flag" : " flags");
   document.querySelector("#documentFlags").innerHTML = analysis.flags.length
     ? analysis.flags.map((flag) => "<article class=\"flag-item evidence-gap\"><span class=\"flag-marker\"></span><div><strong>" + escapeHtml(flag.title) + "</strong><small class=\"flag-risk-type\">Risk type: " + escapeHtml(flag.riskType) + "</small><p>" + escapeHtml(flag.detail) + "</p></div><span class=\"flag-points\">+" + flag.points + "</span></article>").join("")
@@ -444,7 +445,7 @@ function preparePrintSnapshot() {
     return;
   }
 
-  const stylesheet = new URL("./style.css?v=40", window.location.href).href;
+  const stylesheet = new URL("./style.css?v=41", window.location.href).href;
   popup.document.open();
   popup.document.write(`<!doctype html>
 <html lang="en">
@@ -459,8 +460,15 @@ function preparePrintSnapshot() {
     body { color: #17233a; font-family: Inter, Arial, sans-serif; }
     .print-window-main { width: min(100%, 1040px); margin: 0 auto; }
     .print-window-report { display: block !important; width: auto !important; max-width: none !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #fff !important; }
-    .print-window-report .document-report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
-    .print-window-report .report-footer-note, .print-window-report .recommendation-box, .print-window-report .flag-item, .print-window-report .document-file-result { break-inside: avoid; }
+    .print-window-report .document-report-content { display: block !important; visibility: visible !important; padding: 10px !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
+    .print-window-report .report-brand-header { padding-bottom: 10px !important; margin-bottom: 10px !important; }
+    .print-window-report .document-report-overview { padding: 12px !important; }
+    .print-window-report .report-subheading { margin: 10px 0 6px !important; }
+    .print-window-report .report-detail-card { margin: 10px 0 !important; padding: 12px !important; }
+    .print-window-report .document-file-results { display: block !important; }
+    .print-window-report .flag-item, .print-window-report .document-file-result { break-inside: avoid-page; page-break-inside: avoid; margin-bottom: 8px; }
+    .print-window-report .recommendation-box { margin-top: 10px !important; padding: 10px !important; break-inside: auto; page-break-inside: auto; }
+    .print-window-report .report-footer-note { margin-top: 10px !important; padding: 8px 10px !important; font-size: 8px !important; line-height: 1.35 !important; break-inside: auto; page-break-inside: auto; }
   </style>
 </head>
 <body>

@@ -1,4 +1,4 @@
-import { assessDataIntegrity, bandClass } from "./rules.js?v=40";
+import { assessDataIntegrity, bandClass } from "./rules.js?v=41";
 
 const WEBSITE_DISCLAIMER =
   "The system identifies potential risk indicators for analyst review; the responsible officer makes the final assessment based on available evidence and applicable laws, regulations and institutional policy.";
@@ -190,7 +190,9 @@ export function renderReport(result, input) {
   band.className = `status-pill ${result.decisionReady ? (hasScoredFlags ? bandClass(result.band) : hasControlFindings ? "status-medium" : "status-no-signal") : (hasIndicativeScore ? "status-medium" : hasControlFindings ? "status-medium" : "status-not-ready")}`;
   const gaugeScore = result.decisionReady ? result.score : (indicativeScore || 0);
   gaugeShell.style.background = `conic-gradient(#1967d2 ${gaugeScore * 3.6}deg, #dcecf6 0deg)`;
-  flagCount.textContent = `${result.flags.length} ${result.flags.length === 1 ? "flag" : "flags"}`;
+  const riskIndicatorCount = result.scoredFlagCount ?? result.flags.filter((flag) => !flag.controlOnly).length;
+  const controlFindingCount = result.controlFindingCount ?? result.flags.filter((flag) => flag.controlOnly).length;
+  flagCount.textContent = `${riskIndicatorCount} risk indicator${riskIndicatorCount === 1 ? "" : "s"}${controlFindingCount ? ` · ${controlFindingCount} control finding${controlFindingCount === 1 ? "" : "s"}` : ""}`;
   rawScoreValue.textContent = hasScoredFlags ? result.rawScore : "—";
   decisionStatus.textContent = result.decisionStatus;
   decisionStatusMessage.textContent = result.decisionReady
@@ -216,11 +218,15 @@ export function renderReport(result, input) {
       ? `The declared price is approximately ${Math.round(result.deviation)}% above the supplied upper market range.`
       : "The declared price falls inside the supplied market range.";
 
+  const priceCalculationText = result.deviation !== null && input.quantity && input.unitOfMeasure && input.invoicePrice && input.totalValue
+    ? ` Declared total value ${escapeHtml(input.currency || "USD")} ${formatNumber(input.totalValue)} = ${formatNumber(input.quantity)} ${escapeHtml(input.unitOfMeasure)} × ${escapeHtml(input.currency || "USD")} ${formatNumber(input.invoicePrice)}/${escapeHtml(input.unitOfMeasure)}; upper benchmark ${escapeHtml(input.currency || "USD")} ${formatNumber(input.marketHigh)}/${escapeHtml(input.unitOfMeasure)}.`
+    : "";
+
   const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; product/commodity was populated from the verified tariff description.`;
 
   const selectedIndicatorCount = (input.tbmlIndicators || []).length;
   const indicatorText = selectedIndicatorCount
-    ? ` ${selectedIndicatorCount} structured TBML indicator${selectedIndicatorCount === 1 ? " is" : "s are"} selected.`
+    ? ` ${selectedIndicatorCount} structured TBML indicator${selectedIndicatorCount === 1 ? " is" : "s are"} selected; ${riskIndicatorCount} risk indicator${riskIndicatorCount === 1 ? "" : "s"}${controlFindingCount ? ` and ${controlFindingCount} control finding${controlFindingCount === 1 ? "" : "s"}` : ""} are shown below.`
     : " No structured TBML indicator was selected.";
 
   const readinessText = result.decisionReady
@@ -234,7 +240,7 @@ export function renderReport(result, input) {
       : hasControlFindings
         ? "Control findings are present, but no numeric score was issued because the supplied evidence is not decision-ready."
         : "No numeric score was issued because the supplied inputs did not produce a scoreable signal.");
-  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${hsText}${indicatorText} ${readinessText}`;
+  summary.innerHTML = `<strong>${escapeHtml(input.productName)}</strong> — ${escapeHtml(input.originCountry)} to ${escapeHtml(input.destinationCountry)}. ${priceText}${priceCalculationText}${hsText}${indicatorText} ${readinessText}`;
 
   completenessValue.textContent = `${completeness.percent}%`;
   completenessBar.style.width = `${completeness.percent}%`;
@@ -252,7 +258,10 @@ export function renderReport(result, input) {
     input.productDescription && `Goods: ${input.productDescription}`,
     input.qualityGrade && `Grade: ${input.qualityGrade}`,
     input.material && `Material: ${input.material}`,
+    input.quantity && `Quantity: ${formatNumber(input.quantity)} ${input.unitOfMeasure || ""}`.trim(),
     input.unitOfMeasure && `Unit: ${input.unitOfMeasure}`,
+    input.invoicePrice && `Declared unit price: ${input.currency || ""} ${formatNumber(input.invoicePrice)} per ${input.unitOfMeasure || "unit"}`.trim(),
+    input.marketLow && input.marketHigh && `Benchmark range: ${input.currency || ""} ${formatNumber(input.marketLow)}–${formatNumber(input.marketHigh)} per ${input.unitOfMeasure || "unit"}`.trim(),
     integrity.expectedUnits?.length && `Expected unit profile: ${integrity.expectedUnits.join(" or ")}`,
     input.currency && `Currency: ${input.currency}`,
     input.totalValue && `Total value: ${formatNumber(input.totalValue)}`,

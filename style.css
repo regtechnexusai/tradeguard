@@ -314,11 +314,13 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   body.print-report-mode #reportContent[hidden],
   body.print-report-mode .tradeguard-print-snapshot .report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
   body.print-report-mode .report-brand-header { margin-bottom: 14px; }
+  body.print-report-mode .flag-list,
+  body.print-report-mode .document-file-results { display: block !important; }
   body.print-report-mode .flag-item,
   body.print-report-mode .data-completeness-card,
   body.print-report-mode .data-integrity-card,
-  body.print-report-mode .recommendation-box { break-inside: avoid; }
-  body.print-report-mode .report-footer-note { margin-top: 14px; }
+  body.print-report-mode .recommendation-box { break-inside: avoid-page; page-break-inside: avoid; margin-bottom: 8px; }
+  body.print-report-mode .report-footer-note { margin-top: 10px; padding: 8px 10px; font-size: 8px; line-height: 1.35; break-inside: auto; page-break-inside: auto; }
 }
 
 /* Transaction-monitoring report update v31: align the legacy case-file report with the TBML report. */
@@ -421,10 +423,12 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   body.print-transaction-report-mode #proactiveContent,
   body.print-transaction-report-mode #proactiveContent[hidden],
   body.print-transaction-report-mode .tradeguard-print-snapshot .report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+  body.print-transaction-report-mode .flag-list { display: block !important; }
   body.print-transaction-report-mode .flag-item,
   body.print-transaction-report-mode .report-meta-item,
   body.print-transaction-report-mode .report-detail-card,
-  body.print-transaction-report-mode .recommendation-box { break-inside: avoid; }
+  body.print-transaction-report-mode .recommendation-box { break-inside: avoid-page; page-break-inside: avoid; margin-bottom: 8px; }
+  body.print-transaction-report-mode .report-footer-note { margin-top: 10px; padding: 8px 10px; font-size: 8px; line-height: 1.35; break-inside: auto; page-break-inside: auto; }
 }
 
 .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
@@ -711,7 +715,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 }
 
 
-/* Document Assessment v40: OCR-assisted and credit-document review workspace. */
+/* Document Assessment v41: OCR-assisted and credit-document review workspace. */
 .monitoring-card-document { border-color: #e9c6b5; background: linear-gradient(145deg, #fffaf7, #ffe9de); }
 .monitoring-card-document:hover { border-color: #c86b4c; }
 .monitoring-icon-document { color: #a54b31; background: #fff1e9; }
@@ -755,10 +759,16 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   body.document-print-mode #documentCheck > :not(.document-print-snapshot) { display: none !important; }
   body.document-print-mode .document-print-snapshot { display: block !important; padding: 0 !important; margin: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
   body.document-print-mode .document-print-snapshot .document-report-content,
-  body.document-print-mode .document-print-snapshot .document-report-content[hidden] { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+  body.document-print-mode .document-print-snapshot .document-report-content[hidden] { display: block !important; visibility: visible !important; padding: 10px !important; border: 0 !important; box-shadow: none !important; }
+  body.document-print-mode .document-print-snapshot .report-brand-header { padding-bottom: 10px; margin-bottom: 10px; }
+  body.document-print-mode .document-print-snapshot .document-report-overview { padding: 12px; }
+  body.document-print-mode .document-print-snapshot .report-subheading { margin: 10px 0 6px; }
+  body.document-print-mode .document-print-snapshot .report-detail-card { margin: 10px 0; padding: 12px; }
+  body.document-print-mode .document-print-snapshot .document-file-results { display: block !important; }
   body.document-print-mode .flag-item,
   body.document-print-mode .document-file-result,
-  body.document-print-mode .recommendation-box { break-inside: avoid; }
+  body.document-print-mode .recommendation-box { break-inside: avoid-page; page-break-inside: avoid; margin-bottom: 8px; }
+  body.document-print-mode .report-footer-note { margin-top: 10px; padding: 8px 10px; font-size: 8px; line-height: 1.35; break-inside: auto; page-break-inside: auto; }
 }
 
 
@@ -787,7 +797,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .human-review-card .human-review-badge { color: #fff; font-size: 11px; }
 
 
-/* TradeGuard v40 workspace navigation. */
+/* TradeGuard v41 workspace navigation and report export refinements. */
 .workspace-entry-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .workspace-entry-actions .workspace-document-button { color: #6f3a21; border-color: #e7c5a8; background: linear-gradient(145deg, #fff7ef, #ffe7d5); }
 .workspace-entry-actions .workspace-document-button:hover { border-color: #c86b4c; }

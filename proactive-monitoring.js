@@ -73,7 +73,7 @@ function printSnapshot(sourceContent, parent, modeClass) {
     return;
   }
 
-  const stylesheet = new URL("./style.css?v=40", window.location.href).href;
+  const stylesheet = new URL("./style.css?v=41", window.location.href).href;
   const title = "TradeGuard Transaction Monitoring Report";
   popup.document.open();
   popup.document.write(`<!doctype html>
@@ -90,7 +90,16 @@ function printSnapshot(sourceContent, parent, modeClass) {
     .print-window-main { width: min(100%, 1040px); margin: 0 auto; }
     .print-window-report { display: block !important; width: auto !important; max-width: none !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #fff !important; }
     .print-window-report .report-content { display: block !important; visibility: visible !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: #fff !important; }
-    .print-window-report .report-footer-note, .print-window-report .recommendation-box, .print-window-report .flag-item { break-inside: avoid; }
+    .print-window-report .report-brand-header { padding-bottom: 10px !important; margin-bottom: 10px !important; }
+    .print-window-report .masked-account-banner { margin-bottom: 10px !important; padding: 10px 12px !important; }
+    .print-window-report .report-overview { padding: 15px !important; }
+    .print-window-report .decision-readiness { margin: 10px 0 !important; padding: 10px !important; }
+    .print-window-report .report-summary, .print-window-report .report-detail-card, .print-window-report .hypothesis-box, .print-window-report .score-basis-note { margin: 10px 0 !important; padding: 10px !important; }
+    .print-window-report .report-subheading { margin: 12px 0 6px !important; }
+    .print-window-report .flag-list { display: block !important; }
+    .print-window-report .flag-item { break-inside: avoid-page; page-break-inside: avoid; margin-bottom: 8px; }
+    .print-window-report .recommendation-box { margin-top: 10px !important; padding: 10px 0 !important; break-inside: auto; page-break-inside: auto; }
+    .print-window-report .report-footer-note { margin-top: 10px !important; padding: 8px 10px !important; font-size: 8px !important; line-height: 1.35 !important; break-inside: auto; page-break-inside: auto; }
   </style>
 </head>
 <body>
