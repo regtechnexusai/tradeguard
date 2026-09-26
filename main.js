@@ -480,4 +480,5 @@ riskForm.addEventListener("change", (event) => {
   clearFieldError(event.target.id);
 });
 
-document.querySelector("#year").textContent = new Date().getFullYear();
+const yearElement = document.querySelector("#year");
+if (yearElement) yearElement.textContent = new Date().getFullYear();
