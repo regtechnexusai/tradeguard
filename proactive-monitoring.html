@@ -261,9 +261,9 @@
                 <div class="panel-actions">
                   <button id="proactiveCopyButton" class="text-button" type="button" disabled>Copy summary</button>
                   <button id="proactivePrintButton" class="text-button" type="button" disabled>Print / Save PDF</button>
-                  <button id="proactiveDownloadButton" class="text-button" type="button" disabled>Download TXT</button>
+                  <button id="proactiveDownloadButton" class="text-button" type="button" disabled>Download TXT</button><button id="proactiveEmailButton" class="text-button" type="button" disabled>Email report</button>
                 </div>
-                <p class="export-note">Print / Save PDF creates the styled report. Download TXT creates a plain-text copy.</p>
+                <p class="export-note">Print / Save PDF creates the styled report. Download TXT saves a plain-text copy. Email report opens Gmail with From set to regtechnexusai@gmail.com and To left blank; attach the saved PDF before sending.</p>
             </div>
 
             <div id="proactiveEmpty" class="empty-report">
@@ -358,7 +358,7 @@
             <p>Request a pilot conversation for bank trade-finance and compliance operations. Exporters, importers and C&amp;F teams can be supported in a scoped pilot.</p>
             <p class="pilot-email-note">
               Or email us directly:
-              <a href="mailto:regtechnexusai@gmail.com?subject=TradeGuard%20pilot%20request&amp;body=Hello%20RegTech%20Nexus%20AI%2C%0A%0AI%20would%20like%20to%20discuss%20a%20TradeGuard%20pilot.%0A%0AOrganisation%3A%20%0AOrganisation%20type%3A%20%0A%0ARegards%2C%0A" aria-label="Email RegTech Nexus AI about a TradeGuard pilot">regtechnexusai@gmail.com</a>
+              <a href="mailto:?from=regtechnexusai%40gmail.com&subject=TradeGuard%20pilot%20request&amp;body=Hello%20RegTech%20Nexus%20AI%2C%0A%0AI%20would%20like%20to%20discuss%20a%20TradeGuard%20pilot.%0A%0AOrganisation%3A%20%0AOrganisation%20type%3A%20%0A%0ARegards%2C%0A" aria-label="Email RegTech Nexus AI about a TradeGuard pilot">regtechnexusai@gmail.com</a>
             </p>
           </div>
           <form id="pilotForm" class="pilot-form">
@@ -399,8 +399,8 @@
       <span data-build-version data-build-format="footer">© 2026 RegTech Nexus AI · v42</span>
     </footer>
 
-    <script type="module" src="./site-version.js?v=41"></script>
-    <script type="module" src="./proactive-monitoring.js?v=41"></script>
+    <script type="module" src="./site-version.js?v=43"></script>
+    <script type="module" src="./proactive-monitoring.js?v=43"></script>
     <!-- v42 report export refinements -->
-  </body>
+  <script src="./site-email.js" defer></script></body>
 </html>
