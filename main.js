@@ -8,6 +8,7 @@ const formMessage = document.querySelector("#formMessage");
 const copyReportButton = document.querySelector("#copyReportButton");
 const printReportButton = document.querySelector("#printReportButton");
 const downloadReportButton = document.querySelector("#downloadReportButton");
+const emailReportButton = document.querySelector("#emailReportButton");
 const pilotForm = document.querySelector("#pilotForm");
 const pilotMessage = document.querySelector("#pilotMessage");
 const lookupHsCode = document.querySelector("#lookupHsCode");
@@ -347,6 +348,7 @@ riskForm.addEventListener("submit", (event) => {
   copyReportButton.disabled = false;
   if (printReportButton) printReportButton.disabled = false;
   downloadReportButton.disabled = false;
+  if (emailReportButton) emailReportButton.disabled = false;
   document.querySelector("#reportPanel").scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
@@ -368,6 +370,7 @@ function resetReport() {
   copyReportButton.disabled = true;
   if (printReportButton) printReportButton.disabled = true;
   downloadReportButton.disabled = true;
+  if (emailReportButton) emailReportButton.disabled = true;
   latestReport = "";
 }
 
@@ -421,6 +424,18 @@ downloadReportButton.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
+emailReportButton?.addEventListener("click", () => {
+  if (!latestReport) return;
+  const caseId = document.querySelector("#reportContent")?.dataset.caseId || "tradeguard-review";
+  const subject = `TradeGuard TBML Review Report — ${caseId}`;
+  const body = "The TradeGuard report is ready. Please attach the PDF created with Print / Save PDF before sending.\\n\\n" + latestReport;
+  if (window.RegTechEmail?.open) {
+    window.RegTechEmail.open(subject, body);
+  } else {
+    window.location.href = "mailto:?from=regtechnexusai%40gmail.com&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
+});
+
 printReportButton?.addEventListener("click", () => {
   if (!latestReport) return;
   const reportPanel = document.querySelector("#reportPanel");
@@ -448,12 +463,12 @@ pilotForm.addEventListener("submit", (event) => {
   ].join("\n");
 
   const subject = `TradeGuard pilot request — ${organisation}`;
-  const mailto =
-    `mailto:regtechnexusai@gmail.com?subject=${encodeURIComponent(subject)}` +
-    `&body=${encodeURIComponent(message)}`;
-
-  pilotMessage.textContent = "A draft email is opening. Review it and press Send. If nothing opens, email regtechnexusai@gmail.com directly.";
-  window.location.href = mailto;
+  pilotMessage.textContent = "A draft email is opening with To left blank. Enter the recipient, review it and press Send.";
+  if (window.RegTechEmail?.open) {
+    window.RegTechEmail.open(subject, message);
+  } else {
+    window.location.href = "mailto:?from=regtechnexusai%40gmail.com&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(message);
+  }
 });
 
 populateCountries();
