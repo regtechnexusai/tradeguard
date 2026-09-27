@@ -119,9 +119,9 @@
               <div class="panel-actions">
                 <button id="documentCopyButton" class="text-button" type="button" disabled>Copy summary</button>
                 <button id="documentPrintButton" class="text-button" type="button" disabled>Print / Save PDF</button>
-                <button id="documentDownloadButton" class="text-button" type="button" disabled>Download TXT</button>
+                <button id="documentDownloadButton" class="text-button" type="button" disabled>Download TXT</button><button id="documentEmailButton" class="text-button" type="button" disabled>Email report</button>
               </div>
-              <p class="export-note">The report contains metadata and flags, not extracted document text.</p>
+              <p class="export-note">The report contains metadata and flags, not extracted document text. Email report opens Gmail with From set to regtechnexusai@gmail.com and To left blank; attach the saved PDF before sending.</p>
             </div>
 
             <div id="documentEmpty" class="empty-report">
@@ -215,7 +215,7 @@
       <span data-build-version data-build-format="footer">© 2026 RegTech Nexus AI · v42</span>
     </footer>
 
-    <script type="module" src="./site-version.js?v=41"></script>
-    <script type="module" src="./document-assessment.js?v=41"></script>
-  </body>
+    <script type="module" src="./site-version.js?v=43"></script>
+    <script type="module" src="./document-assessment.js?v=43"></script>
+  <script src="./site-email.js" defer></script></body>
 </html>
