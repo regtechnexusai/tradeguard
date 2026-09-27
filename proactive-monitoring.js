@@ -14,6 +14,7 @@ const pdfPrivacyAcknowledge = document.querySelector("#pdfPrivacyAcknowledge");
 const copyButton = document.querySelector("#proactiveCopyButton");
 const printButton = document.querySelector("#proactivePrintButton");
 const downloadButton = document.querySelector("#proactiveDownloadButton");
+const emailButton = document.querySelector("#proactiveEmailButton");
 const revealAccountButton = document.querySelector("#proactiveRevealAccount");
 const accountValue = document.querySelector("#proactiveAccountValue");
 const accountNote = document.querySelector("#proactiveAccountNote");
@@ -649,6 +650,7 @@ function render(result, input) {
   if (copyButton) copyButton.disabled = false;
   if (printButton) printButton.disabled = false;
   if (downloadButton) downloadButton.disabled = false;
+  if (emailButton) emailButton.disabled = false;
 }
 
 transactionPdfInput?.addEventListener("change", () => {
@@ -727,6 +729,7 @@ resetButton?.addEventListener("click", () => {
     copyButton.textContent = "Copy summary";
   }
   if (downloadButton) downloadButton.disabled = true;
+  if (emailButton) emailButton.disabled = true;
   if (printButton) printButton.disabled = true;
   refreshPdfControls();
 });
@@ -785,6 +788,17 @@ copyButton?.addEventListener("click", async () => {
   }
 });
 
+emailButton?.addEventListener("click", () => {
+  if (!latestSummary) return;
+  const subject = `TradeGuard Transaction Monitoring Report — ${currentCaseId || "review"}`;
+  const body = "The TradeGuard transaction-monitoring report is ready. Please attach the PDF created with Print / Save PDF before sending.\\n\\n" + latestSummary;
+  if (window.RegTechEmail?.open) {
+    window.RegTechEmail.open(subject, body);
+  } else {
+    window.location.href = "mailto:?from=regtechnexusai%40gmail.com&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
+});
+
 downloadButton?.addEventListener("click", () => {
   if (!latestSummary) return;
   const blob = new Blob([UTF8_BOM, latestSummary], { type: "text/plain;charset=utf-8" });
@@ -818,15 +832,20 @@ pilotForm?.addEventListener("submit", (event) => {
   const name = document.querySelector("#pilotName")?.value.trim() || "";
   const organisation = document.querySelector("#pilotOrganisation")?.value.trim() || "";
   const type = document.querySelector("#pilotType")?.value || "";
-  const mailto = `mailto:regtechnexusai@gmail.com?subject=${encodeURIComponent(`TradeGuard pilot request — ${organisation}`)}&body=${encodeURIComponent([
+  const subject = `TradeGuard pilot request — ${organisation}`;
+  const body = [
     "TradeGuard pilot request",
     `Name: ${name}`,
     `Organisation: ${organisation}`,
     `Organisation type: ${type}`,
     "I would like to discuss a TradeGuard transaction-monitoring/TBML review pilot."
-  ].join("\n"))}`;
-  if (pilotMessage) pilotMessage.textContent = "A draft email is opening. Review it and press Send. If nothing opens, email regtechnexusai@gmail.com directly.";
-  window.location.href = mailto;
+  ].join("\n");
+  if (pilotMessage) pilotMessage.textContent = "A draft email is opening with To left blank. Enter the recipient, review it and press Send.";
+  if (window.RegTechEmail?.open) {
+    window.RegTechEmail.open(subject, body);
+  } else {
+    window.location.href = "mailto:?from=regtechnexusai%40gmail.com&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
 });
 
 refreshPdfControls();
