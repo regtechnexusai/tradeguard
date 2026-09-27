@@ -18,6 +18,7 @@ const reportContent = document.querySelector("#documentReportContent");
 const copyButton = document.querySelector("#documentCopyButton");
 const printButton = document.querySelector("#documentPrintButton");
 const downloadButton = document.querySelector("#documentDownloadButton");
+const emailButton = document.querySelector("#documentEmailButton");
 const profileHint = document.querySelector("#documentAssessmentHint");
 
 const MAX_FILES = 5;
@@ -383,6 +384,7 @@ function renderReport(profile, results, analysis) {
   copyButton.disabled = false;
   printButton.disabled = false;
   downloadButton.disabled = false;
+  if (emailButton) emailButton.disabled = false;
 }
 
 async function runAssessment() {
@@ -550,6 +552,17 @@ copyButton.addEventListener("click", async () => {
   }
 });
 
+emailButton?.addEventListener("click", () => {
+  if (!latestSummary) return;
+  const subject = `TradeGuard Document Assessment Report — ${currentCaseId || "review"}`;
+  const body = "The TradeGuard document-assessment report is ready. Please attach the PDF created with Print / Save PDF before sending.\\n\\n" + latestSummary;
+  if (window.RegTechEmail?.open) {
+    window.RegTechEmail.open(subject, body);
+  } else {
+    window.location.href = "mailto:?from=regtechnexusai%40gmail.com&subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  }
+});
+
 downloadButton.addEventListener("click", () => {
   if (!latestSummary) return;
   const blob = new Blob([UTF8_BOM, latestSummary], { type: "text/plain;charset=utf-8" });
@@ -575,6 +588,7 @@ resetButton.addEventListener("click", () => {
   copyButton.disabled = true;
   printButton.disabled = true;
   downloadButton.disabled = true;
+  if (emailButton) emailButton.disabled = true;
   latestSummary = "";
   latestAssessment = null;
   currentCaseId = "";
