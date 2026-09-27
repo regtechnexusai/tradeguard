@@ -791,7 +791,7 @@ copyButton?.addEventListener("click", async () => {
 emailButton?.addEventListener("click", () => {
   if (!latestSummary) return;
   const subject = `TradeGuard Transaction Monitoring Report — ${currentCaseId || "review"}`;
-  const body = "The TradeGuard transaction-monitoring report is ready. Please attach the PDF created with Print / Save PDF before sending.\\n\\n" + latestSummary;
+  const body = "The TradeGuard transaction-monitoring report is ready. Please attach the PDF created with Print / Save PDF before sending.\n\n" + latestSummary;
   if (window.RegTechEmail?.open) {
     window.RegTechEmail.open(subject, body);
   } else {
