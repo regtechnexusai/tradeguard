@@ -428,7 +428,7 @@ emailReportButton?.addEventListener("click", () => {
   if (!latestReport) return;
   const caseId = document.querySelector("#reportContent")?.dataset.caseId || "tradeguard-review";
   const subject = `TradeGuard TBML Review Report — ${caseId}`;
-  const body = "The TradeGuard report is ready. Please attach the PDF created with Print / Save PDF before sending.\\n\\n" + latestReport;
+  const body = "The TradeGuard report is ready. Please attach the PDF created with Print / Save PDF before sending.\n\n" + latestReport;
   if (window.RegTechEmail?.open) {
     window.RegTechEmail.open(subject, body);
   } else {
