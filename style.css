@@ -807,3 +807,68 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 @media (max-width: 640px) {
   .workspace-entry-actions { grid-template-columns: 1fr; }
 }
+
+
+/* RegTech Nexus AI main-site shell — header/footer only; TradeGuard workspace styles remain unchanged. */
+.tradeguard-main-nav.nav {
+  width:100%; min-height:78px; height:auto; margin:0; padding:10px clamp(16px,4vw,56px);
+  display:flex; align-items:center; gap:24px; position:sticky; top:0; z-index:1000;
+  background:rgba(255,255,255,.97); border:0; border-bottom:1px solid #dce5ef;
+  box-shadow:0 3px 14px rgba(16,32,59,.06); box-sizing:border-box;
+}
+.tradeguard-main-nav .brand { display:flex; align-items:center; flex:0 0 auto; min-width:0; }
+.tradeguard-main-nav .brand-logo { display:block; width:190px; max-width:220px; height:auto; max-height:62px; object-fit:contain; background:transparent; mix-blend-mode:normal; }
+.tradeguard-main-nav nav {
+  display:flex; flex:1 1 auto; min-width:0; align-items:center; justify-content:flex-end;
+  gap:clamp(8px,1.1vw,18px); margin-left:auto; font-size:11px; font-weight:650; color:#10203b;
+}
+.tradeguard-main-nav nav a { color:#10203b; white-space:nowrap; }
+.tradeguard-main-nav nav a:hover { color:#0956a8; }
+.tradeguard-main-nav .nav-menu-heading { display:none; }
+.tradeguard-main-nav .nav-cta {
+  display:inline-flex; flex:0 0 auto; align-items:center; margin-left:0; padding:12px 14px;
+  background:#10203b; color:#fff; border:1px solid #10203b; font-size:11px; white-space:nowrap;
+}
+.tradeguard-main-nav .menu {
+  display:none; margin-left:auto; border:0; background:transparent; color:#10203b;
+  font-size:25px; line-height:1; padding:8px; cursor:pointer;
+}
+.tradeguard-main-footer {
+  width:100%; max-width:none; margin:0; padding:52px 6vw 30px; display:grid;
+  grid-template-columns:1.5fr repeat(4,minmax(0,1fr)); gap:35px;
+  background:#102d4b; color:#fff; border-top:4px solid #168b91; box-sizing:border-box;
+}
+.tradeguard-main-footer>div:not(.footer-brand):not(.legal) { display:flex; flex-direction:column; gap:13px; }
+.tradeguard-main-footer .footer-brand { grid-column:auto; }
+.tradeguard-main-footer .footer-brand .brand { display:inline-flex; padding:2px; background:#fff; }
+.tradeguard-main-footer .footer-brand .brand-logo { display:block; width:230px; max-width:100%; height:auto; max-height:70px; background:#fff; mix-blend-mode:normal; object-fit:contain; }
+.tradeguard-main-footer .footer-brand p { max-width:250px; margin-top:16px; color:#c7d7e7; font-size:12px; line-height:1.7; }
+.tradeguard-main-footer b { margin-bottom:8px; color:#b9c9d8; font-size:11px; text-transform:uppercase; letter-spacing:.1em; }
+.tradeguard-main-footer a { color:#e0edf8; font-size:12px; line-height:1.5; }
+.tradeguard-main-footer a:hover { color:#70d5df; }
+.tradeguard-main-footer .footer-note { grid-column:1/-1; margin:18px 0 0; padding-top:22px; border-top:1px solid #436079; color:#c7d7e7; font-size:12px; line-height:1.7; }
+.tradeguard-main-footer .legal { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:25px; margin-top:0; padding-top:22px; border-top:1px solid #436079; color:#c7d7e7; font-size:10px; }
+.tradeguard-main-footer .legal span { color:#c7d7e7; font-size:12px; }
+@media (max-width:1250px) {
+  .tradeguard-main-nav .nav-cta { display:none; }
+  .tradeguard-main-nav .menu { display:block; }
+  .tradeguard-main-nav nav { display:none; }
+  .tradeguard-main-nav.nav.open nav {
+    position:absolute; top:100%; left:0; right:0; display:flex; flex-direction:column;
+    align-items:stretch; justify-content:flex-start; gap:0; max-height:calc(100vh - 78px);
+    overflow-y:auto; margin:0; padding:12px clamp(18px,5vw,56px) 20px;
+    background:#fff; border-bottom:1px solid #dce5ef; box-shadow:0 12px 20px rgba(16,32,59,.1);
+  }
+  .tradeguard-main-nav.nav.open nav a { display:block; padding:10px 0; white-space:normal; font-size:13px; }
+  .tradeguard-main-nav .nav-menu-heading { display:block; padding:13px 0 5px; color:#0956a8; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+  .tradeguard-main-footer { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .tradeguard-main-footer .footer-brand, .tradeguard-main-footer .footer-note, .tradeguard-main-footer .legal { grid-column:1/-1; }
+}
+@media (max-width:560px) {
+  .tradeguard-main-nav.nav { min-height:68px; padding:8px 16px; }
+  .tradeguard-main-nav .brand-logo { width:auto; max-width:170px; max-height:50px; }
+  .tradeguard-main-nav.nav.open nav { max-height:calc(100vh - 68px); }
+  .tradeguard-main-footer { grid-template-columns:1fr; gap:25px; padding:30px 18px 24px; }
+  .tradeguard-main-footer .footer-brand, .tradeguard-main-footer .footer-note, .tradeguard-main-footer .legal { grid-column:auto; }
+  .tradeguard-main-footer .legal { gap:16px; }
+}
