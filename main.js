@@ -1,6 +1,24 @@
 import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=41";
 import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=41";
 
+/* Main-site responsive navigation shell; no TradeGuard assessment logic is changed. */
+const mainSiteNav = document.querySelector(".tradeguard-main-nav");
+const mainSiteMenu = mainSiteNav?.querySelector(".menu");
+if (mainSiteNav && mainSiteMenu) {
+  mainSiteMenu.addEventListener("click", () => {
+    const isOpen = mainSiteNav.classList.toggle("open");
+    mainSiteMenu.setAttribute("aria-expanded", String(isOpen));
+    mainSiteMenu.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+  });
+  mainSiteNav.querySelectorAll("nav a").forEach((link) => {
+    link.addEventListener("click", () => {
+      mainSiteNav.classList.remove("open");
+      mainSiteMenu.setAttribute("aria-expanded", "false");
+      mainSiteMenu.setAttribute("aria-label", "Open menu");
+    });
+  });
+}
+
 const riskForm = document.querySelector("#riskForm");
 const sampleButton = document.querySelector("#sampleButton");
 const resetButton = document.querySelector("#resetButton");
