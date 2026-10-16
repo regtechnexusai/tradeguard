@@ -214,12 +214,14 @@ export function renderReport(result, input) {
     ? (integrity.priceDataProvided
       ? "Price comparison was not issued because the supplied price inputs are incomplete or not comparable to the verified HS Code and unit."
       : "Price comparison was not run because the optional price fields were not provided.")
-    : result.deviation > 0
+    : Number(input.invoicePrice) > Number(input.marketHigh)
       ? `The declared price is approximately ${Math.round(result.deviation)}% above the supplied upper market range.`
-      : "The declared price falls inside the supplied market range.";
+      : Number(input.invoicePrice) < Number(input.marketLow)
+        ? `The declared price is approximately ${Math.round(result.deviation)}% below the supplied lower market range.`
+        : "The declared price falls inside the supplied market range.";
 
   const priceCalculationText = result.deviation !== null && input.quantity && input.unitOfMeasure && input.invoicePrice && input.totalValue
-    ? ` Declared total value ${escapeHtml(input.currency || "USD")} ${formatNumber(input.totalValue)} = ${formatNumber(input.quantity)} ${escapeHtml(input.unitOfMeasure)} × ${escapeHtml(input.currency || "USD")} ${formatNumber(input.invoicePrice)}/${escapeHtml(input.unitOfMeasure)}; upper benchmark ${escapeHtml(input.currency || "USD")} ${formatNumber(input.marketHigh)}/${escapeHtml(input.unitOfMeasure)}.`
+    ? ` Declared total value entered: ${escapeHtml(input.currency || "USD")} ${formatNumber(input.totalValue)}. Reconcile this declared total against quantity × unit price and confirm consistent units/currency before relying on it; supplied market range: ${escapeHtml(input.currency || "USD")} ${formatNumber(input.marketLow)}–${formatNumber(input.marketHigh)}/${escapeHtml(input.unitOfMeasure)}.`
     : "";
 
   const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; product/commodity was populated from the verified tariff description.`;
@@ -324,7 +326,7 @@ export function renderReport(result, input) {
         : "Risk score: No scoreable signal from the supplied inputs",
     `Score cap applied: ${result.scoreCapApplied ? "Yes — raw indicator points exceeded 100" : "No"}`,
     result.readinessIssues.length ? `Readiness issues: ${result.readinessIssues.join(" | ")}` : "Readiness issues: None identified by configured gates",
-    `Data completeness: ${completeness.percent}%`,
+    `Input field completion: ${completeness.percent}% (non-empty fields only; not evidence verification)`,
     `Data integrity / comparability: ${integrity.status}`,
     integrity.issues.length ? `Integrity issues: ${integrity.issues.join(" | ")}` : "Integrity issues: None identified by configured checks",
     `Price component: ${result.priceScoringEligible ? "Calculated" : integrity.priceDataProvided ? "Not comparable / withheld" : "Not assessed — optional data not provided"}`,
