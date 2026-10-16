@@ -221,7 +221,7 @@ export function renderReport(result, input) {
         : "The declared price falls inside the supplied market range.";
 
   const priceCalculationText = result.deviation !== null && input.quantity && input.unitOfMeasure && input.invoicePrice && input.totalValue
-    ? ` Declared total value entered: ${escapeHtml(input.currency || "USD")} ${formatNumber(input.totalValue)}. Reconcile this declared total against quantity × unit price and confirm consistent units/currency before relying on it; upper benchmark ${escapeHtml(input.currency || "USD")} ${formatNumber(input.marketHigh)}/${escapeHtml(input.unitOfMeasure)}.`
+    ? ` Declared total value entered: ${escapeHtml(input.currency || "USD")} ${formatNumber(input.totalValue)}. Reconcile this declared total against quantity × unit price and confirm consistent units/currency before relying on it; supplied market range: ${escapeHtml(input.currency || "USD")} ${formatNumber(input.marketLow)}–${formatNumber(input.marketHigh)}/${escapeHtml(input.unitOfMeasure)}.`
     : "";
 
   const hsText = ` HS Code: ${escapeHtml(input.hsCode)}; product/commodity was populated from the verified tariff description.`;
