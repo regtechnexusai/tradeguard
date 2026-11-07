@@ -214,11 +214,9 @@ export function renderReport(result, input) {
     ? (integrity.priceDataProvided
       ? "Price comparison was not issued because the supplied price inputs are incomplete or not comparable to the verified HS Code and unit."
       : "Price comparison was not run because the optional price fields were not provided.")
-    : Number(input.invoicePrice) > Number(input.marketHigh)
-      ? `The declared price is approximately ${Math.round(result.deviation)}% above the supplied upper market range.`
-      : Number(input.invoicePrice) < Number(input.marketLow)
-        ? `The declared price is approximately ${Math.round(result.deviation)}% below the supplied lower market range.`
-        : "The declared price falls inside the supplied market range.";
+    : result.deviation > 0
+      ? "The declared price differs from the supplied market range."
+      : "The declared price falls inside the supplied market range.";
 
   const priceCalculationText = result.deviation !== null && input.quantity && input.unitOfMeasure && input.invoicePrice && input.totalValue
     ? ` Declared total value entered: ${escapeHtml(input.currency || "USD")} ${formatNumber(input.totalValue)}. Reconcile this declared total against quantity × unit price and confirm consistent units/currency before relying on it; supplied market range: ${escapeHtml(input.currency || "USD")} ${formatNumber(input.marketLow)}–${formatNumber(input.marketHigh)}/${escapeHtml(input.unitOfMeasure)}.`
