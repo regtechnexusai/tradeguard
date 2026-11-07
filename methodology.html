@@ -45,10 +45,11 @@
       <p class="info-meta" data-build-version data-build-label="Public methodology note">Public methodology note</p>
 
       <h2>Implementation boundary</h2>
-      <p>The public v37 build uses deterministic browser-side rules and does not call an AI API or make an autonomous compliance decision. “RegTech Nexus AI” is the publisher name; the public workflow should be understood as explainable rule-based review support. Any future AI component would require separate documentation, testing and governance.</p>
+      <p>The public build uses deterministic browser-side rules and does not call an AI API or make an autonomous compliance decision. The visible footer, module cache keys and methodology text may not always identify the same release; verify deployed release metadata before relying on version-specific documentation. “RegTech Nexus AI” is the publisher name; the public workflow should be understood as explainable rule-based review support. Any future AI component would require separate documentation, testing and governance.</p>
 
       <h2>TBML Check</h2>
       <p>The TBML workspace structures a trade case around goods, price and valuation, HS-code alignment, quantity and unit, documents, route and ports, related parties or UBO concerns, third-party payment, repeated or unsupported shipments, business-profile mismatch and unusual payment terms.</p>
+      <p>The public Document Assessment checks for expected terms and review-language signals in combined extracted text; it does not independently reconcile each field across individual documents. Treat its output as an extraction/completeness prompt, not proof that documents agree. Manually reconcile parties, goods, quantities, prices, dates and shipment references against the originals.</p>
       <p>Additional control-context fields cover jurisdiction, PEP and sanctions status, restricted or dual-use goods, payment transparency and source of funds or wealth. These are control findings and readiness information, not automatic sanctions, STR or legal conclusions.</p>
 
       <h3>TBML indicator weights in the public build</h3>
