@@ -58,7 +58,7 @@ def main():
                 errors.append(f"{page.name}: missing local asset/link {ref}")
 
         for ref in parser.versions:
-            if EXPECTED_VERSION not in ref:
+            if f"v={EXPECTED_VERSION[1:]}" not in ref:
                 errors.append(f"{page.name}: stale asset cache key {ref}")
 
     version_file = ROOT / "site-version.js"
