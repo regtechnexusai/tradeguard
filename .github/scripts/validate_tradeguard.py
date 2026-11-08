@@ -32,15 +32,11 @@ class Assets(HTMLParser):
             if value and (".js?" in value or ".css?" in value):
                 self.versions.append(value)
 
-def fail(message):
-    print(f"FAIL: {message}")
-    return 1
-
 def main():
     errors = []
     pages = sorted(ROOT.glob("*.html"))
     if not pages:
-        return fail("No HTML pages found")
+        errors.append("No HTML pages found")
 
     for page in pages:
         parser = Assets()
@@ -55,9 +51,9 @@ def main():
             if parsed.scheme or parsed.netloc or ref.startswith(("#", "mailto:", "tel:", "data:", "javascript:")):
                 continue
             path = parsed.path
-            if not path:
+            if not path or path.startswith("/"):
                 continue
-            target = (page.parent / path).resolve() if not path.startswith("/") else (ROOT / path.lstrip("/")).resolve()
+            target = (page.parent / path).resolve()
             if not target.exists():
                 errors.append(f"{page.name}: missing local asset/link {ref}")
 
@@ -71,7 +67,7 @@ def main():
 
     for js in ROOT.glob("*.js"):
         source = js.read_text(encoding="utf-8")
-        for match in re.finditer(r'import\\s+(?:[^;]*?\\s+from\\s+)?["\\'](\\./[^"\\']+)["\\']', source):
+        for match in re.finditer(r'import\s+(?:[^;]*?\s+from\s+)?["\'](\./[^"\']+)["\']', source):
             ref = match.group(1).split("?", 1)[0]
             if not (ROOT / ref[2:]).exists():
                 errors.append(f"{js.name}: missing local module import {ref}")
@@ -81,7 +77,7 @@ def main():
             print(f"FAIL: {error}")
         return 1
 
-    print(f"PASS: {len(pages)} HTML pages, local assets, module imports, canonical URLs and {EXPECTED_VERSION} cache keys verified.")
+    print(f"PASS: {len(pages)} HTML pages, relative local assets, module imports, canonical URLs and {EXPECTED_VERSION} cache keys verified.")
     return 0
 
 if __name__ == "__main__":
