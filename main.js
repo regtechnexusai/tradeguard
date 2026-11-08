@@ -1,5 +1,5 @@
-import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=41";
-import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=41";
+import { calculateRisk, getExpectedUnitsForHsCode } from "./rules.js?v=45";
+import { collectInput, renderReport, setSampleValues, validateInput } from "./report.js?v=45";
 
 /* Main-site responsive navigation shell; no TradeGuard assessment logic is changed. */
 const mainSiteNav = document.querySelector(".tradeguard-main-nav");
@@ -78,7 +78,7 @@ function printSnapshot(sourceContent, parent, modeClass) {
     return;
   }
 
-  const stylesheet = new URL("./style.css?v=41", window.location.href).href;
+  const stylesheet = new URL("./style.css?v=45", window.location.href).href;
   const title = "TradeGuard TBML Review Report";
   popup.document.open();
   popup.document.write(`<!doctype html>

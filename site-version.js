@@ -1,5 +1,5 @@
-const BUILD_VERSION = "v42";
-const BUILD_DATE = "22 September 2026";
+const BUILD_VERSION = "v45";
+const BUILD_DATE = "8 November 2026";
 
 document.querySelectorAll("[data-build-version]").forEach((element) => {
   const format = element.dataset.buildFormat || "label";
