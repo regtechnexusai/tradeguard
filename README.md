@@ -1,29 +1,25 @@
-# TradeGuard PDF print fix — v37
+# TradeGuard — RegTech Nexus AI
 
-## Problem identified
+TradeGuard is a lightweight, explainable trade-finance and TBML risk-review workspace. The public build uses deterministic browser-side rules and sample data to surface potential price, party, route, transaction-pattern and document-review indicators for human assessment.
 
-This package builds on v35 and fixes the blank Android “Save as PDF” result shown in the print-preview screenshot. Photo 1 contains the report information; photo 2 is the clean, card-based PDF reference.
+## Public workspaces
 
-The styled PDF must be produced with **Print / Save PDF** from the report screen. **Download TXT** remains available as a plain-text copy.
+- **TBML Check:** `https://regtechnexusai.com/tradeguard/`
+- **Transaction Monitoring:** `https://regtechnexusai.com/tradeguard/proactive-monitoring.html`
+- **Document Assessment:** `https://regtechnexusai.com/tradeguard/document-assessment.html`
+- **User guide:** `https://regtechnexusai.com/tradeguard/guide.html`
+- **Methodology and limitations:** `https://regtechnexusai.com/tradeguard/methodology.html`
 
-## Fixes
+## Implementation boundary
 
-- Added a UTF-8 BOM to both TXT exports so Android viewers recognise UTF-8 punctuation correctly.
-- Corrected TBML print isolation so only the TBML report is printed.
-- Corrected Transaction Monitoring print isolation so only the Transaction Monitoring report is printed.
-- Added a standalone visible print snapshot for both reports. The snapshot is cloned from the populated report only when the user presses Print / Save PDF, so the Android print service cannot capture the hidden report container or empty state.
-- Waits for the cloned logo/fonts and two layout frames before calling `window.print()`.
-- Retained print CSS overrides for `[hidden]` report containers and empty-state panels as a compatibility fallback.
-- Added an export note explaining the difference between the styled PDF and plain TXT copy.
-- Updated `report.js` to import `rules.js?v=37`, matching `main.js` and removing stale ES-module cache drift.
-- Standardized top navigation and footer links across all pages.
-- Added shared `site-version.js` build metadata: v37, 22 September 2026.
-- Standardized copyright output and social-share metadata across all six pages.
-- Kept the guide labels aligned with the actual Copy summary, Print / Save PDF and Download TXT controls.
-- Preserved the styled Print / Save PDF output, logo, case metadata, evidence gate and website disclaimer.
-- Bumped asset versions to v37 to prevent stale browser cache files.
-- Included the synchronized guide, Transaction Monitoring page, stylesheet and logo.
+The public workflow runs in the browser and does not make an autonomous compliance decision. It is not a sanctions-screening service, an STR filing system, a regulatory determination, or a substitute for an institution's approved controls. Document extraction and rule flags are preliminary signals; reviewers must verify source documents, currencies, units, parties, dates and applicable requirements.
+
+Use fictional, synthetic or anonymised data only. Do not upload confidential bank statements, customer records, identity documents or other sensitive institutional information to the public demonstration.
+
+## Release consistency
+
+The public release identifier is maintained in `site-version.js`. HTML pages and JavaScript module imports use matching cache keys to reduce stale-browser asset drift. The GitHub Actions quality workflow checks canonical URLs, local relative assets, module imports and release metadata on pull requests and pushes to `main`.
 
 ## Deployment
 
-Upload the package files to the TradeGuard site root. Keep the existing `rules.js`, `hs-codes.json`, `pdf.mjs`, `pdf.worker.mjs` and other supporting files in the root. The TXT export and PDF print fixes apply to both report modules.
+This repository is published through GitHub Pages with the custom domain configured for RegTech Nexus AI. Changes should be made on a feature branch, validated by the quality workflow, and merged through a pull request. Keep the rule engine, scoring weights, thresholds and calculation logic unchanged unless a separately scoped and tested change is approved.
