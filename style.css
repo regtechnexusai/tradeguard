@@ -867,7 +867,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 }
 
 /* Desktop dropdown correction: keep the expanded navigation compact. */
-@media (min-width:641px) and (max-width:1850px) {
+@media (min-width:901px) and (max-width:1850px) {
   .tradeguard-main-nav.nav.open nav {
     position:fixed!important; top:88px!important; left:auto!important; right:24px!important;
     width:min(440px,calc(100vw - 48px))!important; max-width:440px!important;
@@ -916,4 +916,46 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 @media (max-width:360px) {
   .tradeguard-main-nav.nav.open nav { grid-template-columns:minmax(0,1fr); }
   .tradeguard-main-nav.nav.open nav .nav-menu-heading { grid-column:1; }
+}
+
+/* 2026-11-18: compact full-width mobile navigation panel. */
+@media (max-width:900px) {
+  .tradeguard-main-nav.nav.open nav {
+    position:fixed!important; top:76px!important; left:12px!important; right:12px!important;
+    width:auto!important; max-width:none!important; display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    align-content:start; align-items:stretch; gap:7px 8px!important;
+    max-height:calc(100dvh - 90px - env(safe-area-inset-bottom,0px))!important;
+    overflow-x:hidden!important; overflow-y:auto!important; overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch; box-sizing:border-box!important;
+    margin:0!important; padding:13px!important;
+    border:1px solid #dce7ee!important; border-radius:15px!important;
+    background:rgba(255,255,255,.99)!important;
+    box-shadow:0 16px 44px rgba(16,32,59,.18)!important;
+    z-index:1200!important;
+  }
+  .tradeguard-main-nav.nav.open nav .nav-menu-heading {
+    display:block!important; grid-column:1/-1!important;
+    padding:8px 9px 4px!important; margin:3px 0 0!important;
+    border-top:1px solid #e8eef2!important;
+    color:#0956a8!important; font-size:10px!important; line-height:1.25!important;
+  }
+  .tradeguard-main-nav.nav.open nav .nav-menu-heading:first-child {
+    margin-top:0!important; border-top:0!important;
+  }
+  .tradeguard-main-nav.nav.open nav a {
+    display:flex!important; align-items:center; width:auto!important; min-width:0;
+    min-height:42px; padding:9px 10px!important; margin:0!important;
+    border:1px solid #e5edf2!important; border-radius:10px!important;
+    background:#f7fafc!important; color:#17263d!important;
+    font-size:12px!important; line-height:1.3!important; font-weight:650;
+    white-space:normal!important; overflow-wrap:anywhere; box-sizing:border-box!important;
+  }
+}
+@media (max-width:560px) {
+  .tradeguard-main-nav.nav.open nav { top:68px!important; }
+}
+@media (max-width:360px) {
+  .tradeguard-main-nav.nav.open nav { grid-template-columns:minmax(0,1fr)!important; }
+  .tradeguard-main-nav.nav.open nav .nav-menu-heading { grid-column:1!important; }
 }
