@@ -864,7 +864,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
     box-sizing:border-box; -webkit-overflow-scrolling:touch;
   }
   .tradeguard-main-nav.nav.open nav .nav-menu-heading {
-    grid-column:1 / -1; padding:9px 10px 3px; margin-top:2px;
+    display:block; grid-column:1 / -1; padding:9px 10px 3px; margin-top:2px;
     border-top:1px solid #edf1f5; color:#0956a8; font-size:10px;
     font-weight:800; letter-spacing:.12em; text-transform:uppercase;
   }
