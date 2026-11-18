@@ -78,7 +78,7 @@ function printSnapshot(sourceContent, parent, modeClass) {
     return;
   }
 
-  const stylesheet = new URL("./style.css?v=45", window.location.href).href;
+  const stylesheet = new URL("./style.css?v=46", window.location.href).href;
   const title = "TradeGuard TBML Review Report";
   popup.document.open();
   popup.document.write(`<!doctype html>
