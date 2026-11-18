@@ -829,6 +829,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
   display:inline-flex; flex:0 0 auto; align-items:center; margin-left:0; padding:12px 14px;
   background:#10203b; color:#fff; border:1px solid #10203b; font-size:11px; white-space:nowrap;
 }
+.tradeguard-main-nav .nav-cta, .tradeguard-main-nav .nav-cta:visited { color:#fff !important; }
 .tradeguard-main-nav .menu {
   display:none; margin-left:auto; border:0; background:transparent; color:#10203b;
   font-size:25px; line-height:1; padding:8px; cursor:pointer;
@@ -849,7 +850,7 @@ h1 { max-width: 650px; margin: 20px 0 20px; color: var(--navy); font-size: clamp
 .tradeguard-main-footer .footer-note { grid-column:1/-1; margin:18px 0 0; padding-top:22px; border-top:1px solid #436079; color:#c7d7e7; font-size:12px; line-height:1.7; }
 .tradeguard-main-footer .legal { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:25px; margin-top:0; padding-top:22px; border-top:1px solid #436079; color:#c7d7e7; font-size:10px; }
 .tradeguard-main-footer .legal span { color:#c7d7e7; font-size:12px; }
-@media (max-width:1250px) {
+@media (max-width:1850px) {
   .tradeguard-main-nav .nav-cta { display:none; }
   .tradeguard-main-nav .menu { display:block; }
   .tradeguard-main-nav nav { display:none; }
